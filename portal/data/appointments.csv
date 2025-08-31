@@ -1,1 +1,3 @@
 appointment_id,phone_number,full_name,id_number,grant_type,location,date,time,status,timestamp
+BD1643DD,27831234567,JANE DOE,1234567890123,Identity Verification,,reference,"Durban Central - 420 Anton Lembede St, Durban",2025-09-02,09:30 - 10:00,1,Confirmed,2025-08-31T13:27:05.341996
+5A21ED63,27831234567,JOHN DOE,2345678901234,Document Collection,,SKIP,"Mitchell's Plain - Town Centre, Mitchell's Plain",2025-09-05,10:30 - 11:00,1,Confirmed,2025-08-31T13:37:23.486708

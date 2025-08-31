@@ -1,147 +1,4 @@
-def process_ussd_input(session, user_input):
-    """Process user input and update session state"""
-    current_screen = st.session_state.current_screen
-    
-    session.log_interaction(user_input, f"Screen: {current_screen}")
-    
-    if current_screen == 'main_menu':
-        service_map = {
-            '1': 'service_grant_application',
-            '2': 'service_identity_verification', 
-            '3': 'service_biometric_capture',
-            '4': 'service_status_appeal',
-            '5': 'service_document_collection',
-            '6': 'check_appointments',
-            '7': 'find_office'
-        }
-        if user_input in service_map:
-            if user_input in ['1', '2', '3', '4', '5']:
-                session.user_data['service_type'] = user_input
-                st.session_state.current_screen = service_map[user_input]
-            else:
-                st.session_state.current_screen = service_map[user_input]
-        elif user_input == '0':
-            st.session_state.current_screen = 'start'
-    
-    elif current_screen == 'service_grant_application':
-        if user_input in ['1', '2', '3', '4', '5', '6']:
-            session.user_data['grant_type'] = user_input
-            st.session_state.current_screen = 'appointment_type'
-        elif user_input == '0':
-            st.session_state.current_screen = 'main_menu'
-    
-    elif current_screen in ['service_identity_verification', 'service_biometric_capture', 
-                           'service_status_appeal', 'service_document_collection']:
-        if user_input == '1':
-            st.session_state.current_screen = 'appointment_type'
-        elif user_input == '0':
-            st.session_state.current_screen = 'main_menu'
-    
-    elif current_screen == 'appointment_type':
-        if user_input in ['1', '2', '3']:
-            session.user_data['duration_type'] = user_input
-            st.session_state.current_screen = 'province_menu'
-        elif user_input == '0':
-            st.session_state.current_screen = 'main_menu'
-    
-    elif current_screen == 'province_menu':
-        provinces = {'1': 'GP', '2': 'WC', '3': 'KZN'}
-        if user_input in provinces:
-            session.user_data['province_code'] = provinces[user_input]
-            st.session_state.current_screen = 'office_menu'
-        elif user_input == '0':
-            st.session_state.current_screen = 'appointment_type'
-    
-    elif current_screen == 'office_menu':
-        province_code = session.user_data.get('province_code', 'GP')
-        offices = session.locations[province_code]['offices']
-        if user_input in offices:
-            session.user_data['office_name'] = offices[user_input]
-            st.session_state.current_screen = 'date_menu'
-        elif user_input == '0':
-            st.session_state.current_screen = 'province_menu'
-    
-    elif current_screen == 'date_menu':
-        if user_input in [str(i) for i in range(1, 11)]:
-            # Calculate the selected date
-            current = datetime.now() + timedelta(days=1)
-            count = 1
-            selected_date = None
-            
-            while count <= int(user_input):
-                if current.weekday() < 5:  # Working days only
-                    if count == int(user_input):
-                        selected_date = current
-                        break
-                    count += 1
-                current += timedelta(days=1)
-            
-            if selected_date:
-                session.user_data['date_str'] = selected_date.strftime("%Y-%m-%d")
-                session.user_data['date_display'] = selected_date.strftime("%a %d %b")
-                st.session_state.current_screen = 'time_menu'
-        elif user_input == '0':
-            st.session_state.current_screen = 'office_menu'
-    
-    elif current_screen == 'time_menu':
-        # Process time selection based on duration type
-        duration_type = session.user_data.get('duration_type', '1')
-        duration_map = {"1": "standard", "2": "complex", "3": "group"}
-        duration_key = duration_map.get(duration_type, 'standard')
-        
-        # Define time mappings for each duration type
-        time_mappings = {
-            "standard": {
-                "1": "08:00 - 08:30", "2": "08:30 - 09:00", "3": "09:00 - 09:30", "4": "09:30 - 10:00",
-                "5": "10:00 - 10:30", "6": "10:30 - 11:00", "7": "11:00 - 11:30", "8": "11:30 - 12:00",
-                "9": "13:00 - 13:30", "10": "13:30 - 14:00", "11": "14:00 - 14:30", "12": "14:30 - 15:00",
-                "13": "15:00 - 15:30", "14": "15:30 - 16:00", "15": "16:00 - 16:30", "16": "16:30 - 17:00"
-            },
-            "complex": {
-                "1": "08:00 - 09:00", "2": "09:00 - 10:00", "3": "10:00 - 11:00", "4": "11:00 - 12:00",
-                "5": "13:00 - 14:00", "6": "14:00 - 15:00", "7": "15:00 - 16:00", "8": "16:00 - 17:00"
-            },
-            "group": {
-                "1": "08:00 - 09:30", "2": "10:00 - 11:30", "3": "13:00 - 14:30", "4": "15:00 - 16:30"
-            }
-        }
-        
-        current_mappings = time_mappings.get(duration_key, time_mappings["standard"])
-        max_slots = len(current_mappings)
-        
-        if user_input in [str(i) for i in range(1, max_slots + 1)]:
-            session.user_data['time_slot'] = user_input
-            session.user_data['time_display'] = current_mappings.get(user_input, 'Unknown Time')
-            st.session_state.current_screen = 'reference_input'
-        elif user_input == '0':
-            st.session_state.current_screen = 'date_menu'
-    
-    elif current_screen == 'reference_input':
-        session.user_data['reference_number'] = user_input.strip() if user_input.strip() else 'SKIP'
-        st.session_state.current_screen = 'name_input'
-    
-    elif current_screen == 'name_input':
-        if user_input.strip():
-            session.user_data['name'] = user_input.strip().upper()
-            st.session_state.current_screen = 'id_input'
-    
-    elif current_screen == 'id_input':
-        if len(user_input.strip()) == 13 and user_input.strip().isdigit():
-            session.user_data['id_number'] = user_input.strip()
-            st.session_state.current_screen = 'confirmation'
-        else:
-            st.error("Invalid ID number. Must be 13 digits.")
-    
-    elif current_screen == 'confirmation':
-        if user_input == '1':
-            # Confirm booking
-            appointment_id = save_appointment(session)
-            session.user_data['appointment_id'] = appointment_id
-            st.session_state.current_screen = 'success'
-        elif user_input == '2':
-            st.session_state.current_screen = 'name_input'
-        elif user_input == '0':
-            st.session_state.current_screen = 'main_menu'# pages/ussd_service.py
+# pages/ussd_service.py
 import streamlit as st
 import csv
 import os
@@ -152,6 +9,7 @@ import json
 # ---------------- Config ----------------
 USSD_DATA_FILE = "data/ussd_sessions.csv"
 APPOINTMENTS_FILE = "data/appointments.csv"
+HOME_VISITS_FILE = "data/home_visits.csv"
 LOCATIONS_FILE = "data/sassa_locations.json"
 os.makedirs("data", exist_ok=True)
 
@@ -166,8 +24,8 @@ def apply_sassa_styling():
     }
     
     .ussd-screen {
-        background: #000000;
-        color: #00FF00;
+        background:#ebdc9b;
+        color: #8a7a03;
         font-family: 'Courier New', monospace;
         padding: 20px;
         border-radius: 10px;
@@ -186,7 +44,7 @@ def apply_sassa_styling():
     }
     
     .menu-item {
-        color: #00FF00;
+        color: #8a7a03;
         margin: 5px 0;
     }
     
@@ -196,7 +54,7 @@ def apply_sassa_styling():
     }
     
     .success-msg {
-        color: #00FF00;
+        color: ##8a7a03;
         font-weight: bold;
     }
     
@@ -224,6 +82,14 @@ def initialize_data():
             writer = csv.writer(f)
             writer.writerow(["appointment_id", "phone_number", "full_name", "id_number", "service_type",
                            "grant_type", "reference_number", "location", "date", "time", "duration", "status", "timestamp"])
+    
+    # Initialize home visits CSV
+    if not os.path.exists(HOME_VISITS_FILE):
+        with open(HOME_VISITS_FILE, "w", newline="", encoding="utf-8") as f:
+            writer = csv.writer(f)
+            writer.writerow(["visit_id", "phone_number", "full_name", "id_number", "service_type",
+                           "grant_type", "reference_number", "address", "mobility_reason", "preferred_time",
+                           "special_requirements", "emergency_contact", "status", "agent_assigned", "timestamp"])
     
     # Initialize SASSA locations
     if not os.path.exists(LOCATIONS_FILE):
@@ -299,16 +165,104 @@ Sawubona! Welcome to SASSA!
 3. Book Biometric Capture
 4. Book Status Appeal Meeting
 5. Book Document Collection
-6. Check My Appointments
-7. Find SASSA Office
+6. Request Home Visit Service
+7. Check My Appointments
+8. Find SASSA Office
 0. Exit
 
-Please select option (1-7):
+Please select option (1-8):
 """
 
-    def service_type_menu(self, service_type):
-        menus = {
-            "grant_application": """
+    def home_visit_service(self):
+        return """
+HOME VISIT SERVICE
+==================
+
+For those who cannot visit 
+SASSA offices:
+
+• Elderly persons (65+)
+• People with disabilities
+• Remote locations
+• Mobility challenges
+• Serious illness
+
+Services available:
+• Document collection
+• Form assistance
+• Biometric capture
+• Application submission
+• Status verification
+
+1. Request Home Visit
+2. Check Home Visit Status
+0. Back to Main Menu
+
+Select option (1-2):
+"""
+
+    def home_visit_reasons(self):
+        return """
+SELECT VISIT REASON
+==================
+
+Why do you need a home visit?
+
+1. Advanced age (65+ years)
+2. Physical disability
+3. Serious illness/bedridden
+4. Remote location (no transport)
+5. Mobility challenges
+6. Caring for dependents
+7. Other medical reasons
+
+0. Back
+
+Select reason (1-7):
+"""
+
+    def home_visit_services(self):
+        return """
+SELECT SERVICE TYPE
+==================
+
+What service do you need?
+
+1. Grant application assistance
+2. Document collection/delivery
+3. Biometric capture
+4. Form completion help
+5. Status verification
+6. Appeal submission
+7. Identity verification
+
+0. Back
+
+Select service (1-7):
+"""
+
+    def home_visit_schedule(self):
+        return """
+SCHEDULE HOME VISIT
+==================
+
+Available time slots:
+
+1. Monday - Friday (08:00-12:00)
+2. Monday - Friday (13:00-17:00)
+3. Saturday (09:00-13:00)
+4. Emergency (within 24hrs)
+
+Note: Emergency visits for
+urgent medical/disability cases.
+
+0. Back
+
+Select time (1-4):
+"""
+
+    def service_grant_application(self):
+        return """
 SELECT GRANT TYPE
 =================
 
@@ -321,8 +275,10 @@ SELECT GRANT TYPE
 0. Back to Main Menu
 
 Select grant type (1-6):
-""",
-            "identity_verification": """
+"""
+
+    def service_identity_verification(self):
+        return """
 IDENTITY VERIFICATION
 ====================
 
@@ -337,12 +293,15 @@ What to bring:
 - Proof of residence
 - Bank statement
 
-1. Book Appointment
+1. Book Office Appointment
+2. Request Home Visit
 0. Back to Main Menu
 
-Press 1 to continue:
-""",
-            "biometric_capture": """
+Select option (1-2):
+"""
+
+    def service_biometric_capture(self):
+        return """
 BIOMETRIC CAPTURE
 =================
 
@@ -357,12 +316,15 @@ Usually needed when:
 - System flags for manual check
 - Appeal process
 
-1. Book Appointment  
+1. Book Office Appointment
+2. Request Home Visit  
 0. Back to Main Menu
 
-Press 1 to continue:
-""",
-            "status_appeal": """
+Select option (1-2):
+"""
+
+    def service_status_appeal(self):
+        return """
 STATUS APPEAL MEETING
 ====================
 
@@ -378,12 +340,15 @@ Required documents:
 - Supporting documents
 - Previous correspondence
 
-1. Book Appeal Meeting
+1. Book Office Meeting
+2. Request Home Visit
 0. Back to Main Menu
 
-Press 1 to continue:
-""",
-            "document_collection": """
+Select option (1-2):
+"""
+
+    def service_document_collection(self):
+        return """
 DOCUMENT COLLECTION
 ==================
 
@@ -396,13 +361,49 @@ Collect:
 You will receive SMS when
 documents are ready.
 
-1. Book Collection Slot
+1. Book Office Collection
+2. Request Home Delivery
 0. Back to Main Menu
 
-Press 1 to continue:
+Select option (1-2):
 """
-        }
-        return menus.get(service_type, self.main_menu())
+
+    def check_appointments(self):
+        return """
+CHECK APPOINTMENTS
+==================
+
+To check your appointments:
+- SMS will be sent with details
+- Call 0800 601 011
+- Visit nearest SASSA office
+
+Recent appointments for
+this number will be shown.
+
+1. Get SMS with appointments
+2. Call customer service
+3. Check home visit status
+0. Back to Main Menu
+
+Select option (1-3):
+"""
+
+    def find_office(self):
+        return """
+FIND SASSA OFFICE
+=================
+
+1. Gauteng Offices
+2. Western Cape Offices  
+3. KwaZulu-Natal Offices
+4. Get office contact details
+5. Operating hours info
+
+0. Back to Main Menu
+
+Select option (1-5):
+"""
     
     def appointment_type_menu(self):
         service_names = {
@@ -466,7 +467,7 @@ SELECT PROVINCE
         return menu
 
     def date_menu(self):
-        # Generate next 14 working days
+        # Generate next 10 working days
         dates = []
         current = datetime.now() + timedelta(days=1)
         count = 1
@@ -491,36 +492,24 @@ SELECT DATE
     def time_menu(self, duration_type="standard"):
         duration_slots = {
             "standard": {  # 30-minute slots
-                "morning": [
-                    ("1", "08:00 - 08:30"), ("2", "08:30 - 09:00"), 
-                    ("3", "09:00 - 09:30"), ("4", "09:30 - 10:00"),
-                    ("5", "10:00 - 10:30"), ("6", "10:30 - 11:00"),
-                    ("7", "11:00 - 11:30"), ("8", "11:30 - 12:00")
-                ],
-                "afternoon": [
-                    ("9", "13:00 - 13:30"), ("10", "13:30 - 14:00"),
-                    ("11", "14:00 - 14:30"), ("12", "14:30 - 15:00"),
-                    ("13", "15:00 - 15:30"), ("14", "15:30 - 16:00"),
-                    ("15", "16:00 - 16:30"), ("16", "16:30 - 17:00")
-                ]
+                "1": "08:00 - 08:30", "2": "08:30 - 09:00", 
+                "3": "09:00 - 09:30", "4": "09:30 - 10:00",
+                "5": "10:00 - 10:30", "6": "10:30 - 11:00",
+                "7": "11:00 - 11:30", "8": "11:30 - 12:00",
+                "9": "13:00 - 13:30", "10": "13:30 - 14:00",
+                "11": "14:00 - 14:30", "12": "14:30 - 15:00",
+                "13": "15:00 - 15:30", "14": "15:30 - 16:00",
+                "15": "16:00 - 16:30", "16": "16:30 - 17:00"
             },
             "complex": {  # 60-minute slots
-                "morning": [
-                    ("1", "08:00 - 09:00"), ("2", "09:00 - 10:00"), 
-                    ("3", "10:00 - 11:00"), ("4", "11:00 - 12:00")
-                ],
-                "afternoon": [
-                    ("5", "13:00 - 14:00"), ("6", "14:00 - 15:00"),
-                    ("7", "15:00 - 16:00"), ("8", "16:00 - 17:00")
-                ]
+                "1": "08:00 - 09:00", "2": "09:00 - 10:00", 
+                "3": "10:00 - 11:00", "4": "11:00 - 12:00",
+                "5": "13:00 - 14:00", "6": "14:00 - 15:00",
+                "7": "15:00 - 16:00", "8": "16:00 - 17:00"
             },
             "group": {  # 90-minute slots
-                "morning": [
-                    ("1", "08:00 - 09:30"), ("2", "10:00 - 11:30")
-                ],
-                "afternoon": [
-                    ("3", "13:00 - 14:30"), ("4", "15:00 - 16:30")
-                ]
+                "1": "08:00 - 09:30", "2": "10:00 - 11:30",
+                "3": "13:00 - 14:30", "4": "15:00 - 16:30"
             }
         }
         
@@ -530,13 +519,9 @@ SELECT DATE
 SELECT TIME SLOT
 ================
 
-Morning Slots:
+Available times:
 """
-        for slot_id, time_range in slots["morning"]:
-            menu += f"{slot_id}. {time_range}\n"
-        
-        menu += "\nAfternoon Slots:\n"
-        for slot_id, time_range in slots["afternoon"]:
+        for slot_id, time_range in slots.items():
             menu += f"{slot_id}. {time_range}\n"
         
         menu += "\n0. Back\n\nSelect time slot:"
@@ -579,6 +564,155 @@ South African ID number:
 Format: YYMMDDGGGGSAV
 
 (Reply with ID number)
+"""
+        elif step == "address":
+            return """
+HOME ADDRESS REQUIRED
+====================
+
+Please enter your complete 
+home address for the visit:
+
+Include:
+- Street address
+- Suburb/Township
+- City
+- Postal code
+
+(Reply with full address)
+"""
+        elif step == "emergency_contact":
+            return """
+EMERGENCY CONTACT
+=================
+
+Please provide an emergency
+contact person:
+
+Format: Name, Relationship, Phone
+
+Example: 
+John Doe, Son, 0821234567
+
+(Reply with contact details)
+"""
+
+    def home_visit_confirmation_screen(self):
+        service_names = {
+            "1": "Grant Application Assistance",
+            "2": "Document Collection/Delivery",
+            "3": "Biometric Capture",
+            "4": "Form Completion Help",
+            "5": "Status Verification", 
+            "6": "Appeal Submission",
+            "7": "Identity Verification"
+        }
+        
+        reason_names = {
+            "1": "Advanced age (65+)",
+            "2": "Physical disability",
+            "3": "Serious illness",
+            "4": "Remote location",
+            "5": "Mobility challenges",
+            "6": "Caring for dependents",
+            "7": "Other medical reasons"
+        }
+        
+        time_names = {
+            "1": "Weekday Morning (08:00-12:00)",
+            "2": "Weekday Afternoon (13:00-17:00)",
+            "3": "Saturday (09:00-13:00)",
+            "4": "Emergency (within 24hrs)"
+        }
+        
+        service_type = self.user_data.get('home_service_type', '')
+        reason_type = self.user_data.get('home_visit_reason', '')
+        time_type = self.user_data.get('home_visit_time', '')
+        
+        confirmation = f"""
+CONFIRM HOME VISIT
+==================
+
+Service: {service_names.get(service_type, 'Unknown Service')}
+Reason: {reason_names.get(reason_type, 'Not specified')}
+Schedule: {time_names.get(time_type, 'Not specified')}
+
+Name: {self.user_data.get('name', '')}
+ID: {self.user_data.get('id_number', '')}
+Address: {self.user_data.get('home_address', '')}
+Contact: {self.user_data.get('emergency_contact', '')}
+
+AGENT WILL BRING:
+{self.get_home_visit_items()}
+
+IMPORTANT:
+- Adult must be present
+- Have ID document ready
+- Clear access to home
+- Agent will call 30min before
+
+1. CONFIRM HOME VISIT
+2. EDIT DETAILS  
+0. CANCEL
+
+Please select (1, 2, or 0):
+"""
+        return confirmation
+
+    def get_home_visit_items(self):
+        service_type = self.user_data.get('home_service_type', '')
+        items = {
+            "1": "- Application forms\n- Mobile printer\n- Document scanner\n- ID verification device",
+            "2": "- Delivery bag\n- Receipt printer\n- ID verification\n- Collection forms",
+            "3": "- Portable biometric scanner\n- Camera equipment\n- Fingerprint device\n- Mobile connectivity",
+            "4": "- All required forms\n- Pens and materials\n- Document templates\n- Assistance guides",
+            "5": "- Mobile device for status check\n- Printer for updates\n- Verification documents",
+            "6": "- Appeal forms\n- Legal documentation\n- Evidence collection tools\n- Submission receipts",
+            "7": "- ID verification equipment\n- Document scanner\n- Photo capture device\n- Verification forms"
+        }
+        return items.get(service_type, "- Standard documentation\n- Mobile equipment\n- ID verification tools")
+
+    def home_visit_success_screen(self, visit_id):
+        service_names = {
+            "1": "Grant Application Assistance",
+            "2": "Document Collection/Delivery",
+            "3": "Biometric Capture",
+            "4": "Form Completion Help", 
+            "5": "Status Verification",
+            "6": "Appeal Submission",
+            "7": "Identity Verification"
+        }
+        
+        service_type = self.user_data.get('home_service_type', '')
+        service_name = service_names.get(service_type, 'SASSA Home Service')
+        
+        return f"""
+HOME VISIT CONFIRMED!
+====================
+
+Visit ID: {visit_id}
+Service: {service_name}
+
+Your home visit has been 
+scheduled successfully.
+
+WHAT HAPPENS NEXT:
+- Agent assigned within 24hrs
+- SMS confirmation sent
+- Agent calls 30min before visit
+- Visit duration: 30-90 minutes
+
+PREPARE FOR VISIT:
+- Have ID document ready
+- Ensure adult is present
+- Clear access to home
+- Prepare any documents
+
+Emergency contact: 0800 601 011
+
+Thank you for using SASSA!
+
+Session will end in 10 seconds...
 """
 
     def confirmation_screen(self):
@@ -651,6 +785,17 @@ Please select (1, 2, or 0):
         }
         return docs.get(service_type, "- Original ID document\n- Supporting documents")
 
+    def get_appointment_reminders(self):
+        service_type = self.user_data.get('service_type', '')
+        reminders = {
+            "1": "- Complete application forms\n- Bring supporting documents\n- Allow 2 hours for process",
+            "2": "- Bring original documents\n- No photocopies accepted\n- Update address if changed",
+            "3": "- Clean hands for fingerprints\n- Remove hats/sunglasses\n- Speak clearly for voice capture",
+            "4": "- Bring all correspondence\n- Prepare your case summary\n- Allow up to 2 hours",
+            "5": "- Bring SMS collection notice\n- Bring original ID only\n- Quick 15-minute service"
+        }
+        return reminders.get(service_type, "- Bring required documents\n- Arrive on time")
+
     def success_screen(self, appointment_id):
         service_names = {
             "1": "Grant Application",
@@ -679,24 +824,13 @@ Arrive 15 minutes early.
 Bring all required documents.
 SMS confirmation sent to {self.phone_number}
 
-Dial * 120*32390# then option 6
+Dial * 120*32390# then option 7
 to check your appointments.
 
 Thank you for using SASSA USSD!
 
 Session will end in 10 seconds...
 """
-    
-    def get_appointment_reminders(self):
-        service_type = self.user_data.get('service_type', '')
-        reminders = {
-            "1": "- Complete application forms\n- Bring supporting documents\n- Allow 2 hours for process",
-            "2": "- Bring original documents\n- No photocopies accepted\n- Update address if changed",
-            "3": "- Clean hands for fingerprints\n- Remove hats/sunglasses\n- Speak clearly for voice capture",
-            "4": "- Bring all correspondence\n- Prepare your case summary\n- Allow up to 2 hours",
-            "5": "- Bring SMS collection notice\n- Bring original ID only\n- Quick 15-minute service"
-        }
-        return reminders.get(service_type, "- Bring required documents\n- Arrive on time")
 
 def save_appointment(session):
     appointment_id = str(uuid.uuid4())[:8].upper()
@@ -728,6 +862,314 @@ def save_appointment(session):
         ])
     
     return appointment_id
+
+def save_home_visit(session):
+    visit_id = str(uuid.uuid4())[:8].upper()
+    
+    service_names = {
+        "1": "Grant Application Assistance",
+        "2": "Document Collection/Delivery",
+        "3": "Biometric Capture",
+        "4": "Form Completion Help",
+        "5": "Status Verification",
+        "6": "Appeal Submission", 
+        "7": "Identity Verification"
+    }
+    
+    reason_names = {
+        "1": "Advanced age (65+)",
+        "2": "Physical disability",
+        "3": "Serious illness",
+        "4": "Remote location",
+        "5": "Mobility challenges",
+        "6": "Caring for dependents",
+        "7": "Other medical reasons"
+    }
+    
+    with open(HOME_VISITS_FILE, "a", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow([
+            visit_id,
+            session.phone_number,
+            session.user_data.get('name', ''),
+            session.user_data.get('id_number', ''),
+            service_names.get(session.user_data.get('home_service_type', ''), 'Unknown'),
+            session.user_data.get('grant_type', ''),
+            session.user_data.get('reference_number', ''),
+            session.user_data.get('home_address', ''),
+            reason_names.get(session.user_data.get('home_visit_reason', ''), 'Not specified'),
+            session.user_data.get('home_visit_time', ''),
+            session.user_data.get('special_requirements', ''),
+            session.user_data.get('emergency_contact', ''),
+            "Pending Assignment",
+            "",  # agent_assigned
+            datetime.now().isoformat()
+        ])
+    
+    return visit_id
+
+def process_ussd_input(session, user_input):
+    """Process user input and update session state"""
+    current_screen = st.session_state.current_screen
+    
+    session.log_interaction(user_input, f"Screen: {current_screen}")
+    
+    if current_screen == 'main_menu':
+        service_map = {
+            '1': 'service_grant_application',
+            '2': 'service_identity_verification', 
+            '3': 'service_biometric_capture',
+            '4': 'service_status_appeal',
+            '5': 'service_document_collection',
+            '6': 'home_visit_service',
+            '7': 'check_appointments',
+            '8': 'find_office'
+        }
+        if user_input in service_map:
+            if user_input in ['1', '2', '3', '4', '5']:
+                session.user_data['service_type'] = user_input
+                st.session_state.current_screen = service_map[user_input]
+            else:
+                st.session_state.current_screen = service_map[user_input]
+        elif user_input == '0':
+            st.session_state.current_screen = 'start'
+    
+    elif current_screen == 'home_visit_service':
+        if user_input == '1':
+            st.session_state.current_screen = 'home_visit_reasons'
+        elif user_input == '2':
+            # Check home visit status - in real implementation would query database
+            st.info("SMS with home visit status will be sent shortly.")
+            st.session_state.current_screen = 'main_menu'
+        elif user_input == '0':
+            st.session_state.current_screen = 'main_menu'
+    
+    elif current_screen == 'home_visit_reasons':
+        if user_input in ['1', '2', '3', '4', '5', '6', '7']:
+            session.user_data['home_visit_reason'] = user_input
+            st.session_state.current_screen = 'home_visit_services'
+        elif user_input == '0':
+            st.session_state.current_screen = 'home_visit_service'
+    
+    elif current_screen == 'home_visit_services':
+        if user_input in ['1', '2', '3', '4', '5', '6', '7']:
+            session.user_data['home_service_type'] = user_input
+            st.session_state.current_screen = 'home_visit_schedule'
+        elif user_input == '0':
+            st.session_state.current_screen = 'home_visit_reasons'
+    
+    elif current_screen == 'home_visit_schedule':
+        if user_input in ['1', '2', '3', '4']:
+            session.user_data['home_visit_time'] = user_input
+            st.session_state.current_screen = 'home_reference_input'
+        elif user_input == '0':
+            st.session_state.current_screen = 'home_visit_services'
+    
+    elif current_screen == 'service_grant_application':
+        if user_input in ['1', '2', '3', '4', '5', '6']:
+            session.user_data['grant_type'] = user_input
+            st.session_state.current_screen = 'appointment_type'
+        elif user_input == '0':
+            st.session_state.current_screen = 'main_menu'
+    
+    elif current_screen in ['service_identity_verification', 'service_biometric_capture', 
+                           'service_status_appeal', 'service_document_collection']:
+        if user_input == '1':
+            st.session_state.current_screen = 'appointment_type'
+        elif user_input == '2':
+            st.session_state.current_screen = 'home_visit_reasons'
+        elif user_input == '0':
+            st.session_state.current_screen = 'main_menu'
+    
+    elif current_screen == 'check_appointments':
+        if user_input == '1':
+            # In real implementation, would send SMS
+            st.success("SMS with appointment details will be sent shortly.")
+            st.session_state.current_screen = 'main_menu'
+        elif user_input == '2':
+            st.info("Please call 0800 601 011 for appointment information.")
+            st.session_state.current_screen = 'main_menu'
+        elif user_input == '3':
+            st.info("SMS with home visit status will be sent shortly.")
+            st.session_state.current_screen = 'main_menu'
+        elif user_input == '0':
+            st.session_state.current_screen = 'main_menu'
+    
+    elif current_screen == 'find_office':
+        if user_input in ['1', '2', '3']:
+            # Show offices for selected province
+            province_map = {'1': 'GP', '2': 'WC', '3': 'KZN'}
+            province_code = province_map[user_input]
+            session.user_data['selected_province'] = province_code
+            st.session_state.current_screen = 'office_list'
+        elif user_input == '4':
+            st.info("For contact details, call 0800 601 011 or visit www.sassa.gov.za")
+            st.session_state.current_screen = 'main_menu'
+        elif user_input == '5':
+            st.info("Office Hours: Monday-Friday 08:00-17:00. Closed weekends and public holidays.")
+            st.session_state.current_screen = 'main_menu'
+        elif user_input == '0':
+            st.session_state.current_screen = 'main_menu'
+    
+    elif current_screen == 'office_list':
+        # Just show office info and return to main menu
+        if user_input == '0':
+            st.session_state.current_screen = 'find_office'
+        else:
+            st.session_state.current_screen = 'main_menu'
+    
+    elif current_screen == 'appointment_type':
+        if user_input in ['1', '2', '3']:
+            session.user_data['duration_type'] = user_input
+            st.session_state.current_screen = 'province_menu'
+        elif user_input == '0':
+            # Go back to appropriate service screen
+            service_type = session.user_data.get('service_type', '1')
+            service_map = {
+                '1': 'service_grant_application',
+                '2': 'service_identity_verification', 
+                '3': 'service_biometric_capture',
+                '4': 'service_status_appeal',
+                '5': 'service_document_collection'
+            }
+            st.session_state.current_screen = service_map.get(service_type, 'main_menu')
+    
+    elif current_screen == 'province_menu':
+        provinces = {'1': 'GP', '2': 'WC', '3': 'KZN'}
+        if user_input in provinces:
+            session.user_data['province_code'] = provinces[user_input]
+            st.session_state.current_screen = 'office_menu'
+        elif user_input == '0':
+            st.session_state.current_screen = 'appointment_type'
+    
+    elif current_screen == 'office_menu':
+        province_code = session.user_data.get('province_code', 'GP')
+        offices = session.locations[province_code]['offices']
+        if user_input in offices:
+            session.user_data['office_name'] = offices[user_input]
+            st.session_state.current_screen = 'date_menu'
+        elif user_input == '0':
+            st.session_state.current_screen = 'province_menu'
+    
+    elif current_screen == 'date_menu':
+        if user_input in [str(i) for i in range(1, 11)]:
+            # Calculate the selected date
+            current = datetime.now() + timedelta(days=1)
+            count = 1
+            selected_date = None
+            
+            while count <= int(user_input):
+                if current.weekday() < 5:  # Working days only
+                    if count == int(user_input):
+                        selected_date = current
+                        break
+                    count += 1
+                current += timedelta(days=1)
+            
+            if selected_date:
+                session.user_data['date_str'] = selected_date.strftime("%Y-%m-%d")
+                session.user_data['date_display'] = selected_date.strftime("%a %d %b")
+                st.session_state.current_screen = 'time_menu'
+        elif user_input == '0':
+            st.session_state.current_screen = 'office_menu'
+    
+    elif current_screen == 'time_menu':
+        # Process time selection based on duration type
+        duration_type = session.user_data.get('duration_type', '1')
+        duration_map = {"1": "standard", "2": "complex", "3": "group"}
+        duration_key = duration_map.get(duration_type, 'standard')
+        
+        # Define time mappings for each duration type
+        time_mappings = {
+            "standard": {
+                "1": "08:00 - 08:30", "2": "08:30 - 09:00", "3": "09:00 - 09:30", "4": "09:30 - 10:00",
+                "5": "10:00 - 10:30", "6": "10:30 - 11:00", "7": "11:00 - 11:30", "8": "11:30 - 12:00",
+                "9": "13:00 - 13:30", "10": "13:30 - 14:00", "11": "14:00 - 14:30", "12": "14:30 - 15:00",
+                "13": "15:00 - 15:30", "14": "15:30 - 16:00", "15": "16:00 - 16:30", "16": "16:30 - 17:00"
+            },
+            "complex": {
+                "1": "08:00 - 09:00", "2": "09:00 - 10:00", "3": "10:00 - 11:00", "4": "11:00 - 12:00",
+                "5": "13:00 - 14:00", "6": "14:00 - 15:00", "7": "15:00 - 16:00", "8": "16:00 - 17:00"
+            },
+            "group": {
+                "1": "08:00 - 09:30", "2": "10:00 - 11:30", "3": "13:00 - 14:30", "4": "15:00 - 16:30"
+            }
+        }
+        
+        current_mappings = time_mappings.get(duration_key, time_mappings["standard"])
+        max_slots = len(current_mappings)
+        
+        if user_input in [str(i) for i in range(1, max_slots + 1)]:
+            session.user_data['time_slot'] = user_input
+            session.user_data['time_display'] = current_mappings.get(user_input, 'Unknown Time')
+            st.session_state.current_screen = 'reference_input'
+        elif user_input == '0':
+            st.session_state.current_screen = 'date_menu'
+    
+    # Home visit flow
+    elif current_screen == 'home_reference_input':
+        session.user_data['reference_number'] = user_input.strip() if user_input.strip() else 'SKIP'
+        st.session_state.current_screen = 'home_name_input'
+    
+    elif current_screen == 'home_name_input':
+        if user_input.strip():
+            session.user_data['name'] = user_input.strip().upper()
+            st.session_state.current_screen = 'home_id_input'
+    
+    elif current_screen == 'home_id_input':
+        if len(user_input.strip()) == 13 and user_input.strip().isdigit():
+            session.user_data['id_number'] = user_input.strip()
+            st.session_state.current_screen = 'home_address_input'
+        else:
+            st.error("Invalid ID number. Must be 13 digits.")
+    
+    elif current_screen == 'home_address_input':
+        if user_input.strip():
+            session.user_data['home_address'] = user_input.strip()
+            st.session_state.current_screen = 'home_emergency_input'
+    
+    elif current_screen == 'home_emergency_input':
+        session.user_data['emergency_contact'] = user_input.strip() if user_input.strip() else 'Not provided'
+        st.session_state.current_screen = 'home_visit_confirmation'
+    
+    elif current_screen == 'home_visit_confirmation':
+        if user_input == '1':
+            # Confirm home visit
+            visit_id = save_home_visit(session)
+            session.user_data['visit_id'] = visit_id
+            st.session_state.current_screen = 'home_visit_success'
+        elif user_input == '2':
+            st.session_state.current_screen = 'home_name_input'
+        elif user_input == '0':
+            st.session_state.current_screen = 'main_menu'
+    
+    # Regular appointment flow
+    elif current_screen == 'reference_input':
+        session.user_data['reference_number'] = user_input.strip() if user_input.strip() else 'SKIP'
+        st.session_state.current_screen = 'name_input'
+    
+    elif current_screen == 'name_input':
+        if user_input.strip():
+            session.user_data['name'] = user_input.strip().upper()
+            st.session_state.current_screen = 'id_input'
+    
+    elif current_screen == 'id_input':
+        if len(user_input.strip()) == 13 and user_input.strip().isdigit():
+            session.user_data['id_number'] = user_input.strip()
+            st.session_state.current_screen = 'confirmation'
+        else:
+            st.error("Invalid ID number. Must be 13 digits.")
+    
+    elif current_screen == 'confirmation':
+        if user_input == '1':
+            # Confirm booking
+            appointment_id = save_appointment(session)
+            session.user_data['appointment_id'] = appointment_id
+            st.session_state.current_screen = 'success'
+        elif user_input == '2':
+            st.session_state.current_screen = 'name_input'
+        elif user_input == '0':
+            st.session_state.current_screen = 'main_menu'
 
 # ---------------- Streamlit App ----------------
 def run():
@@ -775,9 +1217,46 @@ def run():
             
             if st.session_state.current_screen == 'main_menu':
                 screen_content = session.main_menu()
-            elif st.session_state.current_screen.startswith('service_'):
-                service_type = st.session_state.current_screen.split('_')[1]
-                screen_content = session.service_type_menu(service_type)
+            elif st.session_state.current_screen == 'home_visit_service':
+                screen_content = session.home_visit_service()
+            elif st.session_state.current_screen == 'home_visit_reasons':
+                screen_content = session.home_visit_reasons()
+            elif st.session_state.current_screen == 'home_visit_services':
+                screen_content = session.home_visit_services()
+            elif st.session_state.current_screen == 'home_visit_schedule':
+                screen_content = session.home_visit_schedule()
+            elif st.session_state.current_screen == 'home_reference_input':
+                screen_content = session.collect_reference_info('reference_number')
+            elif st.session_state.current_screen == 'home_name_input':
+                screen_content = session.collect_reference_info('name')
+            elif st.session_state.current_screen == 'home_id_input':
+                screen_content = session.collect_reference_info('id')
+            elif st.session_state.current_screen == 'home_address_input':
+                screen_content = session.collect_reference_info('address')
+            elif st.session_state.current_screen == 'home_emergency_input':
+                screen_content = session.collect_reference_info('emergency_contact')
+            elif st.session_state.current_screen == 'home_visit_confirmation':
+                screen_content = session.home_visit_confirmation_screen()
+            elif st.session_state.current_screen == 'home_visit_success':
+                visit_id = session.user_data.get('visit_id', 'UNKNOWN')
+                screen_content = session.home_visit_success_screen(visit_id)
+            elif st.session_state.current_screen == 'service_grant_application':
+                screen_content = session.service_grant_application()
+            elif st.session_state.current_screen == 'service_identity_verification':
+                screen_content = session.service_identity_verification()
+            elif st.session_state.current_screen == 'service_biometric_capture':
+                screen_content = session.service_biometric_capture()
+            elif st.session_state.current_screen == 'service_status_appeal':
+                screen_content = session.service_status_appeal()
+            elif st.session_state.current_screen == 'service_document_collection':
+                screen_content = session.service_document_collection()
+            elif st.session_state.current_screen == 'check_appointments':
+                screen_content = session.check_appointments()
+            elif st.session_state.current_screen == 'find_office':
+                screen_content = session.find_office()
+            elif st.session_state.current_screen == 'office_list':
+                province_code = session.user_data.get('selected_province', 'GP')
+                screen_content = session.office_menu(province_code)
             elif st.session_state.current_screen == 'appointment_type':
                 screen_content = session.appointment_type_menu()
             elif st.session_state.current_screen == 'province_menu':
@@ -788,7 +1267,7 @@ def run():
             elif st.session_state.current_screen == 'date_menu':
                 screen_content = session.date_menu()
             elif st.session_state.current_screen == 'time_menu':
-                duration_type = session.user_data.get('duration_type', 'standard')
+                duration_type = session.user_data.get('duration_type', '1')
                 duration_map = {"1": "standard", "2": "complex", "3": "group"}
                 screen_content = session.time_menu(duration_map.get(duration_type, 'standard'))
             elif st.session_state.current_screen == 'reference_input':
@@ -808,7 +1287,7 @@ def run():
                        unsafe_allow_html=True)
             
             # User Input
-            if st.session_state.current_screen not in ['success', 'start']:
+            if st.session_state.current_screen not in ['success', 'home_visit_success', 'start']:
                 user_input = st.text_input("Your response:", key=f"input_{st.session_state.current_screen}")
                 
                 if st.button("Send", key=f"send_{st.session_state.current_screen}"):
@@ -849,110 +1328,38 @@ def run():
         - **Biometric Capture**
         - **Status Appeals**
         - **Document Collection**
+        - **🏠 Home Visit Service**
+        """)
+        
+        st.markdown("### 🏠 Home Visit Service")
+        st.markdown("""
+        **Available for:**
+        - Elderly (65+)
+        - People with disabilities
+        - Remote locations
+        - Mobility challenges
+        - Serious illness
+        - Caring for dependents
+        
+        **Services include:**
+        - Document assistance
+        - Form completion
+        - Biometric capture
+        - Application submission
         """)
         
         st.markdown("### ⏰ Operating Hours")
         st.markdown("""
-        **Monday - Friday**  
-        08:00 - 17:00
+        **Office Appointments:**
+        Monday - Friday: 08:00 - 17:00
+        
+        **Home Visits:**
+        Monday - Friday: 08:00 - 17:00
+        Saturday: 09:00 - 13:00
+        Emergency: 24hrs
         
         **Appointment Slots:**
         - Standard: 30 minutes
         - Complex: 60 minutes  
         - Group: 90 minutes
         """)
-
-def process_ussd_input(session, user_input):
-    """Process user input and update session state"""
-    current_screen = st.session_state.current_screen
-    
-    session.log_interaction(user_input, f"Screen: {current_screen}")
-    
-    if current_screen == 'main_menu':
-        if user_input == '1':
-            st.session_state.current_screen = 'grant_menu'
-        elif user_input == '2':
-            st.session_state.current_screen = 'status_check'
-        elif user_input == '3':
-            st.session_state.current_screen = 'find_office'
-        elif user_input == '0':
-            st.session_state.current_screen = 'start'
-    
-    elif current_screen == 'grant_menu':
-        if user_input in ['1', '2', '3', '4', '5', '6']:
-            session.user_data['grant_type'] = user_input
-            st.session_state.current_screen = 'province_menu'
-        elif user_input == '0':
-            st.session_state.current_screen = 'main_menu'
-    
-    elif current_screen == 'province_menu':
-        provinces = {'1': 'GP', '2': 'WC', '3': 'KZN'}
-        if user_input in provinces:
-            session.user_data['province_code'] = provinces[user_input]
-            st.session_state.current_screen = 'office_menu'
-        elif user_input == '0':
-            st.session_state.current_screen = 'grant_menu'
-    
-    elif current_screen == 'office_menu':
-        province_code = session.user_data.get('province_code', 'GP')
-        offices = session.locations[province_code]['offices']
-        if user_input in offices:
-            session.user_data['office_name'] = offices[user_input]
-            st.session_state.current_screen = 'date_menu'
-        elif user_input == '0':
-            st.session_state.current_screen = 'province_menu'
-    
-    elif current_screen == 'date_menu':
-        if user_input in [str(i) for i in range(1, 11)]:
-            # Calculate the selected date
-            current = datetime.now() + timedelta(days=1)
-            count = 1
-            selected_date = None
-            
-            while count <= int(user_input):
-                if current.weekday() < 5:  # Working days only
-                    if count == int(user_input):
-                        selected_date = current
-                        break
-                    count += 1
-                current += timedelta(days=1)
-            
-            if selected_date:
-                session.user_data['date_str'] = selected_date.strftime("%Y-%m-%d")
-                session.user_data['date_display'] = selected_date.strftime("%a %d %b")
-                st.session_state.current_screen = 'time_menu'
-        elif user_input == '0':
-            st.session_state.current_screen = 'office_menu'
-    
-    elif current_screen == 'time_menu':
-        if user_input in [str(i) for i in range(1, 9)]:
-            session.user_data['time_slot'] = user_input
-            st.session_state.current_screen = 'name_input'
-        elif user_input == '0':
-            st.session_state.current_screen = 'date_menu'
-    
-    elif current_screen == 'name_input':
-        if user_input.strip():
-            session.user_data['name'] = user_input.strip().upper()
-            st.session_state.current_screen = 'id_input'
-    
-    elif current_screen == 'id_input':
-        if len(user_input.strip()) == 13 and user_input.strip().isdigit():
-            session.user_data['id_number'] = user_input.strip()
-            st.session_state.current_screen = 'confirmation'
-        else:
-            st.error("Invalid ID number. Must be 13 digits.")
-    
-    elif current_screen == 'confirmation':
-        if user_input == '1':
-            # Confirm booking
-            appointment_id = save_appointment(session)
-            session.user_data['appointment_id'] = appointment_id
-            st.session_state.current_screen = 'success'
-        elif user_input == '2':
-            st.session_state.current_screen = 'name_input'
-        elif user_input == '0':
-            st.session_state.current_screen = 'main_menu'
-
-if __name__ == "__main__":
-    run()

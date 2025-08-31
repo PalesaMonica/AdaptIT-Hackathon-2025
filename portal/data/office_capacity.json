@@ -1,0 +1,53 @@
+{
+  "johannesburg_central": {
+    "office_name": "Johannesburg Central",
+    "total_counters": 8,
+    "active_counters": 6,
+    "avg_service_time": {
+      "grant_application": 45,
+      "identity_verification": 20,
+      "biometric_capture": 15,
+      "status_appeal": 60,
+      "document_collection": 10
+    },
+    "operating_hours": {
+      "start": "08:00",
+      "end": "17:00"
+    },
+    "current_load": 0.7
+  },
+  "pretoria_central": {
+    "office_name": "Pretoria Central",
+    "total_counters": 6,
+    "active_counters": 5,
+    "avg_service_time": {
+      "grant_application": 50,
+      "identity_verification": 25,
+      "biometric_capture": 18,
+      "status_appeal": 65,
+      "document_collection": 12
+    },
+    "operating_hours": {
+      "start": "08:00",
+      "end": "17:00"
+    },
+    "current_load": 0.85
+  },
+  "soweto": {
+    "office_name": "Soweto",
+    "total_counters": 10,
+    "active_counters": 8,
+    "avg_service_time": {
+      "grant_application": 40,
+      "identity_verification": 18,
+      "biometric_capture": 12,
+      "status_appeal": 55,
+      "document_collection": 8
+    },
+    "operating_hours": {
+      "start": "08:00",
+      "end": "17:00"
+    },
+    "current_load": 0.6
+  }
+}

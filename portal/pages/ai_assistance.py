@@ -10,6 +10,7 @@ from gtts import gTTS
 
 # ---------------- Config ----------------
 DATA_FILE = "data/sassa_applications.csv"
+HOME_VISITS_FILE = "data/home_visits.csv"
 MAX_IMAGE_SIZE = 10*1024*1024
 SUPPORTED_FORMATS = ["jpg","jpeg","png","webp"]
 os.makedirs("data", exist_ok=True)
@@ -113,6 +114,16 @@ def apply_sassa_styling():
         border-color: #FFD700 !important;
         opacity: 0.5;
     }
+    
+    /* Home visit info box */
+    .home-visit-info {
+        background: rgba(255, 215, 0, 0.1) !important;
+        border: 2px solid #FFD700 !important;
+        border-radius: 10px !important;
+        padding: 15px !important;
+        margin: 10px 0 !important;
+        color: #FFD700 !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -147,8 +158,16 @@ def initialize_csv():
     if not os.path.exists(DATA_FILE):
         fields = ["timestamp","igama_eliphelele","inombolo_ye_id","uhlobo_lwesibonelelo","inombolo_yefoni",
                   "ikheli","imali_yenyanga","amalungu_asekhaya","ulwazi_lokukhubazeka",
-                  "amanye_amanothi","imithombo_yezithombe"]
+                  "amanye_amanothi","imithombo_yezithombe","home_visit_requested","mobility_details"]
         with open(DATA_FILE,"w",newline="",encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=fields)
+            writer.writeheader()
+
+    # Initialize home visits CSV
+    if not os.path.exists(HOME_VISITS_FILE):
+        fields = ["timestamp","full_name","id_number","phone_number","address","service_type",
+                  "mobility_reason","preferred_time","special_requirements","status","agent_assigned"]
+        with open(HOME_VISITS_FILE,"w",newline="",encoding="utf-8") as f:
             writer = csv.DictWriter(f, fieldnames=fields)
             writer.writeheader()
 
@@ -174,6 +193,98 @@ def play_audio_instruction(text_zu, text_en):
             st.caption("🔊 English")
         except:
             st.caption("Audio unavailable")
+
+# ---------------- Home Visit Functions ----------------
+def show_home_visit_option():
+    st.markdown("""
+    <div class="home-visit-info">
+    <h4>🏠 Ukuvakashela Ekhaya / Home Visit Service</h4>
+    <p>Uma ungezikhundla zokuvakashela ihhovisi: / If you cannot visit an office:</p>
+    <ul>
+    <li>Abantu abadala (65+) / Elderly persons (65+)</li>
+    <li>Abantu abakhubazekile / People with disabilities</li>
+    <li>Izindawo ezikude / Remote locations</li>
+    <li>Amakhono okuhamba / Mobility challenges</li>
+    </ul>
+    <p><strong>Iqembu lethu liya ekuyadleni / Our team comes to you!</strong></p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    return st.checkbox(
+        "🏠 Ngicela ukuvakashela ekhaya / I request a home visit",
+        help="Khomba uma ungakwazi ukuya ehhovisi ngenxa yobudala, ukukhubazeka, noma ukude / Check if you cannot visit office due to age, disability, or distance"
+    )
+
+def home_visit_details_form():
+    st.markdown("### 🏠 Imininingwane Yokuvakashela Ekhaya / Home Visit Details")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        mobility_reason = st.selectbox(
+            "Isizathu sokucela ukuvakashela ekhaya / Reason for home visit request:",
+            [
+                "Ubudala (65+) / Advanced age (65+)",
+                "Ukukhubazeka okumubambekile / Physical disability", 
+                "Ukugula okudingeka ukunakekelwa / Serious illness requiring care",
+                "Indawo ekude / Remote location",
+                "Akukho ukuthutha / No transportation",
+                "Abanye ababangela / Other reasons"
+            ]
+        )
+        
+        preferred_time = st.selectbox(
+            "Isikhathi osiskhethayo / Preferred time:",
+            [
+                "Ekuseni (08:00-12:00) / Morning (08:00-12:00)",
+                "Emini (12:00-15:00) / Afternoon (12:00-15:00)", 
+                "Ntambama (15:00-17:00) / Late afternoon (15:00-17:00)",
+                "Noma nini / Any time"
+            ]
+        )
+    
+    with col2:
+        special_requirements = st.text_area(
+            "Izidingo ezikhethekile / Special requirements:",
+            placeholder="Izibonelo: Isiguli esisebenzisa iwheelchair, udinga umtoliki, nezinye izidingo ezifanele / Examples: Wheelchair access needed, interpreter required, other special needs",
+            help="Chaza noma yiziphi izidingo ezikhethekile ezingasiza umhlanganisi wethu / Describe any special needs that can help our agent"
+        )
+        
+        emergency_contact = st.text_input(
+            "Umuntu wokuthintana nezimo eziphuthumayo / Emergency contact:",
+            placeholder="Igama nonombolo / Name and number",
+            help="Umuntu ozokuthintana naye uma siludinga / Person to contact if needed"
+        )
+    
+    # Audio instructions for home visit
+    st.markdown("#### 🔊 Izixwayiso zomsindo / Audio Instructions")
+    play_audio_instruction(
+        "Umhlanganisi wethu uzofika ekhaya lakho ngesikhathi esivumelekile. Qiniseka ukuba unezincwadi ezidingekayo futhi umuntu omdala ukhona.",
+        "Our agent will visit your home at the agreed time. Please ensure you have required documents and an adult is present."
+    )
+    
+    return mobility_reason, preferred_time, special_requirements, emergency_contact
+
+def save_home_visit_request(form_data, visit_data):
+    """Save home visit request to separate CSV file"""
+    home_visit_record = {
+        "timestamp": datetime.now().isoformat(),
+        "full_name": form_data.get('igama_eliphelele', ''),
+        "id_number": form_data.get('inombolo_ye_id', ''),
+        "phone_number": form_data.get('inombolo_yefoni', ''),
+        "address": form_data.get('ikheli', ''),
+        "service_type": form_data.get('uhlobo_lwesibonelelo', ''),
+        "mobility_reason": visit_data[0],
+        "preferred_time": visit_data[1], 
+        "special_requirements": visit_data[2],
+        "emergency_contact": visit_data[3],
+        "status": "Pending Assignment",
+        "agent_assigned": ""
+    }
+    
+    with open(HOME_VISITS_FILE, "a", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=list(home_visit_record.keys()))
+        writer.writerow(home_visit_record)
 
 # ---------------- Field Step ----------------
 def field_step(field_name, icon, ocr_reader, instruction_zu, instruction_en, display_name, options=None):
@@ -222,6 +333,9 @@ def run():
 
     st.title("🇿🇦 I-SASSA Visual Form")
     st.markdown("**Landela izinyathelo ngezithombe nezixwayiso zomsindo / Follow the steps with pictures and audio prompts**")
+
+    # Show home visit option at the top
+    home_visit_requested = show_home_visit_option()
 
     # Define fields with isiZulu translations
     field_info = {
@@ -296,6 +410,12 @@ def run():
         if img_name: image_sources.append(f"{field}: {img_name}")
         st.markdown("---")
 
+    # Home visit details if requested
+    visit_data = None
+    if home_visit_requested:
+        visit_data = home_visit_details_form()
+        st.markdown("---")
+
     # Additional Notes
     field_data['amanye_amanothi'] = st.text_area(
         "📝 Amanye Amanothi (Ongakukhetha) / Additional Notes (Optional)",
@@ -312,12 +432,18 @@ def run():
     # Submit button
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        if st.button("📤 Thumela Isicelo / Submit Application", key="submit"):
+        submit_text = "🏠 Thumela Isicelo Lokuvakashela Ekhaya / Submit Home Visit Request" if home_visit_requested else "📤 Thumela Isicelo / Submit Application"
+        
+        if st.button(submit_text, key="submit"):
             errors = []
             if not field_data['igama_eliphelele']: 
                 errors.append("Igama eliphelele liyadingeka / Full Name required")
             if not field_data['inombolo_ye_id']: 
                 errors.append("Inombolo ye-ID iyadingeka / ID Number required")
+            if not field_data['inombolo_yefoni']:
+                errors.append("Inombolo Yefoni iyasingeka / Phone Number required")
+            if not field_data['ikheli']:
+                errors.append("Ikheli iyasingeka / Address required")
             if not field_data['uhlobo_lwesibonelelo']: 
                 errors.append("Uhlobo lwesibonelelo luyadingeka / Grant Type required")
             
@@ -344,10 +470,12 @@ def run():
                 
                 app_data.update({
                     "timestamp": datetime.now().isoformat(),
-                    "image_sources": ', '.join(image_sources)
+                    "image_sources": ', '.join(image_sources),
+                    "home_visit_requested": "Yes" if home_visit_requested else "No",
+                    "mobility_details": visit_data[0] if visit_data else ""
                 })
                 
-               
+                # Save main application
                 csv_file = "data/sassa_applications.csv"
                 if not os.path.exists(csv_file):
                     with open(csv_file, "w", newline="", encoding="utf-8") as f:
@@ -358,6 +486,22 @@ def run():
                     writer = csv.DictWriter(f, fieldnames=list(app_data.keys()))
                     writer.writerow(app_data)
                 
-                st.success("Isicelo sithunyelwe ngempumelelo! / Application submitted successfully!")
+                # Save home visit request if applicable
+                if home_visit_requested and visit_data:
+                    save_home_visit_request(field_data, visit_data)
                 
-
+                if app_data:
+                    if home_visit_requested:
+                        st.success("""
+                        ✅ Isicelo sokuvakashela ekhaya sithunyelwe ngempumelelo! 
+                        
+                        🏠 Home visit request submitted successfully!
+                        
+                        📞 Umhlanganisi wethu uzokuthinta maduze ukuze ahlele ukuvakashela
+                        
+                        📞 Our agent will contact you soon to arrange the visit
+                        
+                        📋 Lungisa izincwadi ezidingekayo / Prepare required documents
+                        """)
+                    else:
+                        st.success("Isicelo sithunyelwe ngempumelelo! / Application submitted successfully!")
