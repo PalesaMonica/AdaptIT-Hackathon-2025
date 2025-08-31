@@ -1,0 +1,35 @@
+
+EMPLOYMENT AGREEMENT
+
+This Employment Agreement ("Agreement") is entered into on January 15, 2025, between TechCorp Solutions (Pty) Ltd, a company incorporated under the laws of South Africa ("Company"), and Sarah Johnson ("Employee").
+
+WHEREAS, the Company desires to employ the Employee in the capacity of Senior Software Developer; and
+
+WHEREAS, the Employee agrees to be employed by the Company under the terms and conditions set forth herein;
+
+NOW, THEREFORE, in consideration of the mutual covenants contained herein, the parties agree as follows:
+
+1. POSITION AND DUTIES
+Employee shall serve as Senior Software Developer and shall perform such duties as may be assigned by the Company's management team. Employee agrees to devote their full professional time and attention to the Company's business.
+
+2. COMPENSATION
+The Company shall pay Employee a gross monthly salary of R45,000 (Forty-Five Thousand Rand), payable monthly in arrears. Employee shall be entitled to annual performance reviews which may result in salary adjustments.
+
+3. BENEFITS
+Employee shall be entitled to:
+- 21 working days annual leave
+- Medical aid contribution (80% employer, 20% employee)
+- Provident fund contribution (Company contributes 10% of basic salary)
+- Professional development allowance of R10,000 per annum
+
+4. TERMINATION
+Either party may terminate this agreement with 30 (thirty) days written notice. The Company may terminate immediately for just cause including misconduct, breach of confidentiality, or poor performance.
+
+5. CONFIDENTIALITY
+Employee acknowledges that they may have access to confidential information and agrees to maintain strict confidentiality during and after employment.
+
+IN WITNESS WHEREOF, the parties have executed this Agreement on the date first written above.
+
+Company: _________________ Employee: _________________
+TechCorp Solutions (Pty) Ltd Sarah Johnson
+Date: _________________ Date: _________________

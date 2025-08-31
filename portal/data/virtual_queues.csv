@@ -1,3 +1,0 @@
-ticket_id,phone_number,office_id,service_type,appointment_id,estimated_wait_time,queue_position,status,created_at,called_at,completed_at
-Q20250831C29F50,27831234567,johannesburg_central,grant_application,,0,1,waiting,2025-08-31T14:11:38.294272,,
-Q2025083163C07F,27831234567,johannesburg_central,grant_application,,10,2,waiting,2025-08-31T14:11:45.856666,,
