@@ -2,277 +2,332 @@ import streamlit as st
 from gtts import gTTS
 import tempfile
 
-# ---------------- Professional Legal Styling ----------------
 def apply_legal_home_styling():
     st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
     
-    /* Global styling */
-    * {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    /* Main app background - Background image with lighter overlay */
+    .stApp {
+        background: 
+            linear-gradient(135deg, rgba(30, 41, 59, 0.65) 0%, rgba(51, 65, 85, 0.55) 50%, rgba(71, 85, 105, 0.50) 100%),
+            url('https://images.unsplash.com/photo-1589829545856-d10d557cf95f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') !important;
+        background-size: cover !important;
+        background-position: center !important;
+        background-attachment: fixed !important;
+        background-repeat: no-repeat !important;
+        font-family: 'Inter', sans-serif !important;
+        min-height: 100vh !important;
     }
     
-    /* Main container with professional gradient */
+    /* Main content area */
     .main .block-container {
-        padding: 2rem 3rem;
-        background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #334155 100%);
-        min-height: 100vh;
+        padding: 2rem !important;
+        max-width: 1200px !important;
+        background: transparent !important;
     }
     
-    /* Hero section - clean and professional */
+    /* Force all text to be white and visible */
+    .stMarkdown, .stMarkdown p, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
+        color: white !important;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
+    }
+    
+    /* Hero section - Brighter, less grey */
     .hero-section {
-        background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
-        padding: 3rem 2rem;
-        border-radius: 20px;
-        text-align: center;
-        margin-bottom: 3rem;
-        border: 1px solid rgba(255,255,255,0.1);
-        backdrop-filter: blur(20px);
-        box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.08)) !important;
+        padding: 4rem 2rem !important;
+        border-radius: 24px !important;
+        text-align: center !important;
+        margin: 2rem 0 !important;
+        /* Remove border completely */
+        border: none !important;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.08) !important;
+        backdrop-filter: blur(3px) !important;
     }
     
-    .hero-title {
-        color: #051cf0;
-        font-size: 3.5rem;
-        font-weight: 700;
-        letter-spacing: -0.025em;
-        margin-bottom: 1rem;
-        line-height: 1.1;
+    .hero-title-container {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 1.5rem !important;
+        margin-bottom: 1.5rem !important;
+        flex-wrap: wrap !important;
+    }
+    
+    .hero-logo {
+        width: 80px !important;
+        height: 80px !important;
+        background: linear-gradient(135deg, #3B82F6, #1D4ED8) !important;
+        border-radius: 20px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 2.5rem !important;
+        box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4) !important;
+        border: 3px solid rgba(255, 255, 255, 0.3) !important;
+        animation: logoGlow 3s ease-in-out infinite alternate !important;
+    }
+    
+    @keyframes logoGlow {
+        0% {
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4), 0 0 20px rgba(59, 130, 246, 0.2) !important;
+        }
+        100% {
+            box-shadow: 0 15px 40px rgba(59, 130, 246, 0.6), 0 0 30px rgba(59, 130, 246, 0.4) !important;
+        }
     }
     
     .hero-subtitle {
-        color: #515263;
-        font-size: 1.25rem;
-        font-weight: 400;
-        line-height: 1.6;
-        max-width: 600px;
-        margin: 0 auto 2rem;
+        color: #F1F5F9 !important;
+        font-size: 1.4rem !important;
+        line-height: 1.7 !important;
+        max-width: 700px;
+        margin: 0 auto 2rem !important;
+        font-weight: 400 !important;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
     }
     
     .hero-badge {
-        display: inline-block;
-        background: linear-gradient(135deg, #3B82F6, #1D4ED8);
-        color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 50px;
-        font-size: 0.875rem;
-        font-weight: 500;
-        margin-bottom: 1rem;
+        background: linear-gradient(135deg, #3B82F6, #1D4ED8) !important;
+        color: white !important;
+        padding: 0.75rem 1.5rem !important;
+        border-radius: 30px !important;
+        display: inline-block !important;
+        margin-bottom: 1.5rem !important;
+        font-weight: 700 !important;
+        font-size: 1rem !important;
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3) !important;
     }
     
-    /* Service cards - professional card design */
+    /* Service cards - Brighter background */
     .service-card {
-        background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-        padding: 2rem;
-        border-radius: 16px;
-        border: 1px solid rgba(255,255,255,0.1);
-        margin: 1rem 0;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        backdrop-filter: blur(20px);
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .service-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 2px;
-        background: linear-gradient(90deg, #3B82F6, #8B5CF6, #EF4444);
-        opacity: 0;
-        transition: opacity 0.3s ease;
+        background: linear-gradient(145deg, rgba(255,255,255,0.20), rgba(255,255,255,0.15)) !important;
+        padding: 2.5rem !important;
+        border-radius: 20px !important;
+        border: 2px solid rgba(255,255,255,0.3) !important;
+        margin: 1rem 0 !important;
+        transition: all 0.4s ease !important;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.12) !important;
+        backdrop-filter: blur(6px) !important;
     }
     
     .service-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-        border-color: rgba(59, 130, 246, 0.3);
-    }
-    
-    .service-card:hover::before {
-        opacity: 1;
+        transform: translateY(-8px) !important;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2) !important;
+        border-color: rgba(59, 130, 246, 0.6) !important;
+        background: linear-gradient(145deg, rgba(255,255,255,0.25), rgba(255,255,255,0.2)) !important;
     }
     
     .card-icon {
-        font-size: 2.5rem;
-        margin-bottom: 1.5rem;
-        display: block;
-        text-align: center;
-        background: linear-gradient(135deg, #3B82F6, #8B5CF6);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+        font-size: 3rem !important;
+        text-align: center !important;
+        margin-bottom: 1.5rem !important;
+        display: block !important;
     }
     
     .card-title {
-        color: #F8FAFC;
-        font-size: 1.375rem;
-        font-weight: 600;
-        text-align: center;
-        margin-bottom: 1rem;
-        line-height: 1.3;
+        color: white !important;
+        font-size: 1.75rem !important;
+        font-weight: 700 !important;
+        text-align: center !important;
+        margin-bottom: 1.2rem !important;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
     }
     
     .card-description {
-        color: #94A3B8;
-        text-align: center;
-        margin-bottom: 2rem;
-        line-height: 1.6;
-        font-weight: 400;
+        color: #E2E8F0 !important;
+        text-align: center !important;
+        margin-bottom: 2rem !important;
+        line-height: 1.7 !important;
+        font-size: 1rem !important;
     }
     
-    /* Professional button styling */
+    /* Buttons */
     .stButton > button {
-        background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%) !important;
+        background: linear-gradient(135deg, #3B82F6, #1D4ED8) !important;
         color: white !important;
-        font-weight: 500 !important;
-        font-size: 0.95rem !important;
+        font-weight: 700 !important;
         border: none !important;
-        border-radius: 12px !important;
-        padding: 0.875rem 2rem !important;
+        border-radius: 15px !important;
+        padding: 1rem 2.5rem !important;
         width: 100% !important;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
-        letter-spacing: 0.025em !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.35) !important;
+        font-size: 1.1rem !important;
     }
     
     .stButton > button:hover {
-        background: linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%) !important;
-        transform: translateY(-2px) !important;
-        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4) !important;
+        background: linear-gradient(135deg, #1D4ED8, #1E40AF) !important;
+        transform: translateY(-3px) !important;
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.45) !important;
     }
     
-    .stButton > button:active {
-        transform: translateY(0px) !important;
-    }
-    
-    /* Stats section - modern card design */
+    /* Stats section - Brighter background */
     .stats-container {
-        background: linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
-        padding: 2rem;
-        border-radius: 20px;
-        margin: 3rem 0;
-        border: 1px solid rgba(255,255,255,0.1);
-        backdrop-filter: blur(20px);
-    }
-    
-    .stat-item {
-        text-align: center;
-        padding: 1rem;
-        border-radius: 12px;
-        background: rgba(255,255,255,0.05);
-        margin: 0.5rem;
-        transition: transform 0.3s ease;
-    }
-    
-    .stat-item:hover {
-        transform: scale(1.05);
+        background: linear-gradient(145deg, rgba(255,255,255,0.20), rgba(255,255,255,0.15)) !important;
+        padding: 3rem !important;
+        border-radius: 24px !important;
+        margin: 4rem 0 !important;
+        border: 2px solid rgba(255,255,255,0.3) !important;
+        backdrop-filter: blur(6px) !important;
     }
     
     .stat-number {
-        font-size: 2.5rem;
-        font-weight: 700;
-        background: linear-gradient(135deg, #3B82F6, #8B5CF6);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        display: block;
-        line-height: 1.1;
+        color: #60A5FA !important;
+        font-size: 3rem !important;
+        font-weight: 800 !important;
+        display: block !important;
+        text-shadow: 0 2px 10px rgba(96, 165, 250, 0.3) !important;
     }
     
     .stat-label {
-        font-size: 0.875rem;
-        color: #94A3B8;
-        font-weight: 400;
-        margin-top: 0.5rem;
-        line-height: 1.4;
+        color: #E2E8F0 !important;
+        font-size: 1rem !important;
+        margin-top: 0.75rem !important;
+        font-weight: 500 !important;
     }
     
-    /* Section headers */
+    /* Section titles - Background image visible through text */
     .section-title {
-        color: #F8FAFC;
-        font-size: 2rem;
-        font-weight: 600;
-        text-align: center;
-        margin: 3rem 0 2rem;
-        position: relative;
+        font-size: 3.5rem !important;
+        font-weight: 900 !important;
+        text-align: center !important;
+        margin: 4rem 0 3rem !important;
+        letter-spacing: -0.01em !important;
+        position: relative !important;
+        /* Background image visible through text */
+        background: url('https://images.unsplash.com/photo-1589829545856-d10d557cf95f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') !important;
+        background-size: cover !important;
+        background-position: center !important;
+        background-attachment: fixed !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        background-clip: text !important;
+        /* Add text stroke for definition */
+        -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.7) !important;
+        text-stroke: 1.5px rgba(255, 255, 255, 0.7) !important;
+        /* Enhanced shadow */
+        filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4)) drop-shadow(0 6px 12px rgba(0,0,0,0.2)) !important;
     }
     
     .section-title::after {
-        content: '';
-        position: absolute;
-        bottom: -0.5rem;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 60px;
-        height: 3px;
-        background: linear-gradient(90deg, #3B82F6, #8B5CF6);
-        border-radius: 2px;
+        content: '' !important;
+        position: absolute !important;
+        bottom: -10px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 100px !important;
+        height: 4px !important;
+        background: linear-gradient(135deg, #3B82F6, #8B5CF6) !important;
+        border-radius: 2px !important;
     }
     
-    /* Emergency contact - professional alert */
+    /* Fallback for section titles */
+    @supports not (-webkit-background-clip: text) {
+        .section-title {
+            color: white !important;
+            background: linear-gradient(135deg, #FFFFFF, #CBD5E1) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            background-clip: text !important;
+            -webkit-text-stroke: none !important;
+            text-stroke: none !important;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+        }
+    }
+    
+    /* Emergency section - Smaller and more compact */
     .emergency-section {
-        background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.05));
-        padding: 2rem;
-        border-radius: 16px;
-        margin: 3rem 0;
-        border: 1px solid rgba(239, 68, 68, 0.2);
-        backdrop-filter: blur(20px);
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.15)) !important;
+        padding: 2rem !important;
+        border-radius: 16px !important;
+        margin: 3rem 0 !important;
+        border: 2px solid rgba(239, 68, 68, 0.4) !important;
+        text-align: center !important;
+        backdrop-filter: blur(8px) !important;
     }
     
     .emergency-title {
-        color: #FCA5A5;
-        font-size: 1.5rem;
-        font-weight: 600;
-        text-align: center;
-        margin-bottom: 1.5rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-    }
-    
-    .emergency-content {
-        text-align: center;
-        color: #F8FAFC;
+        color: #FCA5A5 !important;
+        font-size: 1.8rem !important;
+        font-weight: 800 !important;
+        margin-bottom: 1.5rem !important;
+        text-shadow: 0 2px 10px rgba(252, 165, 165, 0.3) !important;
     }
     
     .emergency-content p {
-        margin: 0.75rem 0;
-        font-weight: 400;
+        color: white !important;
+        margin: 0.5rem 0 !important;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.2) !important;
     }
     
     .emergency-content strong {
-        color: #FCA5A5;
-        font-weight: 500;
+        color: #FCA5A5 !important;
+        font-weight: 700 !important;
     }
     
-    /* Responsive design */
+    /* Info boxes - Lighter */
+    [data-testid="stAlert"] {
+        background-color: rgba(59, 130, 246, 0.25) !important;
+        border: 2px solid rgba(59, 130, 246, 0.5) !important;
+        color: white !important;
+        backdrop-filter: blur(5px) !important;
+    }
+    
+    [data-testid="stAlert"] p {
+        color: white !important;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.2) !important;
+    }
+    
+    /* Footer - Lighter */
+    .footer-section {
+        text-align: center !important;
+        padding: 3rem !important;
+        color: #E2E8F0 !important;
+        border-top: 2px solid rgba(255,255,255,0.25) !important;
+        margin-top: 4rem !important;
+        background: rgba(255,255,255,0.05) !important;
+        border-radius: 20px 20px 0 0 !important;
+    }
+    
+    .footer-section p {
+        color: #E2E8F0 !important;
+        margin: 0.75rem 0 !important;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.2) !important;
+    }
+    
+    /* Responsive - Adjusted for bigger headings */
     @media (max-width: 768px) {
+        .section-title {
+            font-size: 2.5rem !important;
+        }
+        
+        .emergency-title {
+            font-size: 1.8rem !important;
+        }
+        
         .main .block-container {
-            padding: 1rem;
+            padding: 1rem !important;
         }
         
-        .hero-title {
-            font-size: 2.5rem;
+        .hero-section {
+            padding: 3rem 1.5rem !important;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .section-title {
+            font-size: 2rem !important;
         }
         
-        .hero-subtitle {
-            font-size: 1.125rem;
-        }
-        
-        .service-card {
-            padding: 1.5rem;
+        .stat-number {
+            font-size: 2.5rem !important;
         }
     }
     </style>
     """, unsafe_allow_html=True)
 
-# ---------------- Enhanced Audio Guidance ----------------
 def play_audio(text="Welcome to the Legal Literacy Portal!", auto_play=False):
     try:
         tts = gTTS(text=text, lang="en", slow=False)
@@ -284,40 +339,24 @@ def play_audio(text="Welcome to the Legal Literacy Portal!", auto_play=False):
         else:
             st.audio(tmp_file.name, format="audio/mp3")
     except Exception as e:
-        st.info("Click the audio controls above to hear guidance")
+        st.info("Audio not available")
 
-# ---------------- Enhanced Service Cards ----------------
-def create_service_card(icon, title, description, button_text, page_key, audio_text):
-    st.markdown(f"""
-    <div class="service-card">
-        <div class="card-icon">{icon}</div>
-        <div class="card-title">{title}</div>
-        <div class="card-description">{description}</div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    if st.button(button_text, key=f"btn_{page_key}"):
-        st.session_state['page'] = page_key
-        # Audio feedback for navigation
-        play_audio(audio_text)
-        st.rerun()
-
-# ------------------ Enhanced Home Page ------------------
 def run():
     st.set_page_config(
         page_title="Legal Literacy Portal - Empowering South Africans",
-        page_icon="⚖",
+        page_icon="⚖️",
         layout="wide",
         initial_sidebar_state="collapsed"
     )
 
     apply_legal_home_styling()
 
-    # Hero Section with enhanced content
+    # Hero Section - Removed the title, kept only logo and subtitle
     st.markdown("""
     <div class="hero-section">
-        <div class="hero-badge">Trusted by South Africans</div>
-        <div class="hero-title">Legal Literacy Portal</div>
+        <div class="hero-title-container">
+            <div class="hero-logo">⚖️</div>
+        </div>
         <div class="hero-subtitle">
             Empowering vulnerable South Africans with accessible legal knowledge, 
             document protection, and connections to trusted legal professionals.
@@ -325,133 +364,147 @@ def run():
     </div>
     """, unsafe_allow_html=True)
 
-    # Welcome audio with better UX
-    st.info("Enable audio for guided navigation and accessibility features")
-    if st.button("Play Welcome Message", key="welcome_audio"):
-        play_audio("Welcome to the Legal Literacy Portal! This platform helps South Africans understand legal documents, detect fraud, create wills, and connect with trusted lawyers. Use the services below to get started.", auto_play=True)
+    # Welcome audio section
+    st.info("🔊 Enable audio for guided navigation and accessibility features")
+    
+    col_audio1, col_audio2, col_audio3 = st.columns([1,2,1])
+    with col_audio2:
+        if st.button("🎵 Play Welcome Message", key="welcome_audio"):
+            play_audio("Welcome to the Legal Literacy Portal! This platform helps South Africans understand legal documents, detect fraud, create wills, and connect with trusted lawyers.", auto_play=True)
 
-    # Enhanced statistics
-    st.markdown('<div class="stats-container">', unsafe_allow_html=True)
-    col_stat1, col_stat2, col_stat3, col_stat4 = st.columns(4)
-    
-    with col_stat1:
-        st.markdown("""
-        <div class="stat-item">
-            <span class="stat-number">70%</span>
-            <span class="stat-label">South Africans die without a will</span>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col_stat2:
-        st.markdown("""
-        <div class="stat-item">
-            <span class="stat-number">50K+</span>
-            <span class="stat-label">Documents analyzed</span>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col_stat3:
-        st.markdown("""
-        <div class="stat-item">
-            <span class="stat-number">1000+</span>
-            <span class="stat-label">Fraud attempts detected</span>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col_stat4:
-        st.markdown("""
-        <div class="stat-item">
-            <span class="stat-number">100%</span>
-            <span class="stat-label">Free & accessible</span>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    # Services section with better organization
-    st.markdown('<h2 class="section-title">Legal Protection Services</h2>', unsafe_allow_html=True)
-    
-    # Primary services
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        create_service_card(
-            "", 
-            "Document Summarizer", 
-            "Transform complex legal documents into clear, understandable summaries in plain English with key highlights.",
-            "Summarize Document", 
-            "SummarizeDocs", 
-            "Opening the document summarizer to help you understand legal documents clearly."
-        )
-    
-    with col2:
-        create_service_card(
-            "", 
-            "Fraud Detection", 
-            "AI-powered analysis to identify suspicious clauses, predatory terms, and potential scams in legal documents.",
-            "Check for Fraud", 
-            "FraudCheck", 
-            "Starting fraud detection to protect you from suspicious legal documents."
-        )
-    
-    with col3:
-        create_service_card(
-            "", 
-            "Will Generator", 
-            "Create a legally compliant will draft based on South African law, ready for professional review and notarization.",
-            "Create Will", 
-            "WillGen", 
-            "Opening the will generator to help you create your legal will."
-        )
-
-    # Secondary services
-    st.markdown('<h2 class="section-title">Professional Support</h2>', unsafe_allow_html=True)
-    
-    col4, col5 = st.columns(2)
-    
-    with col4:
-        create_service_card(
-            "", 
-            "Property & Legal Assistance", 
-            "Connect with verified lawyers and get guidance for safe property transactions, avoiding common pitfalls and scams.",
-            "Get Professional Help", 
-            "LawyerAssist", 
-            "Connecting you with professional legal assistance for property matters."
-        )
-    
-    with col5:
-        create_service_card(
-            "", 
-            "Know Your Rights", 
-            "Interactive legal education covering housing rights, contract law, consumer protection, and essential legal knowledge.",
-            "Learn Your Rights", 
-            "RightsEdu", 
-            "Opening the rights education section to teach you about your legal protections."
-        )
-
-    # Emergency contact section with better design
+    # Statistics
     st.markdown("""
-    <div class="emergency-section">
-        <h3 class="emergency-title">
-            Need Immediate Legal Help?
-        </h3>
-        <div class="emergency-content">
-            <p><strong>Legal Aid SA Helpline:</strong> 0800 110 110 (Toll-Free)</p>
-            <p><strong>WhatsApp Support:</strong> 079 835 7179</p>
-            <p><strong>Operating Hours:</strong> Monday - Friday, 08:00 - 16:00</p>
-            <p style="margin-top: 1rem; font-style: italic; color: #CBD5E1;">
-                Free legal advice available for qualifying South Africans
-            </p>
+    <div class="stats-container">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; text-align: center;">
+            <div>
+                <span class="stat-number">70%</span>
+                <div class="stat-label">South Africans die without a will</div>
+            </div>
+            <div>
+                <span class="stat-number">50K+</span>
+                <div class="stat-label">Documents analyzed</div>
+            </div>
+            <div>
+                <span class="stat-number">1000+</span>
+                <div class="stat-label">Fraud attempts detected</div>
+            </div>
+            <div>
+                <span class="stat-number">100%</span>
+                <div class="stat-label">Free & accessible</div>
+            </div>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-    # Footer information
+    # Services Section
+    st.markdown('<h2 class="section-title">🛡️ Legal Protection Services</h2>', unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.markdown("""
+        <div class="service-card">
+            <div class="card-icon">📄</div>
+            <div class="card-title">Document Summarizer</div>
+            <div class="card-description">Transform complex legal documents into clear, understandable summaries in plain English with key highlights.</div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        if st.button("📖 Summarize Document", key="summarize"):
+            st.session_state['page'] = 'SummarizeDocs'
+            play_audio("Opening document summarizer")
+            st.rerun()
+    
+    with col2:
+        st.markdown("""
+        <div class="service-card">
+            <div class="card-icon">🛡️</div>
+            <div class="card-title">Fraud Detection</div>
+            <div class="card-description">AI-powered analysis to identify suspicious clauses, predatory terms, and potential scams in legal documents.</div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        if st.button("🔍 Check for Fraud", key="fraud"):
+            st.session_state['page'] = 'FraudCheck'
+            play_audio("Starting fraud detection")
+            st.rerun()
+    
+    with col3:
+        st.markdown("""
+        <div class="service-card">
+            <div class="card-icon">📜</div>
+            <div class="card-title">Will Generator</div>
+            <div class="card-description">Create a legally compliant will draft based on South African law, ready for professional review.</div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        if st.button("📝 Create Will", key="will"):
+            st.session_state['page'] = 'WillGen'
+            play_audio("Opening will generator")
+            st.rerun()
+
+    # Secondary Services
+    st.markdown('<h2 class="section-title">🤝 Professional Support</h2>', unsafe_allow_html=True)
+    
+    col4, col5 = st.columns(2)
+    
+    with col4:
+        st.markdown("""
+        <div class="service-card">
+            <div class="card-icon">🏡</div>
+            <div class="card-title">Property & Legal Assistance</div>
+            <div class="card-description">Connect with verified lawyers and get guidance for safe property transactions, avoiding common pitfalls.</div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        if st.button("🤝 Get Professional Help", key="lawyer"):
+            st.session_state['page'] = 'LawyerAssist'
+            play_audio("Connecting with legal professionals")
+            st.rerun()
+    
+    with col5:
+        st.markdown("""
+        <div class="service-card">
+            <div class="card-icon">📚</div>
+            <div class="card-title">Know Your Rights</div>
+            <div class="card-description">Interactive legal education covering housing rights, contract law, consumer protection, and essential knowledge.</div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        if st.button("🎓 Learn Your Rights", key="rights"):
+            st.session_state['page'] = 'RightsEdu'
+            play_audio("Opening rights education")
+            st.rerun()
+
+    # Emergency Section
     st.markdown("""
-    <div style="text-align: center; padding: 2rem 0; color: #64748B; border-top: 1px solid rgba(0,0,0,0.1); margin-top: 3rem;">
-        <p>Proudly serving South African communities | Built with accessibility and inclusion in mind</p>
-        <p style="font-size: 0.875rem; margin-top: 0.5rem;">
-            This platform provides educational information and should not replace professional legal advice
+    <div class="emergency-section">
+        <h3 class="emergency-title">🚨 Need Immediate Legal Help?</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+            <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px;">
+                <div class="emergency-content">
+                    <p><strong>Legal Aid SA Helpline</strong></p>
+                    <p style="font-size: 1.1rem; color: #FCA5A5;">📞 0800 110 110</p>
+                    <p>(Toll-Free)</p>
+                </div>
+            </div>
+            <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px;">
+                <div class="emergency-content">
+                    <p><strong>WhatsApp Support</strong></p>
+                    <p style="font-size: 1.1rem; color: #FCA5A5;">📱 079 835 7179</p>
+                    <p>Available 24/7</p>
+                </div>
+            </div>
+            <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px;">
+                <div class="emergency-content">
+                    <p><strong>Operating Hours</strong></p>
+                    <p style="font-size: 1rem; color: #FCA5A5;">🕐 Mon - Fri</p>
+                    <p>08:00 - 16:00</p>
+                </div>
+            </div>
+        </div>
+        <p style="margin-top: 1.5rem; font-style: italic; color: #CBD5E1; font-size: 0.9rem;">
+            Free legal advice available for qualifying South Africans
         </p>
     </div>
     """, unsafe_allow_html=True)
