@@ -11,46 +11,104 @@ import fitz  # PyMuPDF
 SUPPORTED_FORMATS = ["jpg","jpeg","png","webp","pdf","txt","doc","docx"]
 MAX_FILE_SIZE = 10*1024*1024
 
-# ---------------- Styling ----------------
+# ---------------- Professional Styling ----------------
 def apply_legal_portal_styling():
     st.markdown("""
     <style>
-    :root {
-        --justice-navy: #1E2A38;
-        --justice-gold: #D4AF37;
-        --justice-green: #2E8B57;
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    * {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }
+    
     .main .block-container {
-        padding: 2rem;
-        background: linear-gradient(135deg, #1E2A38 0%, #2E8B57 100%);
-        border-radius: 10px;
+        padding: 2rem 3rem;
+        background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #334155 100%);
+        min-height: 100vh;
         color: white;
     }
+    
     .main h1 {
-        color: #D4AF37 !important;
+        color: #F8FAFC !important;
         text-align: center;
-        font-weight: bold;
+        font-weight: 700;
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+        letter-spacing: -0.025em;
     }
-    .main h3 {
-        color: #D4AF37 !important;
-        border-left: 5px solid #D4AF37;
-        padding-left: 10px;
+    
+    .main h2, .main h3 {
+        color: #3B82F6 !important;
+        font-weight: 600;
+        border-left: 4px solid #3B82F6;
+        padding-left: 1rem;
+        margin: 2rem 0 1rem 0;
     }
+    
+    .feature-list {
+        background: linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.1);
+        margin: 1.5rem 0;
+    }
+    
+    .feature-list ul {
+        margin: 0;
+        padding-left: 1.5rem;
+    }
+    
+    .feature-list li {
+        color: #CBD5E1;
+        margin: 0.5rem 0;
+        line-height: 1.6;
+    }
+    
     .stButton > button {
-        background: linear-gradient(45deg, #D4AF37, #FFD700) !important;
-        color: #1E2A38 !important;
-        font-weight: bold;
-        border: none;
-        border-radius: 8px;
-        padding: 10px 20px;
-    }
-    .stButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
-    .stTextArea > div > div > textarea {
-        background-color: rgba(255,255,255,0.1) !important;
+        background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%) !important;
         color: white !important;
+        font-weight: 600;
+        font-size: 1rem;
+        border: none !important;
+        border-radius: 12px !important;
+        padding: 0.875rem 2rem !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+        letter-spacing: 0.025em !important;
+        width: 100% !important;
+    }
+    
+    .stButton > button:hover {
+        background: linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%) !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4) !important;
+    }
+    
+    .stTextArea > div > div > textarea {
+        background: rgba(255,255,255,0.08) !important;
+        color: #F8FAFC !important;
+        border: 1px solid rgba(255,255,255,0.2) !important;
+        border-radius: 8px !important;
+    }
+    
+    .stSuccess, .stInfo, .stWarning, .stError {
+        border-radius: 8px !important;
+    }
+    
+    .summary-container {
+        background: linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        margin: 1rem 0;
+    }
+    
+    .audio-section {
+        background: linear-gradient(145deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05));
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        margin: 1.5rem 0;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -60,7 +118,7 @@ def apply_legal_portal_styling():
 def load_ocr_model():
     try:
         import easyocr
-        return easyocr.Reader(['en'], gpu=False)  # Removed 'af' as it may not be available
+        return easyocr.Reader(['en'], gpu=False)
     except ImportError:
         st.error("EasyOCR not installed. Please install: pip install easyocr")
         return None
@@ -70,25 +128,18 @@ def load_ocr_model():
 
 def preprocess_image(image):
     """Enhanced image preprocessing for better OCR results"""
-    # Convert to RGB if needed
     if image.mode != 'RGB': 
         image = image.convert('RGB')
     
-    # Resize if image is too large (helps with OCR performance)
     width, height = image.size
     if width > 2000 or height > 2000:
         ratio = min(2000/width, 2000/height)
         new_size = (int(width * ratio), int(height * ratio))
         image = image.resize(new_size, Image.Resampling.LANCZOS)
     
-    # Enhance contrast and sharpness
     image = ImageEnhance.Contrast(image).enhance(1.5)
     image = ImageEnhance.Sharpness(image).enhance(1.3)
-    
-    # Convert to grayscale
     image = image.convert('L')
-    
-    # Apply noise reduction
     image = image.filter(ImageFilter.MedianFilter(size=3))
     
     return image
@@ -110,10 +161,7 @@ def extract_text_from_image(image, ocr_reader):
 def extract_text_from_pdf(uploaded_file):
     """Extract text from PDF using PyMuPDF"""
     try:
-        # Reset file pointer
         uploaded_file.seek(0)
-        
-        # Read PDF using PyMuPDF
         pdf_bytes = uploaded_file.read()
         pdf_document = fitz.open(stream=pdf_bytes, filetype="pdf")
         
@@ -135,13 +183,11 @@ def simple_text_summarizer(text, max_sentences=3):
     if not text or len(text.strip()) < 100:
         return text
     
-    # Split into sentences
     sentences = [s.strip() for s in text.replace('\n', ' ').split('.') if s.strip()]
     
     if len(sentences) <= max_sentences:
         return text
     
-    # Take first, middle, and last sentences for a basic summary
     indices = [0, len(sentences)//2, -1]
     summary_sentences = [sentences[i] for i in indices if i < len(sentences)]
     
@@ -152,12 +198,10 @@ def summarize_text(text):
     if not text or len(text.strip()) < 50:
         return text
     
-    # Try Transformers summarization first
     try:
         from transformers import pipeline
         summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
         
-        # Truncate text if too long (BART has token limits)
         max_length = 1000
         if len(text) > max_length:
             text = text[:max_length] + "..."
@@ -175,7 +219,6 @@ def summarize_text(text):
 # ---------------- Legal Text Simplification ----------------
 def simplify_legal_text(text):
     """Convert legal jargon to plain language"""
-    # Common legal term replacements
     replacements = {
         "whereas": "because",
         "heretofore": "before now",
@@ -214,27 +257,18 @@ def create_audio_summary(text, language='en'):
         return None
 
 def play_audio_summary(summary_text):
-    """Play audio summary in available languages"""
-    st.markdown("### 🔊 Audio Summary")
+    """Play audio summary"""
+    st.markdown('<div class="audio-section">', unsafe_allow_html=True)
+    st.markdown("### Audio Summary")
+    st.markdown("**English Audio:**")
     
-    col1, col2 = st.columns(2)
+    audio_file_en = create_audio_summary(summary_text, 'en')
+    if audio_file_en:
+        st.audio(audio_file_en, format="audio/mp3")
+    else:
+        st.caption("English audio unavailable")
     
-    with col1:
-        st.markdown("**English Audio:**")
-        audio_file_en = create_audio_summary(summary_text, 'en')
-        if audio_file_en:
-            st.audio(audio_file_en, format="audio/mp3")
-        else:
-            st.caption("English audio unavailable")
-    
-    with col2:
-        st.markdown("**Afrikaans Audio:**")
-        # Simple translation attempt for Afrikaans (basic approach)
-        audio_file_af = create_audio_summary(summary_text, 'af')
-        if audio_file_af:
-            st.audio(audio_file_af, format="audio/mp3")
-        else:
-            st.caption("Afrikaans audio unavailable")
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # ---------------- Main App ----------------
 def run():
@@ -246,14 +280,19 @@ def run():
     
     apply_legal_portal_styling()
 
-    st.title("📄 Legal Document Summarizer")
+    st.title("Legal Document Summarizer")
+    
     st.markdown("""
-    **Upload a legal document** (PDF or image) and get:
-    - 📖 **Text extraction** from your document
-    - 📝 **Plain language summary** 
-    - 🔊 **Audio playback** in multiple languages
-    - ⚖️ **Legal term simplification**
-    """)
+    <div class="feature-list">
+        <strong>Upload a legal document</strong> (PDF or image) and get:
+        <ul>
+            <li><strong>Text extraction</strong> from your document</li>
+            <li><strong>Plain language summary</strong></li>
+            <li><strong>Audio playback</strong> in multiple languages</li>
+            <li><strong>Legal term simplification</strong></li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
 
     # Load OCR model
     ocr_reader = load_ocr_model()
@@ -274,7 +313,7 @@ def run():
             return
 
         # Show file info
-        st.success(f"✅ Uploaded: {uploaded_file.name} ({uploaded_file.size/1024:.1f}KB)")
+        st.success(f"Uploaded: {uploaded_file.name} ({uploaded_file.size/1024:.1f}KB)")
 
         # Extract text based on file type
         with st.spinner("Extracting text from document..."):
@@ -283,14 +322,12 @@ def run():
             if uploaded_file.type == "application/pdf":
                 extracted_text = extract_text_from_pdf(uploaded_file)
             elif uploaded_file.type == "text/plain" or uploaded_file.name.endswith('.txt'):
-                # Handle TXT files
                 try:
                     extracted_text = str(uploaded_file.read(), "utf-8")
                 except Exception as e:
                     st.error(f"Failed to read text file: {str(e)}")
                     return
             else:
-                # Handle image files
                 try:
                     image = Image.open(uploaded_file)
                     st.image(image, caption="Document Preview", use_container_width=True)
@@ -301,52 +338,35 @@ def run():
 
         # Display extracted text
         if extracted_text and len(extracted_text.strip()) > 0:
-            st.subheader("📄 Extracted Text")
-            with st.expander("View Full Extracted Text", expanded=False):
-                st.text_area("Full Document Text", extracted_text, height=200, disabled=True)
-            
-            # Word count info
             word_count = len(extracted_text.split())
-            st.info(f"📊 Extracted {word_count} words from the document")
+            st.info(f"Extracted {word_count} words from the document")
 
             # Summarization section
-            if st.button("🔍 Generate Summary & Audio", type="primary"):
+            if st.button("Generate Summary & Audio", type="primary"):
                 with st.spinner("Creating summary..."):
-                    # Generate summary
                     summary = summarize_text(extracted_text)
-                    
-                    # Simplify legal language
                     simplified_summary = simplify_legal_text(summary)
                     
-                    # Display results
-                    st.subheader("📋 Document Summary")
+                    st.subheader("Document Summary")
                     st.success("Summary generated successfully!")
                     
                     col1, col2 = st.columns(2)
                     with col1:
+                        st.markdown('<div class="summary-container">', unsafe_allow_html=True)
                         st.markdown("**Original Summary:**")
                         st.write(summary)
+                        st.markdown('</div>', unsafe_allow_html=True)
                     
                     with col2:
+                        st.markdown('<div class="summary-container">', unsafe_allow_html=True)
                         st.markdown("**Simplified Version:**")
                         st.write(simplified_summary)
+                        st.markdown('</div>', unsafe_allow_html=True)
                     
-                    # Generate audio
                     play_audio_summary(simplified_summary)
                     
-                    # Additional features
-                    st.subheader("📊 Document Analysis")
-                    col3, col4, col5 = st.columns(3)
-                    with col3:
-                        st.metric("Original Words", len(extracted_text.split()))
-                    with col4:
-                        st.metric("Summary Words", len(simplified_summary.split()))
-                    with col5:
-                        compression_ratio = len(simplified_summary.split()) / len(extracted_text.split()) * 100
-                        st.metric("Compression", f"{compression_ratio:.1f}%")
-
         else:
-            st.warning("⚠️ No text could be extracted from the document. Please try:")
+            st.warning("No text could be extracted from the document. Please try:")
             st.markdown("""
             - Ensuring the image is clear and readable
             - Using a higher resolution scan
@@ -354,20 +374,22 @@ def run():
             - Trying a different file format
             """)
 
-    # Instructions section
-    with st.expander("ℹ️ How to Use This Tool", expanded=False):
+    # Sidebar instructions
+    with st.sidebar:
         st.markdown("""
-        ### Instructions:
+        ### How to Use This Tool
+
+        **Instructions:**
         1. **Upload Document**: Choose a PDF or image file containing legal text
         2. **Review Extraction**: Check that the text was extracted correctly
         3. **Generate Summary**: Click the button to create a simplified summary
         4. **Listen**: Use the audio feature to hear the summary read aloud
-        
-        ### Supported File Types:
+
+        **Supported File Types:**
         - **PDF**: Text-based PDFs work best
         - **Images**: JPG, PNG, WEBP (scanned documents, photos)
-        
-        ### Tips for Best Results:
+
+        **Tips for Best Results:**
         - Use high-quality, clear images
         - Ensure text is horizontal and readable
         - PDF files generally give better text extraction than images

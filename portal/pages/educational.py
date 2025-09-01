@@ -9,42 +9,42 @@ class LegalEducationContent:
     def __init__(self):
         self.topics = {
             "contracts": {
-                "title": "📄 Contract Law Basics",
+                "title": "Contract Law Basics",
                 "description": "Understanding legal contracts and agreements",
                 "content": self._get_contract_content(),
                 "quiz": self._get_contract_quiz(),
                 "difficulty": "Beginner"
             },
             "wills": {
-                "title": "⚖️ Wills and Estates",
+                "title": "Wills and Estates",
                 "description": "Everything about wills, estates, and inheritance",
                 "content": self._get_wills_content(),
                 "quiz": self._get_wills_quiz(),
                 "difficulty": "Beginner"
             },
             "fraud": {
-                "title": "🛡️ Legal Fraud Prevention",
+                "title": "Legal Fraud Prevention",
                 "description": "Identifying and avoiding legal scams",
                 "content": self._get_fraud_content(),
                 "quiz": self._get_fraud_quiz(),
                 "difficulty": "Intermediate"
             },
             "rights": {
-                "title": "⚡ Your Legal Rights",
+                "title": "Your Legal Rights",
                 "description": "Understanding your rights in South Africa",
                 "content": self._get_rights_content(),
                 "quiz": self._get_rights_quiz(),
                 "difficulty": "Beginner"
             },
             "family_law": {
-                "title": "👨‍👩‍👧‍👦 Family Law",
+                "title": "Family Law",
                 "description": "Marriage, divorce, and family legal matters",
                 "content": self._get_family_law_content(),
                 "quiz": self._get_family_law_quiz(),
                 "difficulty": "Intermediate"
             },
             "labor": {
-                "title": "👔 Labor Law",
+                "title": "Labor Law",
                 "description": "Employment rights and workplace law",
                 "content": self._get_labor_content(),
                 "quiz": self._get_labor_quiz(),
@@ -917,18 +917,18 @@ def run():
     
     # run menu
     menu_options = [
-        "🏠 Home",
-        "📚 Learn Topics",
-        "🎯 Take Quiz",
-        "📊 Progress Dashboard",
-        "🏆 Certificates",
-        "📞 Legal Resources"
+        " Home",
+        "Learn Topics",
+        " Take Quiz",
+        " Progress Dashboard",
+        " Certificates",
+        " Legal Resources"
     ]
     
     selected_menu = st.sidebar.selectbox("Choose an option:", menu_options)
     
     # Topic selection for learning and quizzes
-    if selected_menu in ["📚 Learn Topics", "🎯 Take Quiz"]:
+    if selected_menu in ["Learn Topics", "Take Quiz"]:
         st.sidebar.subheader("Select Topic")
         topic_options = []
         for key, topic in content.topics.items():
@@ -944,17 +944,17 @@ def run():
                 break
     
     # run content area
-    if selected_menu == "🏠 Home":
+    if selected_menu == "Home":
         show_home_page(content, progress)
-    elif selected_menu == "📚 Learn Topics":
+    elif selected_menu == "Learn Topics":
         show_learning_page(content, progress, selected_topic_key)
-    elif selected_menu == "🎯 Take Quiz":
+    elif selected_menu == "Take Quiz":
         show_quiz_page(content, progress, selected_topic_key)
-    elif selected_menu == "📊 Progress Dashboard":
+    elif selected_menu == " Progress Dashboard":
         show_progress_dashboard(progress, content)
-    elif selected_menu == "🏆 Certificates":
+    elif selected_menu == " Certificates":
         show_certificates_page(progress)
-    elif selected_menu == "📞 Legal Resources":
+    elif selected_menu == " Legal Resources":
         show_resources_page()
 
 def show_home_page(content, progress):
@@ -963,7 +963,7 @@ def show_home_page(content, progress):
     col1, col2 = st.columns([2, 1])
     
     with col1:
-        st.header("🎯 Welcome to Legal Education")
+        st.header("Welcome to Legal Education")
         
         st.markdown("""
         ### Why Legal Education Matters
@@ -994,7 +994,7 @@ def show_home_page(content, progress):
             """, unsafe_allow_html=True)
     
     with col2:
-        st.header("📊 Your Progress")
+        st.header(" Your Progress")
         
         # Progress overview
         completed_topics = len(st.session_state.progress['completed_topics'])
@@ -1012,7 +1012,7 @@ def show_home_page(content, progress):
             
             st.subheader("Recent Quiz Scores")
             for topic, score_data in st.session_state.progress['quiz_scores'].items():
-                topic_title = content.topics[topic]['title'].replace('📄', '').replace('⚖️', '').replace('🛡️', '').replace('⚡', '').replace('👨‍👩‍👧‍👦', '').replace('👔', '').strip()
+                topic_title = content.topics[topic]['title']
                 st.write(f"• {topic_title}: {score_data['score']}/{score_data['total']} ({score_data['percentage']:.1f}%)")
 
 def show_learning_page(content, progress, topic_key):
@@ -1030,7 +1030,7 @@ def show_learning_page(content, progress, topic_key):
     difficulty_color = "#28a745" if topic['difficulty'] == 'Beginner' else "#ffc107"
     st.markdown(f"""
     <span style="background: {difficulty_color}; color: white; padding: 0.3rem 0.7rem; border-radius: 15px; font-size: 0.9rem;">
-        📚 {topic['difficulty']} Level
+         {topic['difficulty']} Level
     </span>
     """, unsafe_allow_html=True)
     
@@ -1062,7 +1062,7 @@ def show_learning_page(content, progress, topic_key):
     # Mark topic as completed
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        if st.button("✅ Mark Topic as Completed", key=f"complete_{topic_key}"):
+        if st.button(" Mark Topic as Completed", key=f"complete_{topic_key}"):
             progress.mark_topic_complete(topic_key)
             st.success(f"Great job! You've completed {topic['title']}")
             st.balloons()
@@ -1076,7 +1076,7 @@ def show_quiz_page(content, progress, topic_key):
     topic = content.topics[topic_key]
     quiz_questions = topic['quiz']
     
-    st.header(f"🎯 Quiz: {topic['title']}")
+    st.header(f"Quiz: {topic['title']}")
     st.subheader("Test Your Knowledge")
     
     st.markdown(f"""
@@ -1118,7 +1118,7 @@ def show_quiz_page(content, progress, topic_key):
     # Submit quiz
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        if st.button("📋 Submit Quiz", key=f"submit_quiz_{topic_key}"):
+        if st.button("Submit Quiz", key=f"submit_quiz_{topic_key}"):
             # Check if all questions are answered
             if len(st.session_state[f'quiz_answers_{topic_key}']) != len(quiz_questions):
                 st.error("Please answer all questions before submitting.")
@@ -1146,19 +1146,19 @@ def show_quiz_page(content, progress, topic_key):
             progress.record_quiz_score(topic_key, correct_answers, len(quiz_questions))
             
             # Display results
-            st.header("📊 Quiz Results")
+            st.header(" Quiz Results")
             
             score_percentage = (correct_answers / len(quiz_questions)) * 100
             
             if score_percentage >= 80:
-                st.success(f"🎉 Excellent! You scored {correct_answers}/{len(quiz_questions)} ({score_percentage:.1f}%)")
+                st.success(f" Excellent! You scored {correct_answers}/{len(quiz_questions)} ({score_percentage:.1f}%)")
                 st.balloons()
                 # Generate certificate
                 progress.generate_certificate(topic_key, content)
             elif score_percentage >= 60:
-                st.warning(f"👍 Good job! You scored {correct_answers}/{len(quiz_questions)} ({score_percentage:.1f}%)")
+                st.warning(f" Good job! You scored {correct_answers}/{len(quiz_questions)} ({score_percentage:.1f}%)")
             else:
-                st.error(f"📚 Keep studying! You scored {correct_answers}/{len(quiz_questions)} ({score_percentage:.1f}%)")
+                st.error(f"Keep studying! You scored {correct_answers}/{len(quiz_questions)} ({score_percentage:.1f}%)")
             
             # Show detailed results
             st.subheader("Detailed Results")
@@ -1167,7 +1167,7 @@ def show_quiz_page(content, progress, topic_key):
                 if result['is_correct']:
                     st.markdown(f"""
                     <div class="correct-answer">
-                        <h5>Question {i+1}: ✅ Correct</h5>
+                        <h5>Question {i+1}:  Correct</h5>
                         <p><strong>Q:</strong> {result['question']}</p>
                         <p><strong>Your answer:</strong> {result['user_answer']}</p>
                         <p><strong>Explanation:</strong> {result['explanation']}</p>
@@ -1176,7 +1176,7 @@ def show_quiz_page(content, progress, topic_key):
                 else:
                     st.markdown(f"""
                     <div class="incorrect-answer">
-                        <h5>Question {i+1}: ❌ Incorrect</h5>
+                        <h5>Question {i+1}:  Incorrect</h5>
                         <p><strong>Q:</strong> {result['question']}</p>
                         <p><strong>Your answer:</strong> {result['user_answer']}</p>
                         <p><strong>Correct answer:</strong> {result['correct_answer']}</p>
@@ -1189,7 +1189,7 @@ def show_quiz_page(content, progress, topic_key):
 
 def show_progress_dashboard(progress, content):
     """Display progress dashboard"""
-    st.header("📊 Your Learning Progress")
+    st.header(" Your Learning Progress")
     
     # Overall statistics
     col1, col2, col3, col4 = st.columns(4)
@@ -1217,7 +1217,7 @@ def show_progress_dashboard(progress, content):
     st.markdown("---")
     
     # Progress by topic
-    st.subheader("📚 Progress by Topic")
+    st.subheader(" Progress by Topic")
     
     for key, topic in content.topics.items():
         col1, col2 = st.columns([3, 1])
@@ -1227,7 +1227,7 @@ def show_progress_dashboard(progress, content):
             
             # Completion status
             is_completed = key in st.session_state.progress['completed_topics']
-            completion_status = "✅ Completed" if is_completed else "⏳ In Progress"
+            completion_status = " Completed" if is_completed else " In Progress"
             
             # Quiz score
             quiz_info = "Not taken"
@@ -1250,7 +1250,7 @@ def show_progress_dashboard(progress, content):
 
 def show_certificates_page(progress):
     """Display earned certificates"""
-    st.header("🏆 Your Certificates")
+    st.header(" Your Certificates")
     
     if not st.session_state.progress['certificates']:
         st.info("Complete quizzes with 80% or higher scores to earn certificates!")
@@ -1261,7 +1261,7 @@ def show_certificates_page(progress):
     for cert in st.session_state.progress['certificates']:
         st.markdown(f"""
         <div style="border: 2px solid #gold; padding: 2rem; margin: 1rem 0; border-radius: 10px; background: linear-gradient(45deg, #f9f9f9, #ffffff); text-align: center;">
-            <h2>🏆 Certificate of Completion</h2>
+            <h2> Certificate of Completion</h2>
             <h3>{cert['title']}</h3>
             <p>This certifies that the learner has successfully completed the course</p>
             <p><strong>Score Achieved:</strong> {cert['score']:.1f}%</p>
@@ -1272,7 +1272,7 @@ def show_certificates_page(progress):
 
 def show_resources_page():
     """Display legal resources and contacts"""
-    st.header("📞 Legal Resources in South Africa")
+    st.header(" Legal Resources in South Africa")
     
     st.markdown("""
     ### Emergency Contacts

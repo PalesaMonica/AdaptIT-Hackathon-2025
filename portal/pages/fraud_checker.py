@@ -126,63 +126,78 @@ def apply_fraud_detection_styling():
     st.markdown("""
     <style>
     :root {
-        --security-red: #DC2626;
-        --security-orange: #EA580C;
-        --security-green: #059669;
-        --security-blue: #2563EB;
-        --security-dark: #1F2937;
+        --primary-blue: #1E40AF;
+        --secondary-blue: #3B82F6;
+        --light-blue: #DBEAFE;
+        --dark-blue: #1E3A8A;
+        --accent-blue: #2563EB;
+        --neutral-gray: #4B5563;
     }
     .main .block-container {
         padding: 2rem;
-        background: linear-gradient(135deg, #1F2937 0%, #374151 100%);
-        border-radius: 10px;
-        color: white;
+        background: linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%);
+        border-radius: 8px;
+        color: #1F2937;
     }
     .main h1 {
-        color: #DC2626 !important;
+        color: var(--primary-blue) !important;
         text-align: center;
-        font-weight: bold;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        font-weight: 600;
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
     }
     .main h2, .main h3 {
-        color: #DC2626 !important;
-        border-left: 5px solid #DC2626;
-        padding-left: 10px;
+        color: var(--dark-blue) !important;
+        border-left: 4px solid var(--accent-blue);
+        padding-left: 12px;
+        font-weight: 500;
     }
     .stButton > button {
-        background: linear-gradient(45deg, #DC2626, #EF4444) !important;
+        background: linear-gradient(45deg, var(--primary-blue), var(--secondary-blue)) !important;
         color: white !important;
-        font-weight: bold;
+        font-weight: 500;
         border: none;
-        border-radius: 8px;
-        padding: 10px 20px;
+        border-radius: 6px;
+        padding: 10px 24px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     .risk-high {
-        background: linear-gradient(45deg, #DC2626, #EF4444);
+        background: linear-gradient(135deg, #DC2626, #EF4444);
         color: white;
-        padding: 15px;
-        border-radius: 10px;
-        border-left: 5px solid #B91C1C;
+        padding: 20px;
+        border-radius: 8px;
+        border-left: 4px solid #B91C1C;
+        margin: 1rem 0;
     }
     .risk-medium {
-        background: linear-gradient(45deg, #EA580C, #F97316);
+        background: linear-gradient(135deg, #F59E0B, #FBBF24);
         color: white;
-        padding: 15px;
-        border-radius: 10px;
-        border-left: 5px solid #C2410C;
+        padding: 20px;
+        border-radius: 8px;
+        border-left: 4px solid #D97706;
+        margin: 1rem 0;
     }
     .risk-low {
-        background: linear-gradient(45deg, #059669, #10B981);
+        background: linear-gradient(135deg, #059669, #10B981);
         color: white;
-        padding: 15px;
-        border-radius: 10px;
-        border-left: 5px solid #047857;
+        padding: 20px;
+        border-radius: 8px;
+        border-left: 4px solid #047857;
+        margin: 1rem 0;
     }
     .metric-container {
-        background: rgba(255,255,255,0.1);
-        padding: 10px;
+        background: var(--light-blue);
+        padding: 15px;
         border-radius: 8px;
         text-align: center;
+        border: 1px solid var(--secondary-blue);
+    }
+    .sidebar .sidebar-content {
+        background: linear-gradient(180deg, var(--light-blue) 0%, #FFFFFF 100%);
+    }
+    .stAlert {
+        border-radius: 6px;
+        border-left: 4px solid var(--accent-blue);
     }
     </style>
     """, unsafe_allow_html=True)
@@ -281,20 +296,17 @@ def display_fraud_analysis_results(detector, text):
     if risk_score >= 70:
         risk_level = "HIGH"
         risk_color = "risk-high"
-        risk_emoji = "🚨"
     elif risk_score >= 40:
         risk_level = "MEDIUM"
         risk_color = "risk-medium"
-        risk_emoji = "⚠️"
     else:
         risk_level = "LOW"
         risk_color = "risk-low"
-        risk_emoji = "✅"
     
     # Display risk score prominently
     st.markdown(f"""
     <div class="{risk_color}">
-        <h2>{risk_emoji} FRAUD RISK: {risk_level}</h2>
+        <h2>FRAUD RISK: {risk_level}</h2>
         <h3>Risk Score: {risk_score}/100</h3>
     </div>
     """, unsafe_allow_html=True)
@@ -303,7 +315,7 @@ def display_fraud_analysis_results(detector, text):
     col1, col2 = st.columns(2)
     
     with col1:
-        st.subheader("🔍 Suspicious Patterns Found")
+        st.subheader("Suspicious Patterns Found")
         
         if patterns['suspicious_phrases']:
             st.error("**Suspicious Phrases Detected:**")
@@ -321,7 +333,7 @@ def display_fraud_analysis_results(detector, text):
                 st.write(f"• {indicator}")
     
     with col2:
-        st.subheader("💰 Financial & Contact Analysis")
+        st.subheader("Financial & Contact Analysis")
         
         if patterns['financial_promises']:
             st.warning("**Financial Claims:**")
@@ -334,7 +346,7 @@ def display_fraud_analysis_results(detector, text):
                 st.write(f"• {issue}")
         
         # Show metrics
-        st.subheader("📊 Analysis Metrics")
+        st.subheader("Analysis Metrics")
         col3, col4, col5 = st.columns(3)
         with col3:
             st.metric("Suspicious Phrases", len(patterns['suspicious_phrases']))
@@ -344,7 +356,7 @@ def display_fraud_analysis_results(detector, text):
             st.metric("Risk Score", f"{risk_score}/100")
     
     # Recommendations
-    st.subheader("🛡️ Security Recommendations")
+    st.subheader("Security Recommendations")
     
     if risk_score >= 70:
         st.error("""
@@ -373,7 +385,7 @@ def display_fraud_analysis_results(detector, text):
         """)
     
     # Audio alert
-    st.subheader("🔊 Audio Risk Alert")
+    st.subheader("Audio Risk Alert")
     audio_file = create_audio_alert(risk_score)
     if audio_file:
         st.audio(audio_file, format="audio/mp3")
@@ -423,14 +435,14 @@ def run():
     
     apply_fraud_detection_styling()
 
-    st.title("🛡️ Legal Document Fraud Detection")
+    st.title("Legal Document Fraud Detection")
     st.markdown("""
     **Advanced fraud detection system** for legal documents. Upload any document to:
-    - 🔍 **Detect suspicious patterns** and common fraud indicators
-    - ⚠️ **Identify red flags** in legal language and structure
-    - 📊 **Calculate risk score** based on multiple factors
-    - 🔊 **Receive audio alerts** about potential risks
-    - 📋 **Get security recommendations** for next steps
+    - **Detect suspicious patterns** and common fraud indicators
+    - **Identify red flags** in legal language and structure
+    - **Calculate risk score** based on multiple factors
+    - **Receive audio alerts** about potential risks
+    - **Get security recommendations** for next steps
     """)
 
     # Initialize fraud detector
@@ -438,7 +450,7 @@ def run():
     
     # Sidebar with fraud education
     with st.sidebar:
-        st.header("🎓 Fraud Education")
+        st.header("Fraud Education")
         st.markdown("""
         ### Common Document Fraud Types:
         - **Forged signatures**
@@ -461,7 +473,7 @@ def run():
         st.stop()
 
     # File upload section
-    st.subheader("📤 Upload Document for Analysis")
+    st.subheader("Upload Document for Analysis")
     uploaded_file = st.file_uploader(
         "Choose a document to analyze for fraud indicators", 
         type=SUPPORTED_FORMATS,
@@ -474,10 +486,10 @@ def run():
             st.error(f"File too large ({uploaded_file.size/1024/1024:.1f}MB). Maximum size is 10MB.")
             return
 
-        st.success(f"✅ File uploaded: {uploaded_file.name} ({uploaded_file.size/1024:.1f}KB)")
+        st.success(f"File uploaded: {uploaded_file.name} ({uploaded_file.size/1024:.1f}KB)")
 
         # Extract text based on file type
-        with st.spinner("🔍 Analyzing document for fraud indicators..."):
+        with st.spinner("Analyzing document for fraud indicators..."):
             extracted_text = ""
             
             if uploaded_file.type == "application/pdf":
@@ -501,12 +513,9 @@ def run():
         # Analyze the document
         if extracted_text and len(extracted_text.strip()) > 0:
             
-            # Display extracted text in expandable section
-            with st.expander("📄 View Extracted Text", expanded=False):
-                st.text_area("Document Content", extracted_text, height=200, disabled=True)
             
             # Document structure verification
-            st.subheader("📋 Document Structure Analysis")
+            st.subheader("Document Structure Analysis")
             structure_score, structure_issues = verify_document_structure(extracted_text)
             
             col1, col2 = st.columns(2)
@@ -514,11 +523,11 @@ def run():
                 st.metric("Structure Score", f"{structure_score}/45")
             with col2:
                 if structure_score >= 35:
-                    st.success("✅ Proper document structure")
+                    st.success("Proper document structure")
                 elif structure_score >= 20:
-                    st.warning("⚠️ Some structure concerns")
+                    st.warning("Some structure concerns")
                 else:
-                    st.error("🚨 Poor document structure")
+                    st.error("Poor document structure")
             
             if structure_issues:
                 st.warning("**Structure Issues Found:**")
@@ -526,43 +535,13 @@ def run():
                     st.write(f"• {issue}")
 
             # Run fraud detection analysis
-            if st.button("🛡️ Run Fraud Detection Analysis", type="primary"):
+            if st.button("Run Fraud Detection Analysis", type="primary"):
                 with st.spinner("Analyzing document for fraud patterns..."):
                     
                     # Comprehensive fraud analysis
-                    st.subheader("🚨 Fraud Detection Results")
+                    st.subheader("Fraud Detection Results")
                     risk_score, risk_level = display_fraud_analysis_results(detector, extracted_text)
-                    
-                    # Additional analysis sections
-                    st.subheader("📊 Detailed Analysis")
-                    
-                    # Text statistics
-                    words = extracted_text.split()
-                    sentences = extracted_text.split('.')
-                    
-                    col1, col2, col3, col4 = st.columns(4)
-                    with col1:
-                        st.metric("Total Words", len(words))
-                    with col2:
-                        st.metric("Sentences", len(sentences))
-                    with col3:
-                        avg_word_length = np.mean([len(word) for word in words]) if words else 0
-                        st.metric("Avg Word Length", f"{avg_word_length:.1f}")
-                    with col4:
-                        complexity = len([w for w in words if len(w) > 6]) / len(words) * 100 if words else 0
-                        st.metric("Text Complexity", f"{complexity:.1f}%")
-                    
-                    # Keyword analysis
-                    st.subheader("🔤 Keyword Frequency Analysis")
-                    if words:
-                        word_freq = Counter([w.lower().strip('.,!?";') for w in words if len(w) > 3])
-                        top_words = word_freq.most_common(10)
-                        
-                        df = pd.DataFrame(top_words, columns=['Word', 'Frequency'])
-                        st.dataframe(df, use_container_width=True)
-                    
-                    # Export results
-                    st.subheader("📁 Export Analysis Results")
+
                     
                     results_summary = f"""
 FRAUD DETECTION ANALYSIS REPORT
@@ -586,14 +565,14 @@ RECOMMENDATION:
                     """
                     
                     st.download_button(
-                        label="📄 Download Analysis Report",
+                        label="Download Analysis Report",
                         data=results_summary,
                         file_name=f"fraud_analysis_{uploaded_file.name}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt",
                         mime="text/plain"
                     )
 
         else:
-            st.warning("⚠️ No text could be extracted from the document.")
+            st.warning("No text could be extracted from the document.")
             st.markdown("""
             **Possible reasons:**
             - Document is purely graphical
@@ -608,10 +587,8 @@ RECOMMENDATION:
             """)
 
     # Help section
-    with st.expander("❓ How Does Fraud Detection Work?", expanded=False):
-        st.markdown("""
-        ### Our Detection Methods:
-        
+    st.sidebar.write("""
+        #### How Does Fraud Detection Work?                  
         **Pattern Analysis:**
         - Scans for common fraud phrases and suspicious language
         - Identifies urgency tactics and pressure techniques
@@ -623,8 +600,6 @@ RECOMMENDATION:
         - Validates date consistency and logic
         
         **Risk Scoring:**
-        - Combines multiple risk factors
-        - Weights different types of suspicious content
         - Provides actionable risk assessment
         
         **Limitations:**

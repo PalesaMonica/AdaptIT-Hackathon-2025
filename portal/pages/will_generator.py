@@ -138,59 +138,114 @@ In the event that {data.get('guardian_name', '')} is unable or unwilling to serv
 def apply_will_generator_styling():
     st.markdown("""
     <style>
-    :root {
-        --will-blue: #1E40AF;
-        --will-gold: #F59E0B;
-        --will-green: #059669;
-        --will-gray: #374151;
-    }
     .main .block-container {
         padding: 2rem;
-        background: linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%);
-        border-radius: 10px;
-        color: white;
+        max-width: 1000px;
     }
-    .main h1 {
-        color: #F59E0B !important;
+    
+    .will-header {
+        background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
         text-align: center;
-        font-weight: bold;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(37, 99, 235, 0.2);
     }
-    .main h2, .main h3 {
-        color: #F59E0B !important;
-        border-left: 5px solid #F59E0B;
-        padding-left: 10px;
-    }
-    .stButton > button {
-        background: linear-gradient(45deg, #F59E0B, #FBBF24) !important;
-        color: #1E40AF !important;
+    
+    .will-header h1 {
+        color: white !important;
+        font-size: 2.5rem;
         font-weight: bold;
-        border: none;
+        margin-bottom: 0.5rem;
+    }
+    
+    .will-header p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+    }
+    
+    .section-card {
+        background: #f8fafc;
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin: 1rem 0;
+        border-left: 5px solid #1E3A8A;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+    
+    .section-card h2 {
+        color: #1E3A8A !important;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 0.5rem;
+    }
+    
+    .legal-notice {
+        background: linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin: 1.5rem 0;
+        border-left: 6px solid #1D4ED8;
+    }
+    
+    .generate-button {
+        background: linear-gradient(45deg, #1E3A8A 0%, #3B82F6 100%) !important;
+        color: white !important;
+        font-weight: bold;
+        font-size: 1.2rem;
+        padding: 1rem 2rem;
+        border: none !important;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        width: 100%;
+        margin: 1rem 0;
+    }
+    
+    .generate-button:hover {
+        background: linear-gradient(45deg, #1E40AF 0%, #2563EB 100%) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+    }
+    
+    .will-preview {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin: 1.5rem 0;
+        border: 2px solid #1E3A8A;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .will-preview h3 {
+        color: #1E3A8A !important;
+        text-align: center;
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+    }
+    
+    .stTextArea textarea {
+        border: 2px solid #e2e8f0;
         border-radius: 8px;
-        padding: 10px 20px;
+        padding: 1rem;
     }
-    .will-section {
-        background: rgba(255,255,255,0.1);
-        padding: 20px;
-        border-radius: 10px;
-        margin: 10px 0;
-        border-left: 5px solid #F59E0B;
+    
+    .stTextArea textarea:focus {
+        border-color: #3B82F6;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
     }
-    .warning-box {
-        background: linear-gradient(45deg, #DC2626, #EF4444);
-        color: white;
-        padding: 15px;
-        border-radius: 10px;
-        border-left: 5px solid #B91C1C;
-        margin: 20px 0;
-    }
-    .info-box {
-        background: linear-gradient(45deg, #059669, #10B981);
-        color: white;
-        padding: 15px;
-        border-radius: 10px;
-        border-left: 5px solid #047857;
-        margin: 20px 0;
+    
+    @media (max-width: 768px) {
+        .will-header h1 {
+            font-size: 2rem;
+        }
+        
+        .section-card {
+            padding: 1rem;
+        }
     }
     </style>
     """, unsafe_allow_html=True)
@@ -217,141 +272,255 @@ def create_will_audio_guide(section, language='en'):
         return None
 
 # ---------------- Main Application ----------------
-import streamlit as st
-
 def run():
-    st.title("📝 Will Generator Tool")
+    apply_will_generator_styling()
+    
+    # Header
+    st.markdown("""
+    <div class="will-header">
+        <h1>Will Generator Tool</h1>
+        <p>Create a legally sound will document to protect your assets and provide for your loved ones</p>
+        <p><small>Professional will drafting with comprehensive legal framework</small></p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Legal notice
+    st.markdown("""
+    <div class="legal-notice">
+        <h3>Legal Notice</h3>
+        <p>This tool provides a basic will template. For complex estates, multiple properties, or specific legal requirements, 
+        we strongly recommend consulting with a qualified legal professional. This document should be signed in the presence 
+        of two competent witnesses who are not beneficiaries.</p>
+    </div>
+    """, unsafe_allow_html=True)
 
     if "will_data" not in st.session_state:
         st.session_state.will_data = {}
 
     # Step 1: Personal Details
-    st.header("Step 1: Personal Details")
-    st.session_state.will_data['full_name'] = st.text_input(
-        "Full Name", 
-        value=st.session_state.will_data.get('full_name', ''), 
-        key="full_name"
-    )
-    st.session_state.will_data['id_number'] = st.text_input(
-        "ID Number", 
-        value=st.session_state.will_data.get('id_number', ''), 
-        key="id_number"
-    )
+    st.markdown("""
+    <div class="section-card">
+        <h2>Step 1: Personal Details</h2>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        st.session_state.will_data['full_name'] = st.text_input(
+            "Full Legal Name", 
+            value=st.session_state.will_data.get('full_name', ''), 
+            key="full_name",
+            help="Enter your complete legal name as it appears on official documents"
+        )
+    with col2:
+        st.session_state.will_data['id_number'] = st.text_input(
+            "South African ID Number", 
+            value=st.session_state.will_data.get('id_number', ''), 
+            key="id_number",
+            help="13-digit South African identity number"
+        )
+    
     st.session_state.will_data['address'] = st.text_area(
-        "Address", 
+        "Current Residential Address", 
         value=st.session_state.will_data.get('address', ''), 
-        key="address"
+        key="address",
+        height=80,
+        help="Full physical address including city and postal code"
     )
 
     # Step 2: Beneficiaries
-    st.header("Step 2: Beneficiaries")
-    st.session_state.will_data['beneficiary_name'] = st.text_input(
-        "Beneficiary Full Name", 
-        value=st.session_state.will_data.get('beneficiary_name', ''), 
-        key="beneficiary_name"
-    )
-    st.session_state.will_data['beneficiary_relationship'] = st.text_input(
-        "Relationship to you", 
-        value=st.session_state.will_data.get('beneficiary_relationship', ''), 
-        key="beneficiary_relationship"
-    )
-    st.session_state.will_data['beneficiary_share'] = st.number_input(
-        "Percentage of Estate (%)", 
-        min_value=0, 
-        max_value=100, 
-        value=st.session_state.will_data.get('beneficiary_share', 0), 
-        key="beneficiary_share"
-    )
+    st.markdown("""
+    <div class="section-card">
+        <h2>Step 2: Beneficiary Information</h2>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns([2, 2, 1])
+    with col1:
+        st.session_state.will_data['beneficiary_name'] = st.text_input(
+            "Primary Beneficiary Full Name", 
+            value=st.session_state.will_data.get('beneficiary_name', ''), 
+            key="beneficiary_name",
+            help="Person who will inherit your estate"
+        )
+    with col2:
+        st.session_state.will_data['beneficiary_relationship'] = st.text_input(
+            "Relationship to Beneficiary", 
+            value=st.session_state.will_data.get('beneficiary_relationship', ''), 
+            key="beneficiary_relationship",
+            help="e.g., Spouse, Child, Sibling, Friend"
+        )
+    with col3:
+        st.session_state.will_data['beneficiary_share'] = st.number_input(
+            "Estate Percentage", 
+            min_value=0, 
+            max_value=100, 
+            value=st.session_state.will_data.get('beneficiary_share', 100), 
+            key="beneficiary_share",
+            help="Percentage of estate to inherit"
+        )
 
     # Step 3: Executor
-    st.header("Step 3: Executor Details")
-    st.session_state.will_data['executor_name'] = st.text_input(
-        "Executor Full Name", 
-        value=st.session_state.will_data.get('executor_name', ''), 
-        key="executor_name"
-    )
-    st.session_state.will_data['executor_relationship'] = st.text_input(
-        "Relationship to you", 
-        value=st.session_state.will_data.get('executor_relationship', ''), 
-        key="executor_relationship"
-    )
-    st.session_state.will_data['executor_phone'] = st.text_input(
-        "Phone Number", 
-        value=st.session_state.will_data.get('executor_phone', ''), 
-        key="executor_phone"
-    )
+    st.markdown("""
+    <div class="section-card">
+        <h2>Step 3: Executor Appointment</h2>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns([2, 2, 1])
+    with col1:
+        st.session_state.will_data['executor_name'] = st.text_input(
+            "Executor Full Name", 
+            value=st.session_state.will_data.get('executor_name', ''), 
+            key="executor_name",
+            help="Person responsible for administering your estate"
+        )
+    with col2:
+        st.session_state.will_data['executor_relationship'] = st.text_input(
+            "Executor Relationship", 
+            value=st.session_state.will_data.get('executor_relationship', ''), 
+            key="executor_relationship",
+            help="Relationship to executor"
+        )
+    with col3:
+        st.session_state.will_data['executor_phone'] = st.text_input(
+            "Executor Phone", 
+            value=st.session_state.will_data.get('executor_phone', ''), 
+            key="executor_phone",
+            help="Contact number for executor"
+        )
 
     # Step 4: Guardian (Optional)
-    st.header("Step 4: Guardian (Optional)")
-    st.session_state.will_data['guardian_name'] = st.text_input(
-        "Guardian Full Name", 
-        value=st.session_state.will_data.get('guardian_name', ''), 
-        key="guardian_name"
-    )
-    st.session_state.will_data['guardian_relationship'] = st.text_input(
-        "Relationship to you", 
-        value=st.session_state.will_data.get('guardian_relationship', ''), 
-        key="guardian_relationship"
-    )
-    st.session_state.will_data['guardian_phone'] = st.text_input(
-        "Phone Number", 
-        value=st.session_state.will_data.get('guardian_phone', ''), 
-        key="guardian_phone"
-    )
+    st.markdown("""
+    <div class="section-card">
+        <h2>Step 4: Guardian Appointment (Optional)</h2>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns([2, 2, 1])
+    with col1:
+        st.session_state.will_data['guardian_name'] = st.text_input(
+            "Guardian Full Name", 
+            value=st.session_state.will_data.get('guardian_name', ''), 
+            key="guardian_name",
+            help="Guardian for minor children if applicable"
+        )
+    with col2:
+        st.session_state.will_data['guardian_relationship'] = st.text_input(
+            "Guardian Relationship", 
+            value=st.session_state.will_data.get('guardian_relationship', ''), 
+            key="guardian_relationship",
+            help="Relationship to guardian"
+        )
+    with col3:
+        st.session_state.will_data['guardian_phone'] = st.text_input(
+            "Guardian Phone", 
+            value=st.session_state.will_data.get('guardian_phone', ''), 
+            key="guardian_phone",
+            help="Contact number for guardian"
+        )
 
     # Step 5: Witnesses
-    st.header("Step 5: Witnesses")
-    st.session_state.will_data['witness1_name'] = st.text_input(
-        "Witness 1 Full Name", 
-        value=st.session_state.will_data.get('witness1_name', ''), 
-        key="witness1_name"
-    )
-    st.session_state.will_data['witness1_phone'] = st.text_input(
-        "Witness 1 Phone", 
-        value=st.session_state.will_data.get('witness1_phone', ''), 
-        key="witness1_phone"
-    )
-    st.session_state.will_data['witness2_name'] = st.text_input(
-        "Witness 2 Full Name", 
-        value=st.session_state.will_data.get('witness2_name', ''), 
-        key="witness2_name"
-    )
-    st.session_state.will_data['witness2_phone'] = st.text_input(
-        "Witness 2 Phone", 
-        value=st.session_state.will_data.get('witness2_phone', ''), 
-        key="witness2_phone"
-    )
+    st.markdown("""
+    <div class="section-card">
+        <h2>Step 5: Witness Information</h2>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        st.session_state.will_data['witness1_name'] = st.text_input(
+            "Witness 1 Full Name", 
+            value=st.session_state.will_data.get('witness1_name', ''), 
+            key="witness1_name",
+            help="First witness (cannot be a beneficiary)"
+        )
+        st.session_state.will_data['witness1_phone'] = st.text_input(
+            "Witness 1 Phone", 
+            value=st.session_state.will_data.get('witness1_phone', ''), 
+            key="witness1_phone",
+            help="Contact number for witness 1"
+        )
+    with col2:
+        st.session_state.will_data['witness2_name'] = st.text_input(
+            "Witness 2 Full Name", 
+            value=st.session_state.will_data.get('witness2_name', ''), 
+            key="witness2_name",
+            help="Second witness (cannot be a beneficiary)"
+        )
+        st.session_state.will_data['witness2_phone'] = st.text_input(
+            "Witness 2 Phone", 
+            value=st.session_state.will_data.get('witness2_phone', ''), 
+            key="witness2_phone",
+            help="Contact number for witness 2"
+        )
 
-    # Generate Will
-    if st.button("Generate Will Document"):
-        st.subheader("📄 Your Draft Will")
-        will_text = f"""
-        LAST WILL AND TESTAMENT
+    # Generate Will Button
+    st.markdown("""
+    <div style="text-align: center; margin: 2rem 0;">
+    """, unsafe_allow_html=True)
+    
+    if st.button("Generate Will Document", key="generate_will", help="Create your will document based on the provided information"):
+        # Validation
+        required_fields = ['full_name', 'address', 'beneficiary_name', 'executor_name']
+        missing_fields = [field for field in required_fields if not st.session_state.will_data.get(field)]
+        
+        if missing_fields:
+            st.error(f"Please complete the following required fields: {', '.join(missing_fields)}")
+        else:
+            st.subheader("Generated Will Document")
+            
+            will_text = f"""
+LAST WILL AND TESTAMENT
 
-        I, {st.session_state.will_data.get('full_name')}, ID {st.session_state.will_data.get('id_number')}, 
-        residing at {st.session_state.will_data.get('address')}, hereby declare this to be my Last Will.
+I, {st.session_state.will_data.get('full_name')}, ID Number {st.session_state.will_data.get('id_number', '')}, 
+residing at {st.session_state.will_data.get('address')}, hereby declare this to be my Last Will and Testament.
 
-        1. Beneficiaries:
-           - {st.session_state.will_data.get('beneficiary_name')} 
-             ({st.session_state.will_data.get('beneficiary_relationship')}), 
-             shall inherit {st.session_state.will_data.get('beneficiary_share')}% of my estate.
+ARTICLE I - PERSONAL DETAILS
+I declare that I am of sound mind and disposing memory, and I make this Will voluntarily.
 
-        2. Executor:
-           - {st.session_state.will_data.get('executor_name')} 
-             ({st.session_state.will_data.get('executor_relationship')}), 
-             Phone: {st.session_state.will_data.get('executor_phone')}, 
-             is appointed as the executor of this Will.
+ARTICLE II - BENEFICIARIES
+I give, devise and bequeath my entire estate to {st.session_state.will_data.get('beneficiary_name')} 
+({st.session_state.will_data.get('beneficiary_relationship')}), who shall inherit {st.session_state.will_data.get('beneficiary_share')}% of my estate.
 
-        3. Guardian (if applicable):
-           - {st.session_state.will_data.get('guardian_name')} 
-             ({st.session_state.will_data.get('guardian_relationship')}), 
-             Phone: {st.session_state.will_data.get('guardian_phone')}, 
-             is appointed as guardian of my minor children.
+ARTICLE III - EXECUTOR
+I appoint {st.session_state.will_data.get('executor_name')} ({st.session_state.will_data.get('executor_relationship')}) 
+as the Executor of this Will. Contact: {st.session_state.will_data.get('executor_phone', '')}.
 
-        4. Witnesses:
-           - {st.session_state.will_data.get('witness1_name')} (Phone: {st.session_state.will_data.get('witness1_phone')})
-           - {st.session_state.will_data.get('witness2_name')} (Phone: {st.session_state.will_data.get('witness2_phone')})
+ARTICLE IV - GUARDIANSHIP
+{('I appoint ' + st.session_state.will_data.get('guardian_name') + ' (' + st.session_state.will_data.get('guardian_relationship') + ') as guardian of any minor children. Contact: ' + st.session_state.will_data.get('guardian_phone', '') + '.') if st.session_state.will_data.get('guardian_name') else 'No guardian appointment specified.'}
 
-        This Will is made freely, voluntarily, and in sound mind.
-        """
-        st.text_area("Generated Will", will_text, height=400)
+ARTICLE V - WITNESSES
+This Will shall be signed in the presence of:
+1. {st.session_state.will_data.get('witness1_name', '')} (Contact: {st.session_state.will_data.get('witness1_phone', '')})
+2. {st.session_state.will_data.get('witness2_name', '')} (Contact: {st.session_state.will_data.get('witness2_phone', '')})
+
+IN WITNESS WHEREOF, I set my hand this {datetime.date.today().strftime('%d day of %B, %Y')}.
+
+_________________________________
+{st.session_state.will_data.get('full_name')}
+Testator
+
+WITNESSED BY:
+
+1. _________________________________
+{st.session_state.will_data.get('witness1_name', '')}
+Date: ____________________________
+
+2. _________________________________
+{st.session_state.will_data.get('witness2_name', '')}
+Date: ____________________________
+"""
+            
+            st.markdown("""
+            <div class="will-preview">
+                <h3>Will Document Preview</h3>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            st.text_area("Generated Will Content", will_text, height=400, key="will_preview")
+            
+            # Download options
+            st.info("Please review the document carefully. For legal validity, this document must be printed and signed in the presence of two competent witnesses.")
+
+    st.markdown("</div>", unsafe_allow_html=True)
