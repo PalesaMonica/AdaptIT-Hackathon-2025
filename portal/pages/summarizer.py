@@ -11,11 +11,11 @@ import fitz  # PyMuPDF
 SUPPORTED_FORMATS = ["jpg","jpeg","png","webp","pdf","txt","doc","docx"]
 MAX_FILE_SIZE = 10*1024*1024
 
-# ---------------- Professional Styling ----------------
+# ---------------- Enhanced Professional Styling ----------------
 def apply_legal_portal_styling():
     st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
     
     * {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -23,92 +23,263 @@ def apply_legal_portal_styling():
     
     .main .block-container {
         padding: 2rem 3rem;
-        background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #334155 100%);
+        background: linear-gradient(135deg, #1E293B 0%, #334155 25%, #475569 50%, #64748B 75%, #94A3B8 100%);
         min-height: 100vh;
         color: white;
     }
     
-    .main h1 {
-        color: #F8FAFC !important;
-        text-align: center;
-        font-weight: 700;
-        font-size: 2.5rem;
-        margin-bottom: 1.5rem;
-        letter-spacing: -0.025em;
+    /* Elegant Blue-to-Pink Gradient Heading */
+    .stMarkdown h1, .main h1 {
+        font-family: 'Inter', sans-serif !important;
+        font-weight: 700 !important;
+        font-size: 3.5rem !important;
+        text-align: center !important;
+        letter-spacing: -0.02em !important;
+        margin: 2rem 0 2.5rem 0 !important;
+        padding: 1.5rem 0 !important;
+        position: relative !important;
+        background: linear-gradient(135deg, 
+            #3B82F6 0%,
+            #5B9BF7 15%,
+            #7BB3F8 30%,
+            #9BCCF9 45%,
+            #BBE4FA 60%,
+            #D4A5E8 75%,
+            #EC7BB8 90%,
+            #F472B6 100%) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        background-clip: text !important;
+        text-shadow: 
+            0 2px 10px rgba(59, 130, 246, 0.3),
+            0 4px 20px rgba(244, 114, 182, 0.2) !important;
+        filter: drop-shadow(0 0 15px rgba(139, 92, 246, 0.2)) !important;
     }
     
+    /* Subtle Blue-Pink Accent Lines */
+    .stMarkdown h1::before, .main h1::before {
+        content: '' !important;
+        position: absolute !important;
+        top: -8px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 60% !important;
+        height: 2px !important;
+        background: linear-gradient(90deg, 
+            transparent 0%, 
+            #3B82F6 30%, 
+            #8B5CF6 50%, 
+            #F472B6 70%, 
+            transparent 100%) !important;
+        border-radius: 1px !important;
+        opacity: 0.6 !important;
+    }
+    
+    .stMarkdown h1::after, .main h1::after {
+        content: '' !important;
+        position: absolute !important;
+        bottom: -8px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 40% !important;
+        height: 2px !important;
+        background: linear-gradient(90deg, 
+            transparent 0%, 
+            #60A5FA 25%, 
+            #A78BFA 50%, 
+            #F472B6 75%, 
+            transparent 100%) !important;
+        border-radius: 1px !important;
+        opacity: 0.4 !important;
+    }
+    
+    /* Improved Section Headings */
     .main h2, .main h3 {
-        color: #3B82F6 !important;
-        font-weight: 600;
-        border-left: 4px solid #3B82F6;
-        padding-left: 1rem;
-        margin: 2rem 0 1rem 0;
+        color: #E2E8F0 !important;
+        font-weight: 700 !important;
+        font-size: 1.5rem !important;
+        border-left: 4px solid #8B5CF6 !important;
+        padding-left: 1rem !important;
+        margin: 2rem 0 1rem 0 !important;
+        text-shadow: 1px 2px 4px rgba(0,0,0,0.3) !important;
+        background: rgba(139, 92, 246, 0.1) !important;
+        padding: 0.75rem 1rem !important;
+        border-radius: 0 8px 8px 0 !important;
+    }
+    
+    /* Enhanced Text Visibility */
+    .main p, .main li, .main div {
+        color: #F1F5F9 !important;
+        line-height: 1.7 !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.5) !important;
+        font-weight: 400 !important;
+    }
+    
+    /* Stronger text for important content */
+    .main strong, .main b {
+        color: #FFFFFF !important;
+        font-weight: 700 !important;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.6) !important;
     }
     
     .feature-list {
-        background: linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
-        padding: 1.5rem;
-        border-radius: 12px;
-        border: 1px solid rgba(255,255,255,0.1);
-        margin: 1.5rem 0;
+        background: linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06)) !important;
+        padding: 2rem !important;
+        border-radius: 16px !important;
+        border: 2px solid rgba(255,255,255,0.15) !important;
+        margin: 2rem 0 !important;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3) !important;
+        backdrop-filter: blur(8px) !important;
+    }
+    
+    .feature-list strong {
+        color: #3B82F6 !important;
+        font-size: 1.1rem !important;
+        font-weight: 700 !important;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.7) !important;
     }
     
     .feature-list ul {
-        margin: 0;
-        padding-left: 1.5rem;
+        margin: 1rem 0 0 0 !important;
+        padding-left: 1.5rem !important;
     }
     
     .feature-list li {
-        color: #CBD5E1;
-        margin: 0.5rem 0;
-        line-height: 1.6;
+        color: #F1F5F9 !important;
+        margin: 0.75rem 0 !important;
+        line-height: 1.7 !important;
+        font-size: 1rem !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.5) !important;
     }
     
+    .feature-list li strong {
+        color: #60A5FA !important;
+        font-weight: 600 !important;
+    }
+    
+    /* Enhanced Buttons */
     .stButton > button {
-        background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%) !important;
+        background: linear-gradient(135deg, #8B5CF6 0%, #F472B6 100%) !important;
         color: white !important;
-        font-weight: 600;
-        font-size: 1rem;
+        font-weight: 700 !important;
+        font-size: 1.1rem !important;
         border: none !important;
         border-radius: 12px !important;
-        padding: 0.875rem 2rem !important;
+        padding: 1rem 2rem !important;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+        box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4) !important;
         letter-spacing: 0.025em !important;
         width: 100% !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3) !important;
     }
     
     .stButton > button:hover {
-        background: linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%) !important;
-        transform: translateY(-2px) !important;
-        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4) !important;
+        background: linear-gradient(135deg, #7C3AED 0%, #EC4899 100%) !important;
+        transform: translateY(-3px) !important;
+        box-shadow: 0 12px 32px rgba(139, 92, 246, 0.5) !important;
     }
     
+    /* Improved Form Elements */
     .stTextArea > div > div > textarea {
-        background: rgba(255,255,255,0.08) !important;
+        background: rgba(255,255,255,0.1) !important;
         color: #F8FAFC !important;
-        border: 1px solid rgba(255,255,255,0.2) !important;
+        border: 2px solid rgba(255,255,255,0.2) !important;
         border-radius: 8px !important;
+        font-size: 1rem !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3) !important;
     }
     
+    /* Enhanced Alert Boxes */
     .stSuccess, .stInfo, .stWarning, .stError {
-        border-radius: 8px !important;
+        border-radius: 12px !important;
+        font-weight: 500 !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3) !important;
+        backdrop-filter: blur(8px) !important;
     }
     
+    .stSuccess {
+        background: rgba(34, 197, 94, 0.15) !important;
+        border: 1px solid rgba(34, 197, 94, 0.3) !important;
+        color: #BBF7D0 !important;
+    }
+    
+    .stInfo {
+        background: rgba(59, 130, 246, 0.15) !important;
+        border: 1px solid rgba(59, 130, 246, 0.3) !important;
+        color: #DBEAFE !important;
+    }
+    
+    .stWarning {
+        background: rgba(245, 158, 11, 0.15) !important;
+        border: 1px solid rgba(245, 158, 11, 0.3) !important;
+        color: #FEF3C7 !important;
+    }
+    
+    .stError {
+        background: rgba(239, 68, 68, 0.15) !important;
+        border: 1px solid rgba(239, 68, 68, 0.3) !important;
+        color: #FECACA !important;
+    }
+    
+    /* Enhanced Summary Containers */
     .summary-container {
-        background: linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
-        padding: 1.5rem;
-        border-radius: 12px;
-        border: 1px solid rgba(59, 130, 246, 0.3);
-        margin: 1rem 0;
+        background: linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06)) !important;
+        padding: 2rem !important;
+        border-radius: 16px !important;
+        border: 2px solid rgba(59, 130, 246, 0.3) !important;
+        margin: 1.5rem 0 !important;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3) !important;
+        backdrop-filter: blur(8px) !important;
     }
     
+    .summary-container strong {
+        color: #3B82F6 !important;
+        font-size: 1.2rem !important;
+        font-weight: 700 !important;
+    }
+    
+    /* Enhanced Audio Section */
     .audio-section {
-        background: linear-gradient(145deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05));
-        padding: 1.5rem;
-        border-radius: 12px;
-        border: 1px solid rgba(139, 92, 246, 0.2);
-        margin: 1.5rem 0;
+        background: linear-gradient(145deg, rgba(139, 92, 246, 0.15), rgba(139, 92, 246, 0.08)) !important;
+        padding: 2rem !important;
+        border-radius: 16px !important;
+        border: 2px solid rgba(139, 92, 246, 0.3) !important;
+        margin: 2rem 0 !important;
+        box-shadow: 0 8px 32px rgba(139, 92, 246, 0.2) !important;
+        backdrop-filter: blur(8px) !important;
+    }
+    
+    .audio-section h3 {
+        color: #C4B5FD !important;
+        font-weight: 700 !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    /* File uploader styling */
+    .stFileUploader > div > button {
+        background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05)) !important;
+        border: 2px dashed rgba(255,255,255,0.3) !important;
+        border-radius: 12px !important;
+        color: #F1F5F9 !important;
+        font-weight: 500 !important;
+        padding: 2rem !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3) !important;
+    }
+    
+    /* Sidebar improvements */
+    .css-1d391kg {
+        background: linear-gradient(180deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95)) !important;
+        backdrop-filter: blur(12px) !important;
+    }
+    
+    .css-1d391kg .markdown-text-container {
+        color: #F1F5F9 !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3) !important;
+    }
+    
+    /* Improved spinner */
+    .stSpinner {
+        color: #3B82F6 !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -259,7 +430,7 @@ def create_audio_summary(text, language='en'):
 def play_audio_summary(summary_text):
     """Play audio summary"""
     st.markdown('<div class="audio-section">', unsafe_allow_html=True)
-    st.markdown("### Audio Summary")
+    st.markdown("### 🎧 Audio Summary")
     st.markdown("**English Audio:**")
     
     audio_file_en = create_audio_summary(summary_text, 'en')
@@ -280,16 +451,18 @@ def run():
     
     apply_legal_portal_styling()
 
-    st.title("Legal Document Summarizer")
+    st.markdown("# ⚖️ Legal Document Summarizer")
     
     st.markdown("""
     <div class="feature-list">
-        <strong>Upload a legal document</strong> (PDF or image) and get:
+        <strong>Transform Complex Legal Documents into Clear Summaries</strong>
+        <br><br>
+        Upload your legal document and instantly receive:
         <ul>
-            <li><strong>Text extraction</strong> from your document</li>
-            <li><strong>Plain language summary</strong></li>
-            <li><strong>Audio playback</strong> in multiple languages</li>
-            <li><strong>Legal term simplification</strong></li>
+            <li><strong>Advanced Text Extraction</strong> - Extract text from PDFs and scanned images</li>
+            <li><strong>Intelligent Summarization</strong> - Get concise summaries of lengthy documents</li>
+            <li><strong>Plain Language Translation</strong> - Convert legal jargon into everyday language</li>
+            <li><strong>Multi-Language Audio</strong> - Listen to summaries in your preferred language</li>
         </ul>
     </div>
     """, unsafe_allow_html=True)
@@ -301,22 +474,22 @@ def run():
 
     # File uploader
     uploaded_file = st.file_uploader(
-        "Choose a document file", 
+        "📁 Choose your legal document", 
         type=SUPPORTED_FORMATS,
-        help="Supported formats: PDF, JPG, PNG, WEBP (Max 10MB)"
+        help="Supported formats: PDF, JPG, PNG, WEBP (Maximum file size: 10MB)"
     )
 
     if uploaded_file is not None:
         # Check file size
         if uploaded_file.size > MAX_FILE_SIZE:
-            st.error(f"File too large ({uploaded_file.size/1024/1024:.1f}MB). Maximum size is 10MB.")
+            st.error(f"⚠️ File too large ({uploaded_file.size/1024/1024:.1f}MB). Maximum allowed size is 10MB.")
             return
 
         # Show file info
-        st.success(f"Uploaded: {uploaded_file.name} ({uploaded_file.size/1024:.1f}KB)")
+        st.success(f"✅ Successfully uploaded: **{uploaded_file.name}** ({uploaded_file.size/1024:.1f}KB)")
 
         # Extract text based on file type
-        with st.spinner("Extracting text from document..."):
+        with st.spinner("🔍 Extracting text from your document..."):
             extracted_text = ""
             
             if uploaded_file.type == "application/pdf":
@@ -325,73 +498,104 @@ def run():
                 try:
                     extracted_text = str(uploaded_file.read(), "utf-8")
                 except Exception as e:
-                    st.error(f"Failed to read text file: {str(e)}")
+                    st.error(f"❌ Failed to read text file: {str(e)}")
                     return
             else:
                 try:
                     image = Image.open(uploaded_file)
-                    st.image(image, caption="Document Preview", use_container_width=True)
+                    st.image(image, caption="📄 Document Preview", use_container_width=True)
                     extracted_text = extract_text_from_image(image, ocr_reader)
                 except Exception as e:
-                    st.error(f"Failed to process image: {str(e)}")
+                    st.error(f"❌ Failed to process image: {str(e)}")
                     return
 
         # Display extracted text
         if extracted_text and len(extracted_text.strip()) > 0:
             word_count = len(extracted_text.split())
-            st.info(f"Extracted {word_count} words from the document")
+            st.info(f"📊 Successfully extracted **{word_count}** words from your document")
 
             # Summarization section
-            if st.button("Generate Summary & Audio", type="primary"):
-                with st.spinner("Creating summary..."):
+            if st.button("🚀 Generate Summary & Audio", type="primary"):
+                with st.spinner("⚡ Creating intelligent summary..."):
                     summary = summarize_text(extracted_text)
                     simplified_summary = simplify_legal_text(summary)
                     
-                    st.subheader("Document Summary")
-                    st.success("Summary generated successfully!")
+                    st.subheader("📝 Document Analysis Results")
+                    st.success("🎉 Summary generated successfully!")
                     
                     col1, col2 = st.columns(2)
                     with col1:
                         st.markdown('<div class="summary-container">', unsafe_allow_html=True)
-                        st.markdown("**Original Summary:**")
+                        st.markdown("**📄 Professional Summary:**")
                         st.write(summary)
                         st.markdown('</div>', unsafe_allow_html=True)
                     
                     with col2:
                         st.markdown('<div class="summary-container">', unsafe_allow_html=True)
-                        st.markdown("**Simplified Version:**")
+                        st.markdown("**💡 Plain Language Version:**")
                         st.write(simplified_summary)
                         st.markdown('</div>', unsafe_allow_html=True)
                     
                     play_audio_summary(simplified_summary)
                     
         else:
-            st.warning("No text could be extracted from the document. Please try:")
+            st.warning("⚠️ No readable text could be extracted from your document.")
             st.markdown("""
-            - Ensuring the image is clear and readable
-            - Using a higher resolution scan
-            - Checking that the document contains readable text
-            - Trying a different file format
+            **💡 Tips to improve text extraction:**
+            - Ensure the image is clear and well-lit
+            - Use high-resolution scans (300 DPI or higher)
+            - Make sure text is horizontal and not skewed
+            - Try uploading a PDF version if available
+            - Check that the document contains actual text (not just images)
             """)
 
-    # Sidebar instructions
+    # Enhanced sidebar instructions
     with st.sidebar:
         st.markdown("""
-        ### How to Use This Tool
+        ## 🛠️ How to Use This Tool
 
-        **Instructions:**
-        1. **Upload Document**: Choose a PDF or image file containing legal text
-        2. **Review Extraction**: Check that the text was extracted correctly
-        3. **Generate Summary**: Click the button to create a simplified summary
-        4. **Listen**: Use the audio feature to hear the summary read aloud
+        ### **Step-by-Step Guide:**
+        
+        **1. 📤 Upload Your Document**
+        - Click "Choose your legal document"
+        - Select PDF or image files
+        - Maximum file size: 10MB
 
-        **Supported File Types:**
-        - **PDF**: Text-based PDFs work best
-        - **Images**: JPG, PNG, WEBP (scanned documents, photos)
+        **2. 👀 Review Text Extraction**
+        - Check that text was extracted correctly
+        - View document preview for images
 
-        **Tips for Best Results:**
-        - Use high-quality, clear images
-        - Ensure text is horizontal and readable
-        - PDF files generally give better text extraction than images
+        **3. ⚡ Generate Summary**
+        - Click "Generate Summary & Audio"
+        - Get both professional and simplified versions
+
+        **4. 🎧 Listen to Audio**
+        - Use audio playback feature
+        - Perfect for accessibility
+
+        ---
+
+        ### **📁 Supported File Types:**
+        - **PDF**: Best for text extraction
+        - **Images**: JPG, PNG, WEBP
+        - **Text**: TXT files
+
+        ---
+
+        ### **💡 Pro Tips:**
+        - **High-quality images** work best
+        - **Horizontal text** extracts more accurately  
+        - **PDF files** generally provide better results
+        - **Clear, unblurred** documents are essential
+
+        ---
+
+        ### **🔧 Technical Features:**
+        - AI-powered text extraction
+        - Advanced summarization algorithms
+        - Legal jargon simplification
+        - Multi-language audio generation
         """)
 
+if __name__ == "__main__":
+    run()

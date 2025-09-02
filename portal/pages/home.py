@@ -33,72 +33,7 @@ def apply_legal_home_styling():
         text-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
     }
     
-    /* Hero section - Brighter, less grey */
-    .hero-section {
-        background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.08)) !important;
-        padding: 4rem 2rem !important;
-        border-radius: 24px !important;
-        text-align: center !important;
-        margin: 2rem 0 !important;
-        /* Remove border completely */
-        border: none !important;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.08) !important;
-        backdrop-filter: blur(3px) !important;
-    }
-    
-    .hero-title-container {
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        gap: 1.5rem !important;
-        margin-bottom: 1.5rem !important;
-        flex-wrap: wrap !important;
-    }
-    
-    .hero-logo {
-        width: 80px !important;
-        height: 80px !important;
-        background: linear-gradient(135deg, #3B82F6, #1D4ED8) !important;
-        border-radius: 20px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        font-size: 2.5rem !important;
-        box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4) !important;
-        border: 3px solid rgba(255, 255, 255, 0.3) !important;
-        animation: logoGlow 3s ease-in-out infinite alternate !important;
-    }
-    
-    @keyframes logoGlow {
-        0% {
-            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4), 0 0 20px rgba(59, 130, 246, 0.2) !important;
-        }
-        100% {
-            box-shadow: 0 15px 40px rgba(59, 130, 246, 0.6), 0 0 30px rgba(59, 130, 246, 0.4) !important;
-        }
-    }
-    
-    .hero-subtitle {
-        color: #F1F5F9 !important;
-        font-size: 1.4rem !important;
-        line-height: 1.7 !important;
-        max-width: 700px;
-        margin: 0 auto 2rem !important;
-        font-weight: 400 !important;
-        text-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
-    }
-    
-    .hero-badge {
-        background: linear-gradient(135deg, #3B82F6, #1D4ED8) !important;
-        color: white !important;
-        padding: 0.75rem 1.5rem !important;
-        border-radius: 30px !important;
-        display: inline-block !important;
-        margin-bottom: 1.5rem !important;
-        font-weight: 700 !important;
-        font-size: 1rem !important;
-        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3) !important;
-    }
+
     
     /* Service cards - Brighter background */
     .service-card {
@@ -237,23 +172,23 @@ def apply_legal_home_styling():
         }
     }
     
-    /* Emergency section - Smaller and more compact */
+    /* Emergency section - Blue color scheme to match overall design */
     .emergency-section {
-        background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.15)) !important;
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(37, 99, 235, 0.20)) !important;
         padding: 2rem !important;
         border-radius: 16px !important;
         margin: 3rem 0 !important;
-        border: 2px solid rgba(239, 68, 68, 0.4) !important;
+        border: 2px solid rgba(59, 130, 246, 0.5) !important;
         text-align: center !important;
         backdrop-filter: blur(8px) !important;
     }
     
     .emergency-title {
-        color: #FCA5A5 !important;
+        color: #93C5FD !important;
         font-size: 1.8rem !important;
         font-weight: 800 !important;
         margin-bottom: 1.5rem !important;
-        text-shadow: 0 2px 10px rgba(252, 165, 165, 0.3) !important;
+        text-shadow: 0 2px 10px rgba(147, 197, 253, 0.3) !important;
     }
     
     .emergency-content p {
@@ -263,8 +198,21 @@ def apply_legal_home_styling():
     }
     
     .emergency-content strong {
-        color: #FCA5A5 !important;
+        color: #93C5FD !important;
         font-weight: 700 !important;
+    }
+
+    /* Updated phone number and important text colors in emergency section */
+    .emergency-phone {
+        font-size: 1.1rem !important; 
+        color: #60A5FA !important;
+        font-weight: 600 !important;
+    }
+    
+    .emergency-hours {
+        font-size: 1rem !important; 
+        color: #93C5FD !important;
+        font-weight: 500 !important;
     }
     
     /* Info boxes - Lighter */
@@ -310,10 +258,6 @@ def apply_legal_home_styling():
         .main .block-container {
             padding: 1rem !important;
         }
-        
-        .hero-section {
-            padding: 3rem 1.5rem !important;
-        }
     }
     
     @media (max-width: 480px) {
@@ -350,19 +294,6 @@ def run():
     )
 
     apply_legal_home_styling()
-
-    # Hero Section - Removed the title, kept only logo and subtitle
-    st.markdown("""
-    <div class="hero-section">
-        <div class="hero-title-container">
-            <div class="hero-logo">⚖️</div>
-        </div>
-        <div class="hero-subtitle">
-            Empowering vulnerable South Africans with accessible legal knowledge, 
-            document protection, and connections to trusted legal professionals.
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
 
     # Welcome audio section
     st.info("🔊 Enable audio for guided navigation and accessibility features")
@@ -476,7 +407,7 @@ def run():
             play_audio("Opening rights education")
             st.rerun()
 
-    # Emergency Section
+    # Emergency Section - Updated with blue color scheme
     st.markdown("""
     <div class="emergency-section">
         <h3 class="emergency-title">🚨 Need Immediate Legal Help?</h3>
@@ -484,21 +415,21 @@ def run():
             <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px;">
                 <div class="emergency-content">
                     <p><strong>Legal Aid SA Helpline</strong></p>
-                    <p style="font-size: 1.1rem; color: #FCA5A5;">📞 0800 110 110</p>
+                    <p class="emergency-phone">📞 0800 110 110</p>
                     <p>(Toll-Free)</p>
                 </div>
             </div>
             <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px;">
                 <div class="emergency-content">
                     <p><strong>WhatsApp Support</strong></p>
-                    <p style="font-size: 1.1rem; color: #FCA5A5;">📱 079 835 7179</p>
+                    <p class="emergency-phone">📱 079 835 7179</p>
                     <p>Available 24/7</p>
                 </div>
             </div>
             <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px;">
                 <div class="emergency-content">
                     <p><strong>Operating Hours</strong></p>
-                    <p style="font-size: 1rem; color: #FCA5A5;">🕐 Mon - Fri</p>
+                    <p class="emergency-hours">🕐 Mon - Fri</p>
                     <p>08:00 - 16:00</p>
                 </div>
             </div>

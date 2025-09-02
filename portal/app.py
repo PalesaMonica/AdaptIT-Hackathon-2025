@@ -1,14 +1,14 @@
-# app.py - Fixed Legal Portal with Visible Navigation
+# app.py - Enhanced Legal Portal with Conditional Header
 import streamlit as st
 
 # Import your page modules
 from pages import summarizer, fraud_checker, property_assistance, educational, will_generator, sassa_loan, login
 
 def apply_beautiful_styling():
-    """Apply beautiful styling without breaking navigation"""
+    """Apply beautiful styling with transparent header design"""
     st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap');
     
     /* Beautiful lighter background */
     .stApp {
@@ -17,7 +17,7 @@ def apply_beautiful_styling():
         color: #1E293B;
     }
     
-    /* Animated background overlay */
+    /* Enhanced animated background overlay */
     .stApp::before {
         content: '';
         position: fixed;
@@ -26,11 +26,18 @@ def apply_beautiful_styling():
         width: 100%;
         height: 100%;
         background: 
-            radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
-            radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
-            radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+            radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.12) 0%, transparent 60%),
+            radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.12) 0%, transparent 60%),
+            radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.08) 0%, transparent 50%),
+            radial-gradient(circle at 60% 70%, rgba(236, 72, 153, 0.06) 0%, transparent 40%);
         pointer-events: none;
         z-index: -1;
+        animation: backgroundFloat 20s ease-in-out infinite;
+    }
+    
+    @keyframes backgroundFloat {
+        0%, 100% { opacity: 0.8; }
+        50% { opacity: 1; }
     }
     
     /* Main content area */
@@ -39,8 +46,139 @@ def apply_beautiful_styling():
         max-width: 1200px;
     }
     
+    /* Transparent Hero Header - No background container */
+    .hero-header {
+        text-align: center;
+        padding: 4rem 2rem 3rem 2rem;
+        margin: -2rem -2rem 3rem -2rem;
+        /* Removed background, border-radius, box-shadow, backdrop-filter, and border */
+        position: relative;
+        overflow: visible; /* Changed from hidden to visible */
+    }
+    
+    /* Keep floating particles effect but make it more subtle */
+    .hero-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: 
+            radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.15) 2px, transparent 2px),
+            radial-gradient(circle at 75% 75%, rgba(139, 92, 246, 0.15) 2px, transparent 2px),
+            radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.1) 1px, transparent 1px);
+        background-size: 50px 50px, 80px 80px, 30px 30px;
+        animation: floatingParticles 30s linear infinite;
+        opacity: 0.3; /* Reduced opacity */
+        pointer-events: none;
+    }
+    
+    @keyframes floatingParticles {
+        0% { transform: translateY(0px) translateX(0px); }
+        25% { transform: translateY(-20px) translateX(10px); }
+        50% { transform: translateY(0px) translateX(-10px); }
+        75% { transform: translateY(-10px) translateX(5px); }
+        100% { transform: translateY(0px) translateX(0px); }
+    }
+    
+    /* Main title styling - Enhanced for visibility without container */
+    .hero-title {
+        font-family: 'Playfair Display', serif !important;
+        font-size: 4.5rem !important;
+        font-weight: 900 !important;
+        margin: 0 0 1rem 0 !important;
+        background: linear-gradient(135deg, 
+            #1E40AF 0%, 
+            #3B82F6 25%, 
+            #8B5CF6 50%, 
+            #EC4899 75%, 
+            #10B981 100%) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        background-clip: text !important;
+        animation: titleGlow 3s ease-in-out infinite alternate !important;
+        /* Enhanced text shadow for better visibility */
+        filter: drop-shadow(0 4px 20px rgba(59, 130, 246, 0.4)) drop-shadow(0 2px 8px rgba(255, 255, 255, 0.8)) !important;
+        letter-spacing: -0.02em !important;
+        line-height: 1.1 !important;
+        position: relative;
+        z-index: 2;
+    }
+    
+    @keyframes titleGlow {
+        0% { 
+            filter: drop-shadow(0 4px 20px rgba(59, 130, 246, 0.4)) drop-shadow(0 2px 8px rgba(255, 255, 255, 0.8));
+            transform: scale(1);
+        }
+        100% { 
+            filter: drop-shadow(0 6px 30px rgba(139, 92, 246, 0.5)) drop-shadow(0 3px 12px rgba(255, 255, 255, 1));
+            transform: scale(1.02);
+        }
+    }
+    
+    /* Subtitle styling - Enhanced for visibility */
+    .hero-subtitle {
+        font-size: 1.4rem !important;
+        color: #334155 !important; /* Darker for better contrast */
+        font-weight: 600 !important; /* Increased weight */
+        margin: 0 0 2rem 0 !important;
+        letter-spacing: 0.02em !important;
+        position: relative;
+        z-index: 2;
+        animation: subtitleFade 2s ease-out !important;
+        /* Enhanced text shadow for visibility */
+        text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8), 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    @keyframes subtitleFade {
+        0% { opacity: 0; transform: translateY(20px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Feature badges - Enhanced for visibility */
+    .feature-badges {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-top: 1.5rem;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .feature-badge {
+        background: rgba(255, 255, 255, 0.95) !important; /* Increased opacity */
+        color: #1E293B;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(59, 130, 246, 0.2) !important; /* Enhanced shadow */
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        transition: all 0.3s ease;
+        animation: badgeFloat 4s ease-in-out infinite;
+        backdrop-filter: blur(10px);
+    }
+    
+    .feature-badge:nth-child(1) { animation-delay: 0s; }
+    .feature-badge:nth-child(2) { animation-delay: 0.5s; }
+    .feature-badge:nth-child(3) { animation-delay: 1s; }
+    .feature-badge:nth-child(4) { animation-delay: 1.5s; }
+    
+    @keyframes badgeFloat {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-5px); }
+    }
+    
+    .feature-badge:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3), 0 4px 12px rgba(0, 0, 0, 0.1);
+        background: rgba(59, 130, 246, 0.1);
+    }
+    
     /* Beautiful page titles */
-    .main h1 {
+    .main h1:not(.hero-title) {
         color: #1E293B !important;
         text-align: center !important;
         font-size: 3rem !important;
@@ -189,11 +327,55 @@ def apply_beautiful_styling():
             padding: 1rem !important;
         }
         
-        .main h1 {
-            font-size: 2rem !important;
+        .hero-title {
+            font-size: 3rem !important;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.1rem !important;
+        }
+        
+        .hero-header {
+            padding: 2rem 1rem !important;
+            margin: -1rem -1rem 2rem -1rem !important;
+        }
+        
+        .feature-badges {
+            gap: 0.5rem;
+        }
+        
+        .feature-badge {
+            font-size: 0.8rem;
+            padding: 0.4rem 0.8rem;
+        }
+    }
+    
+    /* Tablet responsive */
+    @media (max-width: 1024px) and (min-width: 769px) {
+        .hero-title {
+            font-size: 3.5rem !important;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.2rem !important;
         }
     }
     </style>
+    """, unsafe_allow_html=True)
+
+def show_hero_header():
+    """Display the hero header - call this only on the home page"""
+    st.markdown("""
+    <div class="hero-header">
+        <h1 class="hero-title">⚖️ Legal Literacy Portal</h1>
+        <p class="hero-subtitle">Empowering South Africans with Professional Legal Knowledge & Services</p>
+        <div class="feature-badges">
+            <span class="feature-badge">🛡️ Fraud Protection</span>
+            <span class="feature-badge">📄 Document Analysis</span>
+            <span class="feature-badge">💰 SASSA Support</span>
+            <span class="feature-badge">🏠 Property Law</span>
+        </div>
+    </div>
     """, unsafe_allow_html=True)
 
 # Configure the app
@@ -206,18 +388,6 @@ st.set_page_config(
 
 # Apply styling
 apply_beautiful_styling()
-
-# Add a simple header in the main content area
-st.markdown("""
-<div style="text-align: center; padding: 2rem 0; border-bottom: 1px solid rgba(59, 130, 246, 0.2); margin-bottom: 2rem;">
-    <h1 style="font-size: 2.5rem; margin: 0; background: linear-gradient(135deg, #3B82F6, #8B5CF6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-        ⚖️ Legal Literacy Portal
-    </h1>
-    <p style="color: #64748B; font-size: 1.1rem; margin: 0.5rem 0 0 0;">
-        Empowering South Africans with Legal Knowledge
-    </p>
-</div>
-""", unsafe_allow_html=True)
 
 # ------------------- Pages with Icons ------------------- 
 pages = {
@@ -235,11 +405,10 @@ pages = {
 # Create navigation - this should show in the sidebar
 selected_page = st.navigation(pages)
 
-# Show current page info
-
-
 # ------------------- Routing ------------------- 
 if selected_page.title == "🏠 Home":
+    # Show hero header only on home page
+    show_hero_header()
     import pages.home as home
     home.run()
 elif selected_page.title == "📄 Document Summarizer":
@@ -255,11 +424,15 @@ elif selected_page.title == "📚 Know Your Rights":
 elif selected_page.title == "💰 SASSA Loan Assistant":
     sassa_loan.run()
 
-# Footer
+# Enhanced Transparent Footer
 st.markdown("""
 ---
-<div style="text-align: center; color: #64748B; padding: 2rem 0;">
-    <p>🇿🇦 Proudly serving South African communities</p>
-    <p style="font-size: 0.9rem;">This platform provides educational information and should not replace professional legal advice</p>
+<div style="text-align: center; padding: 3rem 0; margin-top: 2rem;">
+    <h3 style="color: #1E293B; margin-bottom: 1rem; text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8), 0 1px 2px rgba(0, 0, 0, 0.1);">🇿🇦 Proudly Serving South African Communities</h3>
+    <p style="font-size: 1rem; margin-bottom: 0.5rem; color: #334155; font-weight: 500; text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7);">Professional Legal Services • Educational Resources • Community Support</p>
+    <p style="font-size: 0.9rem; color: #475569; text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6);">This platform provides educational information and should not replace professional legal advice</p>
+    <div style="margin-top: 1rem; font-size: 0.8rem; color: #64748B; text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);">
+        Made with ❤️ for South Africa • Secure • Confidential • Professional
+    </div>
 </div>
 """, unsafe_allow_html=True)
