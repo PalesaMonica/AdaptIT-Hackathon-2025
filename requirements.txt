@@ -124,4 +124,4 @@ urllib3==2.4.0
 watchdog==6.0.0
 wcwidth==0.2.13
 wheel==0.45.1
-easyocr==1.7.2
+easyocr>=1.6.0
