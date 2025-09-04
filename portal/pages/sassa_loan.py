@@ -143,9 +143,9 @@ class SASSALoanAnalyzer:
         """Generate easy-to-understand summary"""
         
         if analysis["risk_level"] == "HIGH":
-            summary = "DANGER: This loan appears to be a scam or predatory lending scheme."
+            summary = "CAUTION: This loan appears to be a scam or predatory lending scheme."
         elif analysis["risk_level"] == "MEDIUM":
-            summary = "CAUTION: This loan has concerning features that could harm your finances."
+            summary = "ATTENTION: This loan has concerning features that could harm your finances."
         else:
             summary = "This loan appears to have fewer risk factors, but still verify carefully."
         
@@ -170,197 +170,433 @@ def generate_sassa_audio(text, language='en'):
         st.error(f"Audio generation failed: {str(e)}")
         return None
 
-# ---------------- Styling ----------------
+# ---------------- Enhanced Professional Styling with Blue & Pink Theme ----------------
 def apply_sassa_styling():
     st.markdown("""
     <style>
-    /* Main container */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    
+    * {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    
     .main .block-container {
-        padding: 1rem 2rem;
-        max-width: 1200px;
+        padding: 2rem 3rem;
+        background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 25%, #CBD5E1 50%, #94A3B8 75%, #64748B 100%);
+        min-height: 100vh;
+        color: #1E293B;
     }
     
-    /* Header styling */
-    .sassa-header {
-        background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
-        color: white;
-        padding: 2rem;
-        border-radius: 15px;
-        text-align: center;
-        margin-bottom: 2rem;
-        box-shadow: 0 8px 32px rgba(37, 99, 235, 0.2);
+    /* Elegant Blue-to-Pink Gradient Heading */
+    .stMarkdown h1, .main h1 {
+        font-family: 'Inter', sans-serif !important;
+        font-weight: 700 !important;
+        font-size: 3.5rem !important;
+        text-align: center !important;
+        letter-spacing: -0.02em !important;
+        margin: 2rem 0 2.5rem 0 !important;
+        padding: 1.5rem 0 !important;
+        position: relative !important;
+        background: linear-gradient(135deg, 
+            #1E40AF 0%,
+            #3B82F6 15%,
+            #6366F1 30%,
+            #8B5CF6 45%,
+            #A855F7 60%,
+            #C026D3 75%,
+            #E879F9 90%,
+            #F472B6 100%) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        background-clip: text !important;
+        text-shadow: 
+            0 2px 10px rgba(30, 64, 175, 0.4),
+            0 4px 20px rgba(244, 114, 182, 0.3) !important;
+        filter: drop-shadow(0 0 15px rgba(139, 92, 246, 0.3)) !important;
     }
     
-    .sassa-header h1 {
+    /* Subtle Blue-Pink Accent Lines */
+    .stMarkdown h1::before, .main h1::before {
+        content: '' !important;
+        position: absolute !important;
+        top: -8px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 60% !important;
+        height: 3px !important;
+        background: linear-gradient(90deg, 
+            transparent 0%, 
+            #1E40AF 30%, 
+            #8B5CF6 50%, 
+            #F472B6 70%, 
+            transparent 100%) !important;
+        border-radius: 2px !important;
+        opacity: 0.8 !important;
+    }
+    
+    .stMarkdown h1::after, .main h1::after {
+        content: '' !important;
+        position: absolute !important;
+        bottom: -8px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 40% !important;
+        height: 3px !important;
+        background: linear-gradient(90deg, 
+            transparent 0%, 
+            #3B82F6 25%, 
+            #A855F7 50%, 
+            #F472B6 75%, 
+            transparent 100%) !important;
+        border-radius: 2px !important;
+        opacity: 0.6 !important;
+    }
+    
+    /* Improved Section Headings */
+    .main h2, .main h3 {
+        color: #0F172A !important;
+        font-weight: 700 !important;
+        font-size: 1.5rem !important;
+        border-left: 4px solid #3B82F6 !important;
+        padding-left: 1rem !important;
+        margin: 2rem 0 1rem 0 !important;
+        text-shadow: none !important;
+        background: linear-gradient(145deg, rgba(59, 130, 246, 0.08), rgba(59, 130, 246, 0.05)) !important;
+        padding: 0.75rem 1rem !important;
+        border-radius: 0 8px 8px 0 !important;
+    }
+    
+    /* Enhanced Text Visibility */
+    .main p, .main li, .main div {
+        color: #1E293B !important;
+        line-height: 1.7 !important;
+        text-shadow: none !important;
+        font-weight: 500 !important;
+        font-size: 1rem !important;
+    }
+    
+    /* Stronger text for important content */
+    .main strong, .main b {
+        color: #0F172A !important;
+        font-weight: 700 !important;
+        text-shadow: none !important;
+    }
+    
+    .feature-list {
+        background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(248,250,252,0.9)) !important;
+        padding: 2rem !important;
+        border-radius: 16px !important;
+        border: 2px solid rgba(59, 130, 246, 0.2) !important;
+        margin: 2rem 0 !important;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.08) !important;
+        backdrop-filter: blur(8px) !important;
+    }
+    
+    .feature-list strong {
+        color: #1E40AF !important;
+        font-size: 1.1rem !important;
+        font-weight: 700 !important;
+        text-shadow: none !important;
+    }
+    
+    .feature-list ul {
+        margin: 1rem 0 0 0 !important;
+        padding-left: 1.5rem !important;
+    }
+    
+    .feature-list li {
+        color: #334155 !important;
+        margin: 0.75rem 0 !important;
+        line-height: 1.7 !important;
+        font-size: 1rem !important;
+        text-shadow: none !important;
+        font-weight: 500 !important;
+    }
+    
+    .feature-list li strong {
+        color: #3B82F6 !important;
+        font-weight: 700 !important;
+    }
+    
+    /* Enhanced Buttons */
+    .stButton > button {
+        background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 50%, #F472B6 100%) !important;
         color: white !important;
-        font-size: 2.5rem;
-        font-weight: bold;
-        margin-bottom: 0.5rem;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        font-weight: 700 !important;
+        font-size: 1.1rem !important;
+        border: none !important;
+        border-radius: 12px !important;
+        padding: 1rem 2rem !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3) !important;
+        letter-spacing: 0.025em !important;
+        width: 100% !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.2) !important;
     }
     
-    .sassa-header p {
-        font-size: 1.2rem;
-        opacity: 0.9;
-        margin-bottom: 0.5rem;
+    .stButton > button:hover {
+        background: linear-gradient(135deg, #1E40AF 0%, #7C3AED 50%, #EC4899 100%) !important;
+        transform: translateY(-3px) !important;
+        box-shadow: 0 12px 32px rgba(59, 130, 246, 0.4) !important;
     }
     
-    /* Quick scan section */
-    .quick-scan {
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-        padding: 2rem;
-        border-radius: 15px;
-        margin: 2rem 0;
-        border: 3px solid #1E3A8A;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-        text-align: center;
-    }
-    
-    .quick-scan h2 {
-        color: #1E3A8A !important;
-        font-size: 2rem;
-        margin-bottom: 1rem;
-    }
-    
-    /* Risk level indicators */
+    /* Risk level indicators - Blue & Pink Theme */
     .risk-high {
-        background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
-        color: white;
-        padding: 1.5rem;
-        border-radius: 12px;
-        margin: 1rem 0;
-        box-shadow: 0 4px 6px rgba(220, 38, 38, 0.3);
-        border-left: 6px solid #7F1D1D;
+        background: linear-gradient(145deg, rgba(30, 64, 175, 0.95), rgba(30, 58, 138, 0.9)) !important;
+        color: white !important;
+        padding: 2rem !important;
+        border-radius: 16px !important;
+        margin: 1.5rem 0 !important;
+        box-shadow: 0 8px 32px rgba(30, 64, 175, 0.3) !important;
+        border-left: 6px solid #1E3A8A !important;
+        backdrop-filter: blur(8px) !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.2) !important;
     }
     
     .risk-medium {
-        background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
-        color: white;
-        padding: 1.5rem;
-        border-radius: 12px;
-        margin: 1rem 0;
-        box-shadow: 0 4px 6px rgba(245, 158, 11, 0.3);
-        border-left: 6px solid #92400E;
+        background: linear-gradient(145deg, rgba(244, 114, 182, 0.95), rgba(236, 72, 153, 0.9)) !important;
+        color: white !important;
+        padding: 2rem !important;
+        border-radius: 16px !important;
+        margin: 1.5rem 0 !important;
+        box-shadow: 0 8px 32px rgba(244, 114, 182, 0.3) !important;
+        border-left: 6px solid #BE185D !important;
+        backdrop-filter: blur(8px) !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.2) !important;
     }
     
     .risk-low {
-        background: linear-gradient(135deg, #059669 0%, #047857 100%);
-        color: white;
-        padding: 1.5rem;
-        border-radius: 12px;
-        margin: 1rem 0;
-        box-shadow: 0 4px 6px rgba(5, 150, 105, 0.3);
-        border-left: 6px solid #064E3B;
+        background: linear-gradient(145deg, rgba(34, 197, 94, 0.95), rgba(21, 128, 61, 0.9)) !important;
+        color: white !important;
+        padding: 2rem !important;
+        border-radius: 16px !important;
+        margin: 1.5rem 0 !important;
+        box-shadow: 0 8px 32px rgba(34, 197, 94, 0.3) !important;
+        border-left: 6px solid #064E3B !important;
+        backdrop-filter: blur(8px) !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.2) !important;
     }
     
     /* Analysis sections */
     .analysis-section {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 12px;
-        margin: 1rem 0;
-        border-left: 5px solid #1E3A8A;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(248,250,252,0.9)) !important;
+        padding: 2rem !important;
+        border-radius: 16px !important;
+        margin: 1.5rem 0 !important;
+        border-left: 5px solid #1E3A8A !important;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.05) !important;
+        backdrop-filter: blur(8px) !important;
     }
     
     .analysis-section h3 {
-        color: #1E3A8A !important;
-        font-size: 1.3rem;
-        margin-bottom: 1rem;
+        color: #1E40AF !important;
+        font-size: 1.3rem !important;
+        margin-bottom: 1rem !important;
+        font-weight: 700 !important;
     }
     
     /* Grant impact visualization */
     .grant-impact {
-        background: linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%);
-        color: white;
-        padding: 2rem;
-        border-radius: 15px;
-        margin: 1.5rem 0;
-        text-align: center;
-    }
-    
-    .grant-amount {
-        font-size: 2rem;
-        font-weight: bold;
-        margin: 0.5rem;
-    }
-    
-    /* Buttons */
-    .stButton > button {
-        background: linear-gradient(45deg, #1E3A8A 0%, #3B82F6 100%) !important;
+        background: linear-gradient(145deg, rgba(30, 64, 175, 0.95), rgba(30, 58, 138, 0.9)) !important;
         color: white !important;
-        font-weight: bold;
-        font-size: 1.1rem;
-        padding: 0.75rem 2rem;
-        border: none !important;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        transition: all 0.3s ease;
-        width: 100%;
+        padding: 2rem !important;
+        border-radius: 16px !important;
+        margin: 1.5rem 0 !important;
+        text-align: center !important;
+        box-shadow: 0 8px 32px rgba(30, 64, 175, 0.3) !important;
+        backdrop-filter: blur(8px) !important;
     }
     
-    .stButton > button:hover {
-        background: linear-gradient(45deg, #1E40AF 0%, #2563EB 100%) !important;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+    .grant-impact h3 {
+        color: white !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.2) !important;
     }
     
-    .scan-button {
-        background: linear-gradient(45deg, #059669 0%, #047857 100%) !important;
-        font-size: 1.3rem !important;
-        padding: 1rem 3rem !important;
-        margin: 1rem auto !important;
-    }
-    
-    /* Warning boxes */
+    /* Warning boxes - Blue & Pink Theme */
     .warning-critical {
-        background: linear-gradient(135deg, #1E3A8A 0%, #1E40AF 100%);
-        color: white;
-        padding: 1.5rem;
-        border-radius: 12px;
-        margin: 1.5rem 0;
-        border: 2px solid #1E3A8A;
+        background: linear-gradient(145deg, rgba(30, 64, 175, 0.95), rgba(30, 58, 138, 0.9)) !important;
+        color: white !important;
+        padding: 2rem !important;
+        border-radius: 16px !important;
+        margin: 1.5rem 0 !important;
+        border: 2px solid rgba(59, 130, 246, 0.3) !important;
+        box-shadow: 0 8px 32px rgba(30, 64, 175, 0.2) !important;
+        backdrop-filter: blur(8px) !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.2) !important;
     }
     
     .info-helpful {
-        background: linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%);
-        color: white;
-        padding: 1.5rem;
-        border-radius: 12px;
-        margin: 1.5rem 0;
-        border-left: 6px solid #1D4ED8;
+        background: linear-gradient(145deg, rgba(139, 92, 246, 0.95), rgba(124, 58, 237, 0.9)) !important;
+        color: white !important;
+        padding: 2rem !important;
+        border-radius: 16px !important;
+        margin: 1.5rem 0 !important;
+        border-left: 6px solid #7C3AED !important;
+        box-shadow: 0 8px 32px rgba(139, 92, 246, 0.2) !important;
+        backdrop-filter: blur(8px) !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.2) !important;
     }
     
     /* Educational sections */
     .education-card {
-        background: #f9fafb;
-        padding: 1.5rem;
-        border-radius: 12px;
-        margin: 1rem 0;
-        border-left: 5px solid #1E3A8A;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(248,250,252,0.9)) !important;
+        padding: 2rem !important;
+        border-radius: 16px !important;
+        margin: 1.5rem 0 !important;
+        border-left: 5px solid #1E40AF !important;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.05) !important;
+        backdrop-filter: blur(8px) !important;
     }
     
     .education-card h4 {
-        color: #1E3A8A !important;
-        margin-bottom: 0.5rem;
+        color: #1E40AF !important;
+        margin-bottom: 1rem !important;
+        font-weight: 700 !important;
+    }
+    
+    .education-card ul {
+        margin: 1rem 0 0 0 !important;
+        padding-left: 1.5rem !important;
+    }
+    
+    .education-card li {
+        color: #334155 !important;
+        margin: 0.75rem 0 !important;
+        line-height: 1.7 !important;
+        font-size: 1rem !important;
+        text-shadow: none !important;
+        font-weight: 500 !important;
+    }
+    
+    .education-card li strong {
+        color: #3B82F6 !important;
+        font-weight: 700 !important;
+    }
+    
+    /* Enhanced Alert Boxes - Blue & Pink Theme */
+    .stSuccess, .stInfo, .stWarning, .stError {
+        border-radius: 12px !important;
+        font-weight: 600 !important;
+        text-shadow: none !important;
+        backdrop-filter: blur(8px) !important;
+    }
+    
+    .stSuccess {
+        background: rgba(34, 197, 94, 0.1) !important;
+        border: 1px solid rgba(34, 197, 94, 0.3) !important;
+        color: #166534 !important;
+    }
+    
+    .stInfo {
+        background: rgba(59, 130, 246, 0.1) !important;
+        border: 1px solid rgba(59, 130, 246, 0.3) !important;
+        color: #1E40AF !important;
+    }
+    
+    .stWarning {
+        background: rgba(244, 114, 182, 0.1) !important;
+        border: 1px solid rgba(244, 114, 182, 0.3) !important;
+        color: #BE185D !important;
+    }
+    
+    .stError {
+        background: rgba(30, 64, 175, 0.1) !important;
+        border: 1px solid rgba(30, 64, 175, 0.3) !important;
+        color: #1E40AF !important;
+    }
+    
+    /* Improved Form Elements */
+    .stTextArea > div > div > textarea {
+        background: rgba(255,255,255,0.95) !important;
+        color: #1E293B !important;
+        border: 2px solid rgba(59, 130, 246, 0.3) !important;
+        border-radius: 12px !important;
+        font-size: 1rem !important;
+        text-shadow: none !important;
+        font-weight: 500 !important;
+        backdrop-filter: blur(4px) !important;
+    }
+    
+    .stTextArea > div > div > textarea:focus {
+        border-color: #3B82F6 !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+    }
+    
+    .stNumberInput > div > div > input {
+        background: rgba(255,255,255,0.95) !important;
+        color: #1E293B !important;
+        border: 2px solid rgba(59, 130, 246, 0.3) !important;
+        border-radius: 8px !important;
+        font-weight: 500 !important;
+        backdrop-filter: blur(4px) !important;
+    }
+    
+    .stNumberInput > div > div > input:focus {
+        border-color: #3B82F6 !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+    }
+    
+    /* File uploader styling */
+    .stFileUploader > div > button {
+        background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(248,250,252,0.9)) !important;
+        border: 2px dashed rgba(59, 130, 246, 0.4) !important;
+        border-radius: 16px !important;
+        color: #1E293B !important;
+        font-weight: 600 !important;
+        padding: 2rem !important;
+        text-shadow: none !important;
+        backdrop-filter: blur(8px) !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    .stFileUploader > div > button:hover {
+        border-color: #3B82F6 !important;
+        background: linear-gradient(145deg, rgba(59, 130, 246, 0.05), rgba(59, 130, 246, 0.02)) !important;
+    }
+    
+    /* Enhanced Audio Section */
+    .audio-section {
+        background: linear-gradient(145deg, rgba(244, 114, 182, 0.95), rgba(236, 72, 153, 0.9)) !important;
+        color: white !important;
+        padding: 2rem !important;
+        border-radius: 16px !important;
+        border: 2px solid rgba(244, 114, 182, 0.2) !important;
+        margin: 2rem 0 !important;
+        box-shadow: 0 8px 32px rgba(244, 114, 182, 0.15) !important;
+        backdrop-filter: blur(8px) !important;
+    }
+    
+    .audio-section h3 {
+        color: white !important;
+        font-weight: 700 !important;
+        margin-bottom: 1rem !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.2) !important;
+    }
+    
+    .audio-section p {
+        color: white !important;
+        font-weight: 600 !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.1) !important;
     }
     
     /* Progress indicators */
     .scanning-progress {
-        text-align: center;
-        padding: 2rem;
-        color: #1E40AF;
+        text-align: center !important;
+        padding: 2rem !important;
+        color: #1E40AF !important;
+        background: rgba(255,255,255,0.8) !important;
+        border-radius: 16px !important;
+        backdrop-filter: blur(8px) !important;
     }
     
     .progress-spinner {
-        border: 4px solid #e5e7eb;
-        border-top: 4px solid #1E3A8A;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        animation: spin 1s linear infinite;
-        margin: 1rem auto;
+        border: 4px solid rgba(226, 232, 240, 0.3) !important;
+        border-top: 4px solid #3B82F6 !important;
+        border-radius: 50% !important;
+        width: 40px !important;
+        height: 40px !important;
+        animation: spin 1s linear infinite !important;
+        margin: 1rem auto !important;
     }
     
     @keyframes spin {
@@ -370,20 +606,63 @@ def apply_sassa_styling():
     
     /* Mobile responsiveness */
     @media (max-width: 768px) {
-        .sassa-header h1 {
-            font-size: 2rem;
+        .stMarkdown h1, .main h1 {
+            font-size: 2.5rem !important;
         }
         
-        .quick-scan {
-            padding: 1.5rem;
+        .main .block-container {
+            padding: 1rem 1.5rem !important;
         }
         
-        .grant-amount {
-            font-size: 1.5rem;
+        .feature-list {
+            padding: 1.5rem !important;
         }
     }
     </style>
     """, unsafe_allow_html=True)
+
+# ---------------- Helper Functions ----------------
+def create_progress_indicator(step, total_steps):
+    """Create a visual progress indicator"""
+    progress = step / total_steps
+    st.progress(progress)
+    st.caption(f"Step {step} of {total_steps}")
+
+def create_interactive_stats(grant_amount, risk_score, loan_amount=0):
+    """Create interactive statistics display"""
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.metric(
+            "Grant Amount",
+            f"R{grant_amount:,.0f}",
+            help="Monthly social grant amount"
+        )
+    
+    with col2:
+        delta_color = "inverse" if risk_score > 50 else "normal"
+        st.metric(
+            "Risk Score",
+            f"{risk_score}/100",
+            delta=f"{'High' if risk_score > 60 else 'Medium' if risk_score > 30 else 'Low'} Risk",
+            delta_color=delta_color,
+            help="Calculated risk assessment score"
+        )
+    
+    with col3:
+        if loan_amount > 0:
+            st.metric(
+                "Loan Amount",
+                f"R{loan_amount:,.0f}",
+                help="Requested loan amount for analysis"
+            )
+        else:
+            st.metric(
+                "No Loan", 
+                "R0",
+                help="No loan amount specified"
+            )
+
 
 # ---------------- Main Application ----------------
 def run():
@@ -396,9 +675,7 @@ def run():
     st.markdown("""
     <div class="sassa-header">
         <h1>SASSA Loans Analysis Tool</h1>
-        <p>Protect Your Grant from Predatory Lending Practices</p>
-        <p><small>Comprehensive analysis of loan offers targeting social grant recipients</small></p>
-    </div>
+        
     """, unsafe_allow_html=True)
     
     # Quick scan section
