@@ -418,7 +418,7 @@ elif selected_page.title == "🛡️ Fraud Detection":
 elif selected_page.title == "📜 Will Generator":
     will_generator.run()
 elif selected_page.title == "🏡 Property & Legal Help":
-    property_assistance.PropertyAssistance().run()
+    property_assistance.run()
 elif selected_page.title == "📚 Know Your Rights":
     educational.run()
 elif selected_page.title == "💰 SASSA Loan Assistant":
