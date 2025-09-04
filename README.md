@@ -1,6 +1,6 @@
 # AdaptIT-Hackathon-2025
 ## 👩🏽‍💻 Team Members  
- **Amahle Ngubane**  
- **Lindiwe Mthimkhulu**
- **Palesa Rapolaki**
- **Mixo Khoza**
+_ **Amahle Ngubane**  
+_ **Lindiwe Mthimkhulu**
+_ **Palesa Rapolaki**
+_ **Mixo Khoza**
