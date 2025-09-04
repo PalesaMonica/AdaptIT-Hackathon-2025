@@ -418,7 +418,8 @@ elif selected_page.title == "🛡️ Fraud Detection":
 elif selected_page.title == "📜 Will Generator":
     will_generator.run()
 elif selected_page.title == "🏡 Property & Legal Help":
-    st.info("🚧 Property & Legal Help coming soon! This feature is being developed to connect you with verified legal professionals.")
+    property_assistance.run()
+    #st.info("🚧 Property & Legal Help coming soon! This feature is being developed to connect you with verified legal professionals.")
 elif selected_page.title == "📚 Know Your Rights":
     educational.run()
 elif selected_page.title == "💰 SASSA Loan Assistant":
