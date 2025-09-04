@@ -1,86 +1,31 @@
 # property_assistance.py
 
-import os
-import sqlite3
 import streamlit as st
 from datetime import datetime
 import traceback
 import logging
 
 # ---------------------------
-# Database setup
+# Session State Management (replaces SQLite)
 # ---------------------------
 
-DB_PATH = "/tmp/property_queries.db"
-UPLOAD_DIR = "/tmp/uploaded_documents"
-
-os.makedirs(UPLOAD_DIR, exist_ok=True)
-
-def init_db():
-    """Initialize SQLite database in /tmp"""
-    try:
-        conn = sqlite3.connect(DB_PATH)
-        cursor = conn.cursor()
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS property_queries (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                timestamp TEXT,
-                name TEXT,
-                email TEXT,
-                phone TEXT,
-                query_type TEXT,
-                urgency TEXT,
-                description TEXT,
-                files TEXT,
-                marketing_consent TEXT,
-                status TEXT
-            )
-        """)
-        conn.commit()
-        conn.close()
-        logging.info(f"Database initialized at {DB_PATH}")
-    except Exception as e:
-        logging.error(f"DB init failed: {e}")
-        raise
+def init_session_state():
+    """Initialize session state for storing queries"""
+    if 'queries' not in st.session_state:
+        st.session_state.queries = []
 
 def save_query(data):
-    """Insert a query record into the database"""
+    """Add a query to session state"""
     try:
-        conn = sqlite3.connect(DB_PATH)
-        cursor = conn.cursor()
-        cursor.execute("""
-            INSERT INTO property_queries
-            (timestamp, name, email, phone, query_type, urgency, description, files, marketing_consent, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (
-            data["Timestamp"],
-            data["Name"],
-            data["Email"],
-            data["Phone"],
-            data["Query_Type"],
-            data["Urgency"],
-            data["Description"],
-            data["Files"],
-            data["Marketing_Consent"],
-            data["Status"]
-        ))
-        conn.commit()
-        conn.close()
+        st.session_state.queries.append(data)
+        logging.info("Query saved successfully")
     except Exception as e:
         logging.error(f"Failed to save query: {e}")
         raise
 
 def load_queries():
-    """Load all queries from DB as DataFrame"""
-    import pandas as pd
-    try:
-        conn = sqlite3.connect(DB_PATH)
-        df = pd.read_sql_query("SELECT * FROM property_queries", conn)
-        conn.close()
-        return df
-    except Exception as e:
-        logging.error(f"Failed to load queries: {e}")
-        return None
+    """Load all queries from session state"""
+    return st.session_state.get('queries', [])
 
 # ---------------------------
 # Streamlit UI
@@ -88,7 +33,7 @@ def load_queries():
 
 def run():
     try:
-        init_db()
+        init_session_state()
 
         st.title("🏡 Property & Legal Assistance")
 
@@ -118,9 +63,8 @@ def run():
             description = st.text_area("Detailed Description *")
 
             st.subheader("📎 Supporting Documents")
-            uploaded_files = st.file_uploader(
-                "Upload relevant documents", accept_multiple_files=True
-            )
+            st.info("📝 Note: For deployment, please describe your documents instead of uploading files.")
+            document_description = st.text_area("Describe your documents (types, contents, etc.)")
 
             privacy_agreed = st.checkbox("I agree to the privacy policy and terms")
             marketing_consent = st.checkbox("I consent to receive follow-up communications")
@@ -144,16 +88,6 @@ def run():
                     for e in errors:
                         st.error(f"❌ {e}")
                 else:
-                    # Handle file uploads
-                    file_names = []
-                    if uploaded_files:
-                        for f in uploaded_files:
-                            safe_name = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{f.name}"
-                            path = os.path.join(UPLOAD_DIR, safe_name)
-                            with open(path, "wb") as out:
-                                out.write(f.getbuffer())
-                            file_names.append(safe_name)
-
                     # Prepare query data
                     query_data = {
                         "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -163,29 +97,50 @@ def run():
                         "Query_Type": query_type,
                         "Urgency": urgency,
                         "Description": description.strip(),
-                        "Files": ", ".join(file_names) if file_names else "None",
+                        "Documents": document_description.strip() if document_description else "None described",
                         "Marketing_Consent": "Yes" if marketing_consent else "No",
                         "Status": "Pending Review"
                     }
 
                     save_query(query_data)
                     st.success("✅ Query submitted successfully!")
+                    st.balloons()
 
         # ---------------------------
         # Admin Panel
         # ---------------------------
-        if st.checkbox("🔧 Admin: View Previous Queries"):
-            df = load_queries()
-            if df is not None and not df.empty:
-                st.subheader("📊 Recent Queries")
-                display_cols = ["timestamp", "query_type", "urgency", "status"]
-                st.dataframe(df[display_cols].tail(10), use_container_width=True)
+        if st.checkbox("🔧 Admin: View Submitted Queries"):
+            queries = load_queries()
+            if queries:
+                st.subheader(f"📊 Recent Queries ({len(queries)} total)")
+                
+                for i, query in enumerate(reversed(queries[-10:])):  # Show last 10
+                    with st.expander(f"{query['Query_Type']} - {query['Name']} ({query['Timestamp']})"):
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            st.write(f"**Email:** {query['Email']}")
+                            st.write(f"**Phone:** {query['Phone']}")
+                            st.write(f"**Urgency:** {query['Urgency']}")
+                        with col2:
+                            st.write(f"**Status:** {query['Status']}")
+                            st.write(f"**Marketing Consent:** {query['Marketing_Consent']}")
+                        
+                        st.write(f"**Description:** {query['Description']}")
+                        if query['Documents'] != "None described":
+                            st.write(f"**Documents:** {query['Documents']}")
             else:
-                st.info("No queries found.")
+                st.info("No queries submitted yet.")
+
+        # ---------------------------
+        # Footer
+        # ---------------------------
+        st.markdown("---")
+        st.markdown("**Note:** This is a demo application. In production, data would be stored securely and documents would be properly handled.")
 
     except Exception as e:
         st.error(f"⚠️ An unexpected error occurred: {e}")
-        st.text(traceback.format_exc())
+        if st.checkbox("Show technical details"):
+            st.code(traceback.format_exc())
 
 # ---------------------------
 # Entry point
