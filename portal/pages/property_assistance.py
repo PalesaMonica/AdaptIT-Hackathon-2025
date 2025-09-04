@@ -11,27 +11,28 @@ import logging
 
 def init_session_state():
     """Initialize session state for storing queries"""
-    if 'queries' not in st.session_state:
-        st.session_state.queries = []
+    if 'property_queries' not in st.session_state:
+        st.session_state.property_queries = []
 
 def save_query(data):
     """Add a query to session state"""
     try:
-        st.session_state.queries.append(data)
-        logging.info("Query saved successfully")
+        st.session_state.property_queries.append(data)
+        logging.info("Property query saved successfully")
     except Exception as e:
-        logging.error(f"Failed to save query: {e}")
+        logging.error(f"Failed to save property query: {e}")
         raise
 
 def load_queries():
     """Load all queries from session state"""
-    return st.session_state.get('queries', [])
+    return st.session_state.get('property_queries', [])
 
 # ---------------------------
 # Main function that will be called from app.py
 # ---------------------------
 
 def run():
+    """Main function to run the property assistance page"""
     try:
         init_session_state()
 
