@@ -28,7 +28,7 @@ def load_queries():
     return st.session_state.get('queries', [])
 
 # ---------------------------
-# Streamlit UI
+# Main function that will be called from app.py
 # ---------------------------
 
 def run():
@@ -143,7 +143,7 @@ def run():
             st.code(traceback.format_exc())
 
 # ---------------------------
-# Entry point
+# Entry point for direct execution
 # ---------------------------
 if __name__ == "__main__":
     run()
