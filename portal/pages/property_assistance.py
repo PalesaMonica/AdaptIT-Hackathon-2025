@@ -3,58 +3,156 @@ import streamlit as st
 import pandas as pd
 import sqlite3
 import os
+import tempfile
+import logging
+import traceback
 from datetime import datetime
 
-# --- Database setup ---
-DB_FILE = "property_queries.db"
+# Configure basic logging (Streamlit captures stderr/stdout)
+logging.basicConfig(level=logging.INFO)
+
+# --- Helpers to pick a writable location ---
+def find_writable_dir():
+    candidates = [
+        os.getenv("STREAMLIT_TMP_DIR"),
+        os.getenv("TMPDIR"),
+        os.getenv("TEMP"),
+        os.getenv("TMP"),
+        "/tmp",
+        os.getcwd(),
+        os.path.expanduser("~"),
+    ]
+    for d in candidates:
+        if not d:
+            continue
+        try:
+            os.makedirs(d, exist_ok=True)
+            testfile = os.path.join(d, ".write_test")
+            with open(testfile, "w") as f:
+                f.write("ok")
+            os.remove(testfile)
+            return d
+        except Exception:
+            continue
+    # final fallback: system temp
+    try:
+        system_tmp = tempfile.gettempdir()
+        os.makedirs(system_tmp, exist_ok=True)
+        return system_tmp
+    except Exception:
+        return None
+
+WRITABLE_DIR = find_writable_dir()
+if WRITABLE_DIR:
+    DB_PATH = os.path.join(WRITABLE_DIR, "property_queries.db")
+    UPLOADS_DIR = os.path.join(WRITABLE_DIR, "uploaded_documents")
+else:
+    # If absolutely nothing writable, fall back to in-memory DB and no file uploads
+    DB_PATH = ":memory:"
+    UPLOADS_DIR = None
+
+def log_and_show_exception(e, context=""):
+    logging.exception(f"{context}: {e}")
+    tb = traceback.format_exc()
+    logging.error(tb)
+    st.error(f"An internal error occurred. Check app logs for details. ({context})")
+
+# --- Database functions ---
+def get_connection():
+    try:
+        # check_same_thread=False helps when Streamlit spawns multiple worker threads
+        conn = sqlite3.connect(DB_PATH, check_same_thread=False)
+        return conn
+    except Exception as e:
+        logging.exception("Failed to open SQLite connection")
+        raise
 
 def init_db():
-    conn = sqlite3.connect(DB_FILE)
-    c = conn.cursor()
-    c.execute("""
-        CREATE TABLE IF NOT EXISTS queries (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            timestamp TEXT,
-            name TEXT,
-            email TEXT,
-            phone TEXT,
-            query_type TEXT,
-            urgency TEXT,
-            description TEXT,
-            files TEXT,
-            marketing_consent TEXT,
-            status TEXT
-        )
-    """)
-    conn.commit()
-    conn.close()
+    try:
+        conn = get_connection()
+        c = conn.cursor()
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS queries (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                timestamp TEXT,
+                name TEXT,
+                email TEXT,
+                phone TEXT,
+                query_type TEXT,
+                urgency TEXT,
+                description TEXT,
+                files TEXT,
+                marketing_consent TEXT,
+                status TEXT
+            )
+        """)
+        conn.commit()
+        conn.close()
+        logging.info(f"Database initialized at {DB_PATH}")
+    except Exception as e:
+        log_and_show_exception(e, "init_db")
 
 def insert_query(data):
-    conn = sqlite3.connect(DB_FILE)
-    c = conn.cursor()
-    c.execute("""
-        INSERT INTO queries 
-        (timestamp, name, email, phone, query_type, urgency, description, files, marketing_consent, status)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (
-        data["Timestamp"], data["Name"], data["Email"], data["Phone"], data["Query_Type"],
-        data["Urgency"], data["Description"], data["Files"], data["Marketing_Consent"], data["Status"]
-    ))
-    conn.commit()
-    conn.close()
+    try:
+        conn = get_connection()
+        c = conn.cursor()
+        c.execute("""
+            INSERT INTO queries
+            (timestamp, name, email, phone, query_type, urgency, description, files, marketing_consent, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            data["Timestamp"], data["Name"], data["Email"], data["Phone"], data["Query_Type"],
+            data["Urgency"], data["Description"], data["Files"], data["Marketing_Consent"], data["Status"]
+        ))
+        conn.commit()
+        conn.close()
+        logging.info("Inserted new query into DB")
+    except Exception as e:
+        log_and_show_exception(e, "insert_query")
+        raise
 
 def fetch_queries():
-    conn = sqlite3.connect(DB_FILE)
-    df = pd.read_sql_query("SELECT * FROM queries ORDER BY id DESC", conn)
-    conn.close()
-    return df
+    try:
+        conn = get_connection()
+        df = pd.read_sql_query("SELECT * FROM queries ORDER BY id DESC", conn)
+        conn.close()
+        # ensure column names are consistent (lowercase)
+        df.columns = [c.lower() for c in df.columns]
+        return df
+    except Exception as e:
+        logging.exception("fetch_queries failed")
+        # Return empty DataFrame with expected columns to avoid further errors in UI
+        cols = ['id','timestamp','name','email','phone','query_type','urgency','description','files','marketing_consent','status']
+        return pd.DataFrame(columns=cols)
 
+# --- File saving (uploads) ---
+def save_uploaded_file(uploaded_file):
+    if not UPLOADS_DIR:
+        # Not possible to save uploaded files on this host
+        return None, "uploads_not_supported"
+    try:
+        os.makedirs(UPLOADS_DIR, exist_ok=True)
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        safe_name = f"{timestamp}_{uploaded_file.name}"
+        file_path = os.path.join(UPLOADS_DIR, safe_name)
+        with open(file_path, "wb") as f:
+            f.write(uploaded_file.getbuffer())
+        logging.info(f"Saved uploaded file to {file_path}")
+        return file_path, None
+    except Exception as e:
+        logging.exception("Failed to save uploaded file")
+        return None, str(e)
 
+# --- Streamlit UI ---
 def run():
-    # Initialize DB
-    init_db()
+    # initialize DB (safe to call repeatedly)
+    try:
+        init_db()
+    except Exception:
+        # init_db already logs and shows error
+        pass
 
-    # Custom CSS styling
+    # Basic CSS (kept from your original)
     st.markdown("""
     <style>
     .property-header {
@@ -112,7 +210,6 @@ def run():
     </style>
     """, unsafe_allow_html=True)
 
-    # Header
     st.markdown("""
     <div class="property-header">
         <h1>🏡 Property & Legal Assistance</h1>
@@ -120,16 +217,11 @@ def run():
     </div>
     """, unsafe_allow_html=True)
 
-    # Main content in columns
     col1, col2 = st.columns([2, 1])
-
     with col1:
         st.markdown('<div class="form-container">', unsafe_allow_html=True)
-
-        # Query submission form
         with st.form(key="property_form", clear_on_submit=True):
             st.markdown("### 👤 Personal Information")
-
             name = st.text_input("Full Name *", placeholder="Enter your full name")
             col_email, col_phone = st.columns(2)
             with col_email:
@@ -189,11 +281,20 @@ def run():
                     for error in errors:
                         st.error(f"❌ {error}")
                 else:
-                    # Save uploaded file names only (not storing actual files)
+                    # Save uploaded files (if possible) and collect saved filenames
                     uploaded_file_names = []
                     if uploaded_files:
                         for uploaded_file in uploaded_files:
-                            uploaded_file_names.append(uploaded_file.name)
+                            try:
+                                saved_path, save_err = save_uploaded_file(uploaded_file)
+                                if saved_path:
+                                    uploaded_file_names.append(os.path.basename(saved_path))
+                                else:
+                                    # store original name but note error
+                                    uploaded_file_names.append(f"{uploaded_file.name} (not saved: {save_err})")
+                            except Exception as e:
+                                logging.exception("Error while handling uploaded file")
+                                uploaded_file_names.append(f"{uploaded_file.name} (error)")
 
                     query_data = {
                         "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -208,17 +309,19 @@ def run():
                         "Status": "Pending Review"
                     }
 
-                    insert_query(query_data)
-
-                    st.markdown(f"""
-                    <div class="success-card">
-                        <h3 style="color: #059669; margin-top: 0;">✅ Query Submitted Successfully!</h3>
-                        <p><strong>Query ID:</strong> QRY_{datetime.now().strftime("%Y%m%d%H%M%S")}</p>
-                        <p>📧 You'll receive a confirmation email within 24 hours.</p>
-                    </div>
-                    """, unsafe_allow_html=True)
-                    st.rerun()
-
+                    try:
+                        insert_query(query_data)
+                        st.markdown(f"""
+                        <div class="success-card">
+                            <h3 style="color: #059669; margin-top: 0;">✅ Query Submitted Successfully!</h3>
+                            <p><strong>Query ID:</strong> QRY_{datetime.now().strftime("%Y%m%d%H%M%S")}</p>
+                            <p>📧 You'll receive a confirmation email within 24 hours.</p>
+                        </div>
+                        """, unsafe_allow_html=True)
+                        # rerun to reset form and show admin if needed
+                        st.experimental_rerun()
+                    except Exception as e:
+                        log_and_show_exception(e, "submitting query")
         st.markdown('</div>', unsafe_allow_html=True)
 
     with col2:
@@ -239,37 +342,42 @@ def run():
         """, unsafe_allow_html=True)
 
         # Admin dashboard
-        if st.checkbox("🔧 Admin: View Previous Queries"):
-            df = fetch_queries()
-            if len(df) > 0:
-                st.markdown("### 📊 Query Dashboard")
-                col_stats1, col_stats2, col_stats3 = st.columns(3)
-                with col_stats1:
-                    st.metric("Total Queries", len(df))
-                with col_stats2:
-                    pending = len(df[df['status'] == 'Pending Review'])
-                    st.metric("Pending", pending)
-                with col_stats3:
-                    property_queries = len(df[df['query_type'].str.contains('Property', na=False)])
-                    st.metric("Property Queries", property_queries)
+        try:
+            if st.checkbox("🔧 Admin: View Previous Queries"):
+                df = fetch_queries()
+                if len(df) > 0:
+                    st.markdown("### 📊 Query Dashboard")
+                    col_stats1, col_stats2, col_stats3 = st.columns(3)
+                    with col_stats1:
+                        st.metric("Total Queries", len(df))
+                    with col_stats2:
+                        pending = len(df[df['status'] == 'Pending Review']) if 'status' in df.columns else 0
+                        st.metric("Pending", pending)
+                    with col_stats3:
+                        property_queries = len(df[df['query_type'].str.contains('Property', na=False)]) if 'query_type' in df.columns else 0
+                        st.metric("Property Queries", property_queries)
 
-                display_cols = ['timestamp', 'query_type', 'urgency', 'status']
-                st.dataframe(df[display_cols].head(10), use_container_width=True)
+                    display_cols = [c for c in ['timestamp', 'query_type', 'urgency', 'status'] if c in df.columns]
+                    if display_cols:
+                        st.dataframe(df[display_cols].head(10), use_container_width=True)
 
-                if 'description' in df.columns:
-                    st.markdown("**Recent Descriptions:**")
-                    for desc in df['description'].head(5).tolist():
-                        preview = desc[:100] + "..." if len(desc) > 100 else desc
-                        st.write(f"• {preview}")
+                    if 'description' in df.columns:
+                        st.markdown("**Recent Descriptions:**")
+                        for desc in df['description'].head(5).tolist():
+                            preview = desc[:100] + "..." if len(desc) > 100 else desc
+                            st.write(f"• {preview}")
 
-                st.download_button(
-                    "📥 Download All Queries (CSV)",
-                    data=df.to_csv(index=False),
-                    file_name=f"property_queries_full_{datetime.now().strftime('%Y%m%d')}.csv",
-                    mime="text/csv"
-                )
-            else:
-                st.info("📝 No queries yet.")
+                    csv_download = df.to_csv(index=False)
+                    st.download_button(
+                        "📥 Download All Queries (CSV)",
+                        data=csv_download,
+                        file_name=f"property_queries_full_{datetime.now().strftime('%Y%m%d')}.csv",
+                        mime="text/csv"
+                    )
+                else:
+                    st.info("📝 No queries yet.")
+        except Exception as e:
+            log_and_show_exception(e, "admin dashboard")
 
 if __name__ == "__main__":
     run()
