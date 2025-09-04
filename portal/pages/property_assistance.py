@@ -1,10 +1,59 @@
 # pages/property_assistance.py
 import streamlit as st
 import pandas as pd
+import sqlite3
 import os
 from datetime import datetime
 
+# --- Database setup ---
+DB_FILE = "property_queries.db"
+
+def init_db():
+    conn = sqlite3.connect(DB_FILE)
+    c = conn.cursor()
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS queries (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            timestamp TEXT,
+            name TEXT,
+            email TEXT,
+            phone TEXT,
+            query_type TEXT,
+            urgency TEXT,
+            description TEXT,
+            files TEXT,
+            marketing_consent TEXT,
+            status TEXT
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+def insert_query(data):
+    conn = sqlite3.connect(DB_FILE)
+    c = conn.cursor()
+    c.execute("""
+        INSERT INTO queries 
+        (timestamp, name, email, phone, query_type, urgency, description, files, marketing_consent, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        data["Timestamp"], data["Name"], data["Email"], data["Phone"], data["Query_Type"],
+        data["Urgency"], data["Description"], data["Files"], data["Marketing_Consent"], data["Status"]
+    ))
+    conn.commit()
+    conn.close()
+
+def fetch_queries():
+    conn = sqlite3.connect(DB_FILE)
+    df = pd.read_sql_query("SELECT * FROM queries ORDER BY id DESC", conn)
+    conn.close()
+    return df
+
+
 def run():
+    # Initialize DB
+    init_db()
+
     # Custom CSS styling
     st.markdown("""
     <style>
@@ -73,42 +122,28 @@ def run():
 
     # Main content in columns
     col1, col2 = st.columns([2, 1])
-    
+
     with col1:
         st.markdown('<div class="form-container">', unsafe_allow_html=True)
-        
+
         # Query submission form
         with st.form(key="property_form", clear_on_submit=True):
             st.markdown("### 👤 Personal Information")
-            
-            name = st.text_input(
-                "Full Name *", 
-                placeholder="Enter your full name",
-                help="Your full name as it appears on legal documents"
-            )
-            
+
+            name = st.text_input("Full Name *", placeholder="Enter your full name")
             col_email, col_phone = st.columns(2)
             with col_email:
-                email = st.text_input(
-                    "Email Address *", 
-                    placeholder="your.email@example.com",
-                    help="We'll send updates to this email"
-                )
+                email = st.text_input("Email Address *", placeholder="your.email@example.com")
             with col_phone:
-                phone = st.text_input(
-                    "Phone Number", 
-                    placeholder="+27 XX XXX XXXX",
-                    help="Optional: For urgent queries"
-                )
-            
+                phone = st.text_input("Phone Number", placeholder="+27 XX XXX XXXX")
+
             st.markdown("### 📋 Query Information")
-            
             query_type = st.selectbox(
                 "Type of Assistance Needed *",
                 [
                     "Select query type...",
                     "🏠 Property Purchase/Sale",
-                    "📄 Property Documentation", 
+                    "📄 Property Documentation",
                     "⚖️ Property Disputes",
                     "🏢 Rental/Lease Issues",
                     "📜 Contract Review",
@@ -116,72 +151,29 @@ def run():
                     "🏛️ Estate Planning",
                     "💼 Business Legal Matters",
                     "🔧 Other Legal Issue"
-                ],
-                help="Select the category that best describes your query"
+                ]
             )
-            
-            # Show info based on query type
-            if query_type and query_type != "Select query type...":
-                query_info = {
-                    "🏠 Property Purchase/Sale": "Assistance with buying or selling property, transfer processes, and documentation.",
-                    "📄 Property Documentation": "Help with property documents, title deeds, and registration.",
-                    "⚖️ Property Disputes": "Mediation and legal advice for property-related conflicts.",
-                    "🏢 Rental/Lease Issues": "Tenant/landlord disputes, lease agreements, and rental law.",
-                    "📜 Contract Review": "Professional review of contracts and legal documents.",
-                    "👨‍⚖️ General Legal Advice": "General legal consultation on various matters.",
-                    "🏛️ Estate Planning": "Wills, trusts, and estate planning assistance.",
-                    "💼 Business Legal Matters": "Business formation, contracts, and commercial law.",
-                    "🔧 Other Legal Issue": "Any other legal matter not listed above."
-                }
-                
-                if query_type in query_info:
-                    st.markdown(f'<div class="query-type-info">ℹ️ {query_info[query_type]}</div>', 
-                              unsafe_allow_html=True)
-            
+
             urgency = st.radio(
                 "Urgency Level",
                 ["🟢 Normal (7-14 days)", "🟡 Urgent (3-7 days)", "🔴 Very Urgent (24-48 hours)"],
-                help="This helps us prioritize your query appropriately"
             )
-            
-            description = st.text_area(
-                "Detailed Description *",
-                placeholder="Please provide a detailed description of your query, including relevant background information, specific questions, and any urgency factors...",
-                height=150,
-                help="The more details you provide, the better we can assist you"
-            )
-            
-            # File upload
-            st.markdown("### 📎 Supporting Documents")
+
+            description = st.text_area("Detailed Description *", height=150)
+
             uploaded_files = st.file_uploader(
                 "Upload relevant documents (optional)",
                 type=["pdf", "docx", "doc", "jpg", "jpeg", "png"],
                 accept_multiple_files=True,
-                help="You can upload contracts, property documents, images, etc."
             )
-            
-            # Privacy notice
-            st.markdown("### 🔒 Privacy & Terms")
-            privacy_agreed = st.checkbox(
-                "I agree to the privacy policy and terms of service",
-                help="Your information will be shared only with verified legal professionals"
-            )
-            
-            marketing_consent = st.checkbox(
-                "I consent to receive follow-up communications about my query"
-            )
-            
-            # Submit button
-            st.markdown("---")
-            submit_button = st.form_submit_button(
-                "Submit Query 📤",
-                help="Click to submit your query to our legal professionals"
-            )
-            
-            # Form validation and submission
+
+            privacy_agreed = st.checkbox("I agree to the privacy policy and terms of service")
+            marketing_consent = st.checkbox("I consent to receive follow-up communications about my query")
+
+            submit_button = st.form_submit_button("Submit Query 📤")
+
             if submit_button:
                 errors = []
-                
                 if not name or len(name.strip()) < 2:
                     errors.append("Please enter a valid full name")
                 if not email or "@" not in email:
@@ -192,31 +184,17 @@ def run():
                     errors.append("Please provide a detailed description (at least 10 characters)")
                 if not privacy_agreed:
                     errors.append("Please agree to the privacy policy and terms")
-                
+
                 if errors:
                     for error in errors:
                         st.error(f"❌ {error}")
                 else:
-                    # Process file uploads
+                    # Save uploaded file names only (not storing actual files)
                     uploaded_file_names = []
                     if uploaded_files:
-                        upload_folder = "uploaded_documents"
-                        if not os.path.exists(upload_folder):
-                            os.makedirs(upload_folder)
-                        
                         for uploaded_file in uploaded_files:
-                            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                            safe_name = f"{timestamp}_{uploaded_file.name}"
-                            file_path = os.path.join(upload_folder, safe_name)
-                            
-                            try:
-                                with open(file_path, "wb") as f:
-                                    f.write(uploaded_file.getbuffer())
-                                uploaded_file_names.append(safe_name)
-                            except Exception as e:
-                                st.warning(f"Could not save file {uploaded_file.name}: {str(e)}")
-                    
-                    # Save query to CSV
+                            uploaded_file_names.append(uploaded_file.name)
+
                     query_data = {
                         "Timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                         "Name": name.strip(),
@@ -229,42 +207,20 @@ def run():
                         "Marketing_Consent": "Yes" if marketing_consent else "No",
                         "Status": "Pending Review"
                     }
-                    
-                    df = pd.DataFrame([query_data])
-                    
-                    csv_file = "property_queries.csv"
-                    try:
-                        if os.path.exists(csv_file):
-                            df.to_csv(csv_file, mode="a", header=False, index=False)
-                        else:
-                            df.to_csv(csv_file, index=False)
-                        
-                        # Success message
-                        st.markdown("""
-                        <div class="success-card">
-                            <h3 style="color: #059669; margin-top: 0;">✅ Query Submitted Successfully!</h3>
-                            <p><strong>What happens next:</strong></p>
-                            <ul>
-                                <li>📧 You'll receive a confirmation email within 24 hours</li>
-                                <li>👨‍⚖️ A qualified legal professional will review your query and documents</li>
-                                <li>📞 You'll be contacted via your preferred method within the specified timeframe</li>
-                                <li>📋 If urgent, we'll prioritize your query accordingly</li>
-                                <li>📎 Your uploaded documents will be securely reviewed by our legal team</li>
-                            </ul>
-                            <p><em>Query ID: QRY_{}</em></p>
-                        </div>
-                        """.format(datetime.now().strftime("%Y%m%d%H%M%S")), unsafe_allow_html=True)
-                        
-                        # Add a small delay to ensure file is written, then refresh
-                        st.rerun()
-                        
-                    except Exception as e:
-                        st.error(f"❌ Error saving query: {str(e)}")
-                        st.error("Please try again or contact support.")
-        
+
+                    insert_query(query_data)
+
+                    st.markdown(f"""
+                    <div class="success-card">
+                        <h3 style="color: #059669; margin-top: 0;">✅ Query Submitted Successfully!</h3>
+                        <p><strong>Query ID:</strong> QRY_{datetime.now().strftime("%Y%m%d%H%M%S")}</p>
+                        <p>📧 You'll receive a confirmation email within 24 hours.</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    st.rerun()
+
         st.markdown('</div>', unsafe_allow_html=True)
-    
-    # Sidebar information
+
     with col2:
         st.markdown("""
         <div class="info-card">
@@ -274,138 +230,46 @@ def run():
             <p><strong>Hours:</strong> Mon-Fri 8AM-5PM</p>
         </div>
         """, unsafe_allow_html=True)
-        
+
         st.markdown("""
         <div class="info-card">
             <h3>⚖️ Legal Disclaimer</h3>
-            <p><small>This platform connects you with legal professionals but does not provide legal advice directly. All consultations are subject to professional legal ethics and confidentiality.</small></p>
+            <p><small>This platform connects you with legal professionals but does not provide legal advice directly.</small></p>
         </div>
         """, unsafe_allow_html=True)
-        
-        st.markdown("""
-        <div class="info-card">
-            <h3>🎯 Service Areas</h3>
-            <ul style="margin: 0.5rem 0;">
-                <li>Property Law</li>
-                <li>Contract Law</li>
-                <li>Family Law</li>
-                <li>Estate Planning</li>
-                <li>Business Law</li>
-                <li>Consumer Rights</li>
-            </ul>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        # Previous queries section (admin view)
-        if st.checkbox("🔧 Admin: View Previous Queries", help="For admin use only"):
-            csv_file = "property_queries.csv"
-            if os.path.exists(csv_file):
-                try:
-                    # Read with error handling for malformed CSV
-                    df = pd.read_csv(csv_file, quoting=1, escapechar='\\', on_bad_lines='skip')
-                    
-                    # Clean up any remaining issues
-                    if len(df) > 0:
-                        st.markdown("### 📊 Query Dashboard")
-                        
-                        # Summary stats
-                        col_stats1, col_stats2, col_stats3 = st.columns(3)
-                        with col_stats1:
-                            st.metric("Total Queries", len(df))
-                        with col_stats2:
-                            pending = len(df[df['Status'] == 'Pending Review']) if 'Status' in df.columns else 0
-                            st.metric("Pending", pending)
-                        with col_stats3:
-                            if 'Query_Type' in df.columns:
-                                property_queries = len(df[df['Query_Type'].str.contains('Property', na=False)])
-                                st.metric("Property Queries", property_queries)
-                        
-                        # Query type breakdown
-                        if 'Query_Type' in df.columns:
-                            st.markdown("**Query Types:**")
-                            query_counts = df['Query_Type'].value_counts()
-                            for query_type, count in query_counts.head(5).items():
-                                st.write(f"• {query_type}: {count}")
-                        
-                        # Recent queries with better display (excluding personal info)
-                        st.markdown("**Recent Queries:**")
-                        display_columns = []
-                        
-                        # Select available columns for display (excluding personal info)
-                        if 'Timestamp' in df.columns:
-                            display_columns.append('Timestamp')
-                        if 'Query_Type' in df.columns:
-                            display_columns.append('Query_Type')
-                        if 'Urgency' in df.columns:
-                            display_columns.append('Urgency')
-                        if 'Status' in df.columns:
-                            display_columns.append('Status')
-                        # Note: Excluding Name, Email, Phone for privacy
-                        
-                        if display_columns:
-                            recent_df = df[display_columns].tail(10).copy()
-                            # Clean up display names
-                            if 'Query_Type' in recent_df.columns:
-                                recent_df['Query_Type'] = recent_df['Query_Type'].str.replace(';', ',')
-                            
-                            st.dataframe(recent_df, use_container_width=True)
-                            
-                            # Show anonymized description preview
-                            if 'Description' in df.columns:
-                                st.markdown("**Recent Query Descriptions (Anonymized):**")
-                                for i, desc in enumerate(df['Description'].tail(5).tolist(), 1):
-                                    cleaned_desc = str(desc).replace(';', ',')
-                                    preview = cleaned_desc[:100] + "..." if len(cleaned_desc) > 100 else cleaned_desc
-                                    st.write(f"**Query {i}:** {preview}")
-                            
-                            # Option to download full data (admin only - includes personal info)
-                            st.markdown("---")
-                            st.markdown("**🔒 Admin Data Export** (includes personal information)")
-                            if st.button("📥 Download All Queries (CSV)", help="Full data export for admin use only"):
-                                csv_data = df.to_csv(index=False)
-                                st.download_button(
-                                    label="Download Full CSV (Admin)",
-                                    data=csv_data,
-                                    file_name=f"property_queries_full_{datetime.now().strftime('%Y%m%d')}.csv",
-                                    mime="text/csv"
-                                )
-                                st.warning("⚠️ This file contains personal information. Handle with care and in compliance with data protection regulations.")
-                        else:
-                            st.warning("No displayable columns found in the data.")
-                    else:
-                        st.info("📝 No valid queries found.")
-                        
-                except Exception as e:
-                    st.error(f"Error loading queries: {str(e)}")
-                    st.info("💡 The CSV file may be corrupted. You can:")
-                    
-                    # Option to reset the CSV file
-                    col_reset1, col_reset2 = st.columns(2)
-                    with col_reset1:
-                        if st.button("🔄 Reset Query Database", help="This will delete all previous queries"):
-                            try:
-                                os.remove(csv_file)
-                                st.success("✅ Query database reset successfully!")
-                                st.rerun()
-                            except Exception as reset_error:
-                                st.error(f"Error resetting database: {str(reset_error)}")
-                    
-                    with col_reset2:
-                        if st.button("🔧 Try Manual Fix", help="Attempt to fix the CSV file"):
-                            try:
-                                # Try to read with different parameters
-                                df_fixed = pd.read_csv(csv_file, sep=',', on_bad_lines='skip', engine='python')
-                                if len(df_fixed) > 0:
-                                    # Save the fixed version
-                                    df_fixed.to_csv(csv_file, index=False, quoting=1)
-                                    st.success(f"✅ Fixed CSV file! Recovered {len(df_fixed)} queries.")
-                                    st.rerun()
-                                else:
-                                    st.warning("No recoverable data found.")
-                            except Exception as fix_error:
-                                st.error(f"Manual fix failed: {str(fix_error)}")
+
+        # Admin dashboard
+        if st.checkbox("🔧 Admin: View Previous Queries"):
+            df = fetch_queries()
+            if len(df) > 0:
+                st.markdown("### 📊 Query Dashboard")
+                col_stats1, col_stats2, col_stats3 = st.columns(3)
+                with col_stats1:
+                    st.metric("Total Queries", len(df))
+                with col_stats2:
+                    pending = len(df[df['status'] == 'Pending Review'])
+                    st.metric("Pending", pending)
+                with col_stats3:
+                    property_queries = len(df[df['query_type'].str.contains('Property', na=False)])
+                    st.metric("Property Queries", property_queries)
+
+                display_cols = ['timestamp', 'query_type', 'urgency', 'status']
+                st.dataframe(df[display_cols].head(10), use_container_width=True)
+
+                if 'description' in df.columns:
+                    st.markdown("**Recent Descriptions:**")
+                    for desc in df['description'].head(5).tolist():
+                        preview = desc[:100] + "..." if len(desc) > 100 else desc
+                        st.write(f"• {preview}")
+
+                st.download_button(
+                    "📥 Download All Queries (CSV)",
+                    data=df.to_csv(index=False),
+                    file_name=f"property_queries_full_{datetime.now().strftime('%Y%m%d')}.csv",
+                    mime="text/csv"
+                )
             else:
-                st.info("📝 No queries submitted yet.")
+                st.info("📝 No queries yet.")
 
 if __name__ == "__main__":
     run()
