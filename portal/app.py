@@ -391,17 +391,16 @@ def show_hero_header():
     """Display the hero header - call this only on the home page"""
     st.markdown("""
     <div class="hero-header">
-        <h1 class="hero-title">⚖️ Legal Literacy Portal</h1>
+        <h1 class="hero-title"><i class="fas fa-balance-scale"></i> Legal Literacy Portal</h1>
         <p class="hero-subtitle">Empowering South Africans with Professional Legal Knowledge & Services</p>
         <div class="feature-badges">
-            <span class="feature-badge">🛡️ Fraud Protection</span>
-            <span class="feature-badge">📄 Document Analysis</span>
-            <span class="feature-badge">💰 SASSA Support</span>
-            <span class="feature-badge">🏠 Property Law</span>
+            <span class="feature-badge"><i class="fas fa-shield-alt"></i> Fraud Protection</span>
+            <span class="feature-badge"><i class="fas fa-file-contract"></i> Document Analysis</span>
+            <span class="feature-badge"><i class="fas fa-hand-holding-usd"></i> SASSA Support</span>
+            <span class="feature-badge"><i class="fas fa-home"></i> Property Law</span>
         </div>
     </div>
     """, unsafe_allow_html=True)
-
 # Configure the app
 st.set_page_config(
     page_title="Legal Literacy Portal - Professional Legal Services",
