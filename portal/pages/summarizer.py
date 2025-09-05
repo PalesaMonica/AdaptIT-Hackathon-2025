@@ -6,10 +6,17 @@ import io
 import tempfile
 from gtts import gTTS
 import fitz  # PyMuPDF
-
+import time
 # ---------------- Config ----------------
 SUPPORTED_FORMATS = ["jpg","jpeg","png","webp","pdf","txt","doc","docx"]
 MAX_FILE_SIZE = 10*1024*1024
+
+# ---------------- Progress Indicator ----------------
+def create_progress_indicator(step, total_steps):
+    """Create a visual progress indicator"""
+    progress_text = f"Step {step} of {total_steps}"
+    progress_percent = step / total_steps
+    st.progress(progress_percent, text=progress_text)
 
 # ---------------- Enhanced Professional Styling with Better Visibility ----------------
 def apply_legal_portal_styling():
@@ -358,6 +365,7 @@ def extract_text_from_image(image, ocr_reader):
     try:
         processed = preprocess_image(image)
         arr = np.array(processed)
+        reader = easyocr.Reader(['en'], gpu=False)
         results = ocr_reader.readtext(arr, detail=0, paragraph=True)
         return ' '.join(results).strip()
     except Exception as e:
@@ -465,7 +473,7 @@ def create_audio_summary(text, language='en'):
 def play_audio_summary(summary_text):
     """Play audio summary"""
     st.markdown('<div class="audio-section">', unsafe_allow_html=True)
-    st.markdown("### 🎧 Audio Summary")
+    st.markdown("### Audio Summary")
     st.markdown("**English Audio:**")
     
     audio_file_en = create_audio_summary(summary_text, 'en')
@@ -486,7 +494,7 @@ def run():
     
     apply_legal_portal_styling()
 
-    st.markdown("# ⚖️ Legal Document Summarizer")
+    st.markdown("# Legal Document Summarizer")
     
     st.markdown("""
     <div class="feature-list">
@@ -509,7 +517,7 @@ def run():
 
     # File uploader
     uploaded_file = st.file_uploader(
-        "📁 Choose your legal document", 
+        "Choose your legal document", 
         type=SUPPORTED_FORMATS,
         help="Supported formats: PDF, JPG, PNG, WEBP (Maximum file size: 10MB)"
     )
@@ -517,14 +525,14 @@ def run():
     if uploaded_file is not None:
         # Check file size
         if uploaded_file.size > MAX_FILE_SIZE:
-            st.error(f"⚠️ File too large ({uploaded_file.size/1024/1024:.1f}MB). Maximum allowed size is 10MB.")
+            st.error(f"File too large ({uploaded_file.size/1024/1024:.1f}MB). Maximum allowed size is 10MB.")
             return
 
         # Show file info
-        st.success(f"✅ Successfully uploaded: **{uploaded_file.name}** ({uploaded_file.size/1024:.1f}KB)")
+        st.success(f"Successfully uploaded: **{uploaded_file.name}** ({uploaded_file.size/1024:.1f}KB)")
 
         # Extract text based on file type
-        with st.spinner("🔍 Extracting text from your document..."):
+        with st.spinner("Extracting text from your document..."):
             extracted_text = ""
             
             if uploaded_file.type == "application/pdf":
@@ -533,15 +541,15 @@ def run():
                 try:
                     extracted_text = str(uploaded_file.read(), "utf-8")
                 except Exception as e:
-                    st.error(f"❌ Failed to read text file: {str(e)}")
+                    st.error(f"Failed to read text file: {str(e)}")
                     return
             else:
                 try:
                     image = Image.open(uploaded_file)
-                    st.image(image, caption="📄 Document Preview", use_container_width=True)
+                    st.image(image, caption="Document Preview", use_container_width=True)
                     extracted_text = extract_text_from_image(image, ocr_reader)
                 except Exception as e:
-                    st.error(f"❌ Failed to process image: {str(e)}")
+                    st.error(f"Failed to process image: {str(e)}")
                     return
 
         # Display extracted text
@@ -550,14 +558,10 @@ def run():
             char_count = len(extracted_text)
             estimated_read_time = max(1, word_count // 200)  # Average reading speed
             
-            st.success("🎉 Text extraction completed successfully!")
-            
-            # Interactive statistics
-            st.markdown("### 📊 Document Statistics")
-            create_interactive_stats(word_count, char_count, estimated_read_time)
+            st.success("Text extraction completed successfully!")
             
             # Show a preview of extracted text with fade-in effect
-            with st.expander("👀 Preview Extracted Text", expanded=False):
+            with st.expander("Preview Extracted Text", expanded=False):
                 preview_text = extracted_text[:500] + "..." if len(extracted_text) > 500 else extracted_text
                 st.markdown(f"""
                 <div style="
@@ -582,55 +586,54 @@ def run():
                 """, unsafe_allow_html=True)
 
             # Enhanced summarization button with progress tracking
-            if st.button("🚀 Generate Summary & Audio", type="primary"):
+            if st.button("Generate Summary & Audio", type="primary"):
                 progress_container = st.container()
                 
                 with progress_container:
                     # Step 1: Text Processing
                     create_progress_indicator(1, 4)
-                    with st.spinner("🔍 Analyzing document structure..."):
-                        st.sleep(0.5)  # Brief pause for visual effect
+                    with st.spinner("Analyzing document structure..."):
+                        time.sleep(0.5)  # Brief pause for visual effect
                 
                 with progress_container:
                     # Step 2: Summarization
                     create_progress_indicator(2, 4)
-                    with st.spinner("🧠 Creating intelligent summary..."):
+                    with st.spinner("Creating intelligent summary..."):
                         summary = summarize_text(extracted_text)
-                        st.sleep(0.3)
+                        time.sleep(0.3)
                 
                 with progress_container:
                     # Step 3: Simplification
                     create_progress_indicator(3, 4)
-                    with st.spinner("💡 Translating to plain language..."):
+                    with st.spinner("Translating to plain language..."):
                         simplified_summary = simplify_legal_text(summary)
-                        st.sleep(0.3)
+                        time.sleep(0.3)
                 
                 with progress_container:
                     # Step 4: Audio Generation
                     create_progress_indicator(4, 4)
-                    with st.spinner("🎧 Generating audio summary..."):
-                        st.sleep(0.5)
+                    with st.spinner("Generating audio summary..."):
+                        time.sleep(0.5)
                 
                 # Clear progress and show results
                 progress_container.empty()
                 
                 st.markdown("---")
-                st.subheader("📝 Document Analysis Results")
+                st.subheader("Document Analysis Results")
                 
                 # Success message with confetti effect
-                st.balloons()  # Streamlit's built-in celebration animation
-                st.success("🎉 Summary generated successfully!")
+                st.success("Summary generated successfully!")
                 
                 col1, col2 = st.columns(2)
                 with col1:
                     st.markdown('<div class="summary-container">', unsafe_allow_html=True)
-                    st.markdown("**📄 Professional Summary:**")
+                    st.markdown("**Professional Summary:**")
                     st.write(summary)
                     st.markdown('</div>', unsafe_allow_html=True)
                 
                 with col2:
                     st.markdown('<div class="summary-container">', unsafe_allow_html=True)
-                    st.markdown("**💡 Plain Language Version:**")
+                    st.markdown("**Plain Language Version:**")
                     st.write(simplified_summary)
                     st.markdown('</div>', unsafe_allow_html=True)
                 
@@ -638,21 +641,21 @@ def run():
                 
                 # Additional interactive features
                 st.markdown("---")
-                st.markdown("### 🛠️ Additional Tools")
+                st.markdown("### Additional Tools")
                 
                 tool_col1, tool_col2, tool_col3 = st.columns(3)
                 
                 with tool_col1:
-                    if st.button("📋 Copy Summary", key="copy_summary"):
-                        st.info("📋 Summary copied to clipboard!")
+                    if st.button("Copy Summary", key="copy_summary"):
+                        st.info("Summary copied to clipboard!")
                         st.code(summary, language=None)
                 
                 with tool_col2:
-                    if st.button("📊 Word Cloud", key="word_cloud"):
-                        st.info("🔮 Word cloud feature coming soon!")
+                    if st.button("Word Cloud", key="word_cloud"):
+                        st.info("Word cloud feature coming soon!")
                 
                 with tool_col3:
-                    if st.button("📈 Complexity Score", key="complexity"):
+                    if st.button("Complexity Score", key="complexity"):
                         # Simple complexity calculation
                         avg_word_length = sum(len(word) for word in summary.split()) / len(summary.split())
                         complexity_score = min(100, int(avg_word_length * 10))
@@ -660,17 +663,17 @@ def run():
                                 delta="Lower is better" if complexity_score > 70 else "Good readability")
                     
         else:
-            st.warning("⚠️ No readable text could be extracted from your document.")
+            st.warning("No readable text could be extracted from your document.")
             
             # Enhanced tips section with interactive cards
-            st.markdown("### 💡 Tips to improve text extraction:")
+            st.markdown("### Tips to improve text extraction:")
             
             tips = [
-                ("🌟 Image Quality", "Ensure the image is clear and well-lit"),
-                ("🎯 Resolution", "Use high-resolution scans (300 DPI or higher)"),
-                ("📐 Orientation", "Make sure text is horizontal and not skewed"),
-                ("📄 Format", "Try uploading a PDF version if available"),
-                ("✨ Content", "Check that the document contains actual text")
+                ("Image Quality", "Ensure the image is clear and well-lit"),
+                ("Resolution", "Use high-resolution scans (300 DPI or higher)"),
+                ("Orientation", "Make sure text is horizontal and not skewed"),
+                ("Format", "Try uploading a PDF version if available"),
+                ("Content", "Check that the document contains actual text")
             ]
             
             for i, (title, description) in enumerate(tips):
@@ -700,37 +703,37 @@ def run():
     # Enhanced sidebar instructions
     with st.sidebar:
         st.markdown("""
-        ## 🛠️ How to Use This Tool
+        ## How to Use This Tool
 
         ### **Step-by-Step Guide:**
         
-        **1. 📤 Upload Your Document**
+        **1. Upload Your Document**
         - Click "Choose your legal document"
         - Select PDF or image files
         - Maximum file size: 10MB
 
-        **2. 👀 Review Text Extraction**
+        **2. Review Text Extraction**
         - Check that text was extracted correctly
         - View document preview for images
 
-        **3. ⚡ Generate Summary**
+        **3. Generate Summary**
         - Click "Generate Summary & Audio"
         - Get both professional and simplified versions
 
-        **4. 🎧 Listen to Audio**
+        **4. Listen to Audio**
         - Use audio playback feature
         - Perfect for accessibility
 
         ---
 
-        ### **📁 Supported File Types:**
+        ### **Supported File Types:**
         - **PDF**: Best for text extraction
         - **Images**: JPG, PNG, WEBP
         - **Text**: TXT files
 
         ---
 
-        ### **💡 Pro Tips:**
+        ### **Pro Tips:**
         - **High-quality images** work best
         - **Horizontal text** extracts more accurately  
         - **PDF files** generally provide better results
@@ -738,7 +741,7 @@ def run():
 
         ---
 
-        ### **🔧 Technical Features:**
+        ### **Technical Features:**
         - AI-powered text extraction
         - Advanced summarization algorithms
         - Legal jargon simplification
