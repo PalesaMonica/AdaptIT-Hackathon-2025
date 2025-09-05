@@ -365,7 +365,6 @@ def extract_text_from_image(image, ocr_reader):
     try:
         processed = preprocess_image(image)
         arr = np.array(processed)
-        reader = easyocr.Reader(['en'], gpu=False)
         results = ocr_reader.readtext(arr, detail=0, paragraph=True)
         return ' '.join(results).strip()
     except Exception as e:
