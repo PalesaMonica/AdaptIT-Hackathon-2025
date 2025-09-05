@@ -547,22 +547,16 @@ if selected == "Home":
     show_hero_header()
     home.run()
 elif selected == "Document Summarizer":
-    st.title("Document Summarizer")
     summarizer.run()
 elif selected == "Fraud Detection":
-    st.title("Fraud Detection")
     fraud_checker.run()
 elif selected == "Will Generator":
-    st.title("Will Generator")
     will_generator.run()
 elif selected == "Property & Legal Help":
-    st.title("Property & Legal Help")
     property_assistance.run()
 elif selected == "Know Your Rights":
-    st.title("Know Your Rights")
     educational.run()
 elif selected == "SASSA Loan Assistant":
-    st.title("SASSA Loan Assistant")
     sassa_loan.run()
 
 # Enhanced Transparent Footer
