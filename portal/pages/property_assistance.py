@@ -112,8 +112,8 @@ def apply_property_styling():
         color: #1E293B;
     }
     
-    /* Elegant Blue-to-Pink Gradient Heading - FIXED SELECTOR */
-    .main h1, h1, .stMarkdown h1 {
+    /* Elegant Blue-to-Pink Gradient Heading */
+    .stMarkdown h1, .main h1 {
         font-family: 'Inter', sans-serif !important;
         font-weight: 700 !important;
         font-size: 3.5rem !important;
@@ -141,7 +141,7 @@ def apply_property_styling():
     }
     
     /* Subtle Blue-Pink Accent Lines */
-    .main h1::before, h1::before, .stMarkdown h1::before {
+    .stMarkdown h1::before, .main h1::before {
         content: '' !important;
         position: absolute !important;
         top: -8px !important;
@@ -159,7 +159,7 @@ def apply_property_styling():
         opacity: 0.8 !important;
     }
     
-    .main h1::after, h1::after, .stMarkdown h1::after {
+    .stMarkdown h1::after, .main h1::after {
         content: '' !important;
         position: absolute !important;
         bottom: -8px !important;
@@ -177,87 +177,156 @@ def apply_property_styling():
         opacity: 0.6 !important;
     }
     
-    /* Form section */
-    .form-container {
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-        padding: 2rem;
-        border-radius: 15px;
-        margin: 2rem 0;
-        border: 3px solid #1E3A8A;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    /* Improved Section Headings */
+    .main h2, .main h3 {
+        color: #0F172A !important;
+        font-weight: 700 !important;
+        font-size: 1.5rem !important;
+        border-left: 4px solid #3B82F6 !important;
+        padding-left: 1rem !important;
+        margin: 2rem 0 1rem 0 !important;
+        text-shadow: none !important;
+        background: linear-gradient(145deg, rgba(59, 130, 246, 0.08), rgba(59, 130, 246, 0.05)) !important;
+        padding: 0.75rem 1rem !important;
+        border-radius: 0 8px 8px 0 !important;
     }
     
-    .form-container h2 {
-        color: #1E3A8A !important;
-        font-size: 2rem;
-        margin-bottom: 1rem;
+    /* Enhanced Text Visibility */
+    .main p, .main li, .main div {
+        color: #1E293B !important;
+        line-height: 1.7 !important;
+        text-shadow: none !important;
+        font-weight: 500 !important;
+        font-size: 1rem !important;
+    }
+    
+    /* Stronger text for important content */
+    .main strong, .main b {
+        color: #0F172A !important;
+        font-weight: 700 !important;
+        text-shadow: none !important;
+    }
+    
+    /* Form container */
+    .form-container {
+        background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(248,250,252,0.9)) !important;
+        padding: 2rem !important;
+        border-radius: 16px !important;
+        margin: 2rem 0 !important;
+        border: 2px solid rgba(59, 130, 246, 0.2) !important;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.08) !important;
+        backdrop-filter: blur(10px) !important;
     }
     
     /* Form sections */
     .form-section {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 12px;
-        margin: 1.5rem 0;
-        border-left: 5px solid #1E3A8A;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(248,250,252,0.9)) !important;
+        padding: 2rem !important;
+        border-radius: 16px !important;
+        margin: 1.5rem 0 !important;
+        border-left: 5px solid #1E40AF !important;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.05) !important;
+        backdrop-filter: blur(8px) !important;
     }
     
     .form-section h3 {
-        color: #1E3A8A !important;
-        font-size: 1.3rem;
-        margin-bottom: 1rem;
+        color: #1E40AF !important;
+        font-weight: 700 !important;
+        margin-bottom: 1rem !important;
+        text-shadow: none !important;
+        background: none !important;
+        border: none !important;
+        padding: 0 !important;
+        font-size: 1.3rem !important;
     }
     
     /* Success card */
     .success-card {
-        background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
-        color: white;
-        padding: 2rem;
-        border-radius: 15px;
-        margin: 1.5rem 0;
-        box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
-        border-left: 6px solid #1E40AF;
+        background: linear-gradient(145deg, rgba(30, 64, 175, 0.95), rgba(30, 58, 138, 0.9)) !important;
+        color: white !important;
+        padding: 2rem !important;
+        border-radius: 16px !important;
+        margin: 2rem 0 !important;
+        box-shadow: 0 8px 32px rgba(30, 64, 175, 0.2) !important;
+        backdrop-filter: blur(8px) !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.2) !important;
+        border-left: 6px solid #1E3A8A !important;
+    }
+    
+    .success-card h3 {
+        color: white !important;
+        font-weight: 700 !important;
+        margin-bottom: 1rem !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.2) !important;
+        background: none !important;
+        border: none !important;
+        padding: 0 !important;
+    }
+    
+    .success-card p, .success-card ul, .success-card li {
+        color: white !important;
+        font-weight: 600 !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.1) !important;
+        line-height: 1.6 !important;
+    }
+    
+    .success-card strong, .success-card b {
+        color: white !important;
+        font-weight: 700 !important;
     }
     
     /* Info sections */
     .info-section {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 12px;
-        margin: 1rem 0;
-        border-left: 5px solid #1E3A8A;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(248,250,252,0.9)) !important;
+        padding: 2rem !important;
+        border-radius: 16px !important;
+        margin: 1.5rem 0 !important;
+        border-left: 5px solid #1E40AF !important;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.05) !important;
+        backdrop-filter: blur(8px) !important;
     }
     
     .info-section h3 {
-        color: #1E3A8A !important;
-        font-size: 1.3rem;
-        margin-bottom: 1rem;
+        color: #1E40AF !important;
+        margin-bottom: 1rem !important;
+        font-weight: 700 !important;
+        font-size: 1.2rem !important;
+        text-shadow: none !important;
+        background: none !important;
+        border: none !important;
+        padding: 0 !important;
     }
     
-    /* Terms modal */
-    .terms-modal {
-        background: #f8fafc;
-        padding: 1.5rem;
-        border-radius: 12px;
-        margin: 1rem 0;
-        border: 2px solid #1E3A8A;
-        max-height: 300px;
-        overflow-y: auto;
+    .info-section ul, .info-section ol {
+        margin: 1rem 0 0 0 !important;
+        padding-left: 1.5rem !important;
     }
     
-    .terms-modal h4 {
-        color: #1E3A8A;
-        margin-bottom: 1rem;
+    .info-section li {
+        color: #334155 !important;
+        margin: 0.75rem 0 !important;
+        line-height: 1.7 !important;
+        font-size: 1rem !important;
+        text-shadow: none !important;
+        font-weight: 500 !important;
+    }
+    
+    .info-section li strong, .info-section li b {
+        color: #3B82F6 !important;
+        font-weight: 700 !important;
     }
     
     /* Status tracker */
     .status-tracker {
         display: flex;
         justify-content: space-between;
-        margin: 1.5rem 0;
+        margin: 2rem 0;
         position: relative;
+        background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(248,250,252,0.9)) !important;
+        padding: 2rem !important;
+        border-radius: 16px !important;
+        backdrop-filter: blur(8px) !important;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.05) !important;
     }
     
     .status-step {
@@ -269,144 +338,244 @@ def apply_property_styling():
     }
     
     .status-icon {
-        width: 40px;
-        height: 40px;
+        width: 50px;
+        height: 50px;
         border-radius: 50%;
-        background: #e5e7eb;
+        background: #E5E7EB;
         display: flex;
         align-items: center;
         justify-content: center;
         margin-bottom: 0.5rem;
-        font-weight: bold;
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #6B7280;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
     }
     
     .status-icon.active {
-        background: #3B82F6;
+        background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
         color: white;
+        transform: scale(1.1);
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
     }
     
     .status-icon.completed {
-        background: #10B981;
+        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
         color: white;
+        box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
     }
     
     .status-label {
-        font-size: 0.8rem;
+        font-size: 0.9rem;
         text-align: center;
         color: #6B7280;
+        font-weight: 500;
+        max-width: 80px;
     }
     
     .status-label.active {
-        color: #1E3A8A;
-        font-weight: bold;
+        color: #1E40AF;
+        font-weight: 700;
     }
     
     .status-connector {
         position: absolute;
-        top: 20px;
+        top: 25px;
         left: 0;
         right: 0;
-        height: 2px;
-        background: #e5e7eb;
+        height: 3px;
+        background: #E5E7EB;
         z-index: 1;
+        border-radius: 2px;
     }
     
     .status-connector-progress {
         height: 100%;
-        background: #10B981;
-        transition: width 0.3s ease;
+        background: linear-gradient(90deg, #10B981 0%, #3B82F6 100%);
+        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 2px;
     }
     
-    /* Urgency radio styling */
-    .stRadio > div {
-        flex-direction: row;
-        gap: 1rem;
-    }
-    
-    .stRadio > div > label {
-        background: #f1f5f9;
-        padding: 0.75rem 1rem;
-        border-radius: 8px;
-        border: 2px solid #cbd5e1;
-        transition: all 0.3s ease;
-        flex: 1;
-        text-align: center;
-    }
-    
-    .stRadio > div > label:hover {
-        border-color: #1E3A8A;
-        background: #e0f2fe;
-    }
-    
-    .stRadio > div > label[data-testid="stRadio"] > div:first-child {
-        display: none;
-    }
-    
-    /* Buttons */
+    /* Enhanced Buttons */
     .stButton > button {
-        background: linear-gradient(45deg, #1E3A8A 0%, #3B82F6 100%) !important;
+        background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 50%, #F472B6 100%) !important;
         color: white !important;
-        font-weight: bold;
-        font-size: 1.1rem;
-        padding: 0.75rem 2rem;
+        font-weight: 700 !important;
+        font-size: 1.1rem !important;
         border: none !important;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        transition: all 0.3s ease;
-        width: 100%;
+        border-radius: 12px !important;
+        padding: 1rem 2rem !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3) !important;
+        letter-spacing: 0.025em !important;
+        width: 100% !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.2) !important;
     }
     
     .stButton > button:hover {
-        background: linear-gradient(45deg, #1E40AF 0%, #2563EB 100%) !important;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+        background: linear-gradient(135deg, #1E40AF 0%, #7C3AED 50%, #EC4899 100%) !important;
+        transform: translateY(-3px) !important;
+        box-shadow: 0 12px 32px rgba(59, 130, 246, 0.4) !important;
     }
     
-    /* Form elements */
+    /* Enhanced Form Elements */
     .stTextInput > div > div > input, 
     .stTextArea > div > div > textarea,
     .stSelectbox > div > div > select {
-        border: 2px solid #1E3A8A;
-        border-radius: 8px;
-        padding: 0.5rem;
+        background: rgba(255,255,255,0.95) !important;
+        color: #1E293B !important;
+        border: 2px solid rgba(59, 130, 246, 0.3) !important;
+        border-radius: 12px !important;
+        font-size: 1rem !important;
+        text-shadow: none !important;
+        font-weight: 500 !important;
+        backdrop-filter: blur(4px) !important;
+        padding: 0.75rem !important;
+    }
+    
+    .stTextInput > div > div > input:focus, 
+    .stTextArea > div > div > textarea:focus,
+    .stSelectbox > div > div > select:focus {
+        border-color: #3B82F6 !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+    }
+    
+    /* Radio button styling */
+    .stRadio > div {
+        display: flex;
+        flex-direction: row;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .stRadio > div > label {
+        background: rgba(255,255,255,0.9) !important;
+        padding: 1rem !important;
+        border-radius: 12px !important;
+        border: 2px solid rgba(59, 130, 246, 0.3) !important;
+        transition: all 0.3s ease !important;
+        flex: 1 !important;
+        text-align: center !important;
+        cursor: pointer !important;
+        backdrop-filter: blur(4px) !important;
+        min-width: 120px !important;
+    }
+    
+    .stRadio > div > label:hover {
+        border-color: #3B82F6 !important;
+        background: rgba(59, 130, 246, 0.05) !important;
     }
     
     /* Checkbox styling */
     .stCheckbox > label {
-        font-weight: 600;
-        color: #1E3A8A;
+        font-weight: 600 !important;
+        color: #1E293B !important;
+        text-shadow: none !important;
     }
     
     /* File uploader styling */
-    .stFileUploader > section {
-        border: 2px dashed #1E3A8A;
-        border-radius: 8px;
-        padding: 1rem;
-        background: #f8fafc;
+    .stFileUploader > div > section {
+        background: rgba(255,255,255,0.95) !important;
+        border: 2px dashed rgba(59, 130, 246, 0.4) !important;
+        border-radius: 16px !important;
+        color: #1E293B !important;
+        font-weight: 600 !important;
+        padding: 2rem !important;
+        text-shadow: none !important;
+        backdrop-filter: blur(8px) !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    .stFileUploader > div > section:hover {
+        border-color: #3B82F6 !important;
+        background: rgba(59, 130, 246, 0.02) !important;
+    }
+    
+    /* Enhanced Alert Boxes */
+    .stSuccess, .stInfo, .stWarning, .stError {
+        border-radius: 12px !important;
+        font-weight: 600 !important;
+        text-shadow: none !important;
+        backdrop-filter: blur(8px) !important;
+    }
+    
+    .stSuccess {
+        background: rgba(34, 197, 94, 0.1) !important;
+        border: 1px solid rgba(34, 197, 94, 0.3) !important;
+        color: #166534 !important;
+    }
+    
+    .stInfo {
+        background: rgba(59, 130, 246, 0.1) !important;
+        border: 1px solid rgba(59, 130, 246, 0.3) !important;
+        color: #1E40AF !important;
+    }
+    
+    .stWarning {
+        background: rgba(244, 114, 182, 0.1) !important;
+        border: 1px solid rgba(244, 114, 182, 0.3) !important;
+        color: #BE185D !important;
+    }
+    
+    .stError {
+        background: rgba(30, 64, 175, 0.1) !important;
+        border: 1px solid rgba(30, 64, 175, 0.3) !important;
+        color: #1E40AF !important;
+    }
+    
+    /* Terms modal styling */
+    .stExpander {
+        background: rgba(255,255,255,0.95) !important;
+        border-radius: 12px !important;
+        border: 2px solid rgba(59, 130, 246, 0.2) !important;
+        backdrop-filter: blur(8px) !important;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.05) !important;
+        margin: 1rem 0 !important;
+    }
+    
+    .stExpander > div > div > div > div {
+        background: transparent !important;
+        color: #1E293B !important;
     }
     
     /* Mobile responsiveness */
     @media (max-width: 768px) {
-        .main h1, h1, .stMarkdown h1 {
+        .stMarkdown h1, .main h1 {
             font-size: 2.5rem !important;
         }
         
-        .form-container {
-            padding: 1.5rem;
+        .main .block-container {
+            padding: 1rem 1.5rem !important;
+        }
+        
+        .form-container, .form-section, .info-section {
+            padding: 1.5rem !important;
         }
         
         .stRadio > div {
-            flex-direction: column;
-            gap: 0.5rem;
+            flex-direction: column !important;
+            gap: 0.5rem !important;
         }
         
         .status-tracker {
-            flex-direction: column;
-            gap: 1rem;
+            flex-direction: column !important;
+            gap: 1rem !important;
+            padding: 1.5rem !important;
         }
         
         .status-connector {
-            display: none;
+            display: none !important;
+        }
+        
+        .status-icon {
+            width: 40px !important;
+            height: 40px !important;
+            font-size: 1rem !important;
+        }
+        
+        .status-label {
+            max-width: none !important;
         }
     }
     </style>
@@ -417,14 +586,14 @@ def show_success_card(query_data):
     st.markdown(
         f"""
         <div class="success-card">
-            <h3>✅ Query Submitted Successfully!</h3>
+            <h3>Query Submitted Successfully!</h3>
             <p><b>Thank you, {query_data['Name']}!</b></p>
             <p><b>What happens next:</b></p>
             <ul style="line-height:1.7;">
-                <li>📧 You'll receive a confirmation email at {query_data['Email']}</li>
-                <li>👩‍⚖️ A qualified legal professional will review your query</li>
-                <li>📞 Contact via preferred method (phone: {query_data['Phone']})</li>
-                <li>📝 If urgent, we'll prioritize your query accordingly</li>
+                <li>You'll receive a confirmation email at {query_data['Email']}</li>
+                <li>A qualified legal professional will review your query</li>
+                <li>Contact via preferred method (phone: {query_data['Phone']})</li>
+                <li>If urgent, we'll prioritize your query accordingly</li>
             </ul>
             <p><b>Query Details:</b></p>
             <ul style="line-height:1.5;">
@@ -432,7 +601,7 @@ def show_success_card(query_data):
                 <li>Urgency: {query_data['Urgency']}</li>
                 <li>Uploaded Files: {query_data['Files']}</li>
             </ul>
-            <p style="font-size:13px; color:#e0f2fe;">Query ID: {query_data['Query_ID']}</p>
+            <p style="font-size:13px; opacity: 0.9;">Query ID: {query_data['Query_ID']}</p>
         </div>
         """,
         unsafe_allow_html=True
@@ -446,19 +615,21 @@ def show_status_tracker(status="Submitted"):
     st.markdown("""
     <div class="status-tracker">
         <div class="status-connector"><div class="status-connector-progress" style="width: {}%;"></div></div>
-    """.format((current_index / (len(statuses) - 1)) * 100), unsafe_allow_html=True)
+    """.format((current_index / (len(statuses) - 1)) * 100 if len(statuses) > 1 else 0), unsafe_allow_html=True)
     
     for i, status_name in enumerate(statuses):
         status_class = ""
+        label_class = ""
         if i < current_index:
             status_class = "completed"
         elif i == current_index:
             status_class = "active"
+            label_class = "active"
             
         st.markdown(f"""
         <div class="status-step">
             <div class="status-icon {status_class}">{i+1}</div>
-            <div class="status-label {status_class if i == current_index else ''}">{status_name}</div>
+            <div class="status-label {label_class}">{status_name}</div>
         </div>
         """, unsafe_allow_html=True)
     
@@ -466,7 +637,7 @@ def show_status_tracker(status="Submitted"):
 
 def show_terms_modal():
     """Display terms and conditions in an expandable section"""
-    with st.expander("📄 Read Terms and Conditions", expanded=False):
+    with st.expander("Read Terms and Conditions", expanded=False):
         st.markdown("### Property & Legal Assistance Service Terms")
         st.markdown(f"**Last Updated:** {datetime.now().strftime('%B %d, %Y')}")
         
@@ -500,14 +671,11 @@ def run():
         init_db()
         apply_property_styling()
 
-        # Header with blue-purple gradient - FIXED: Using proper HTML structure
-        st.markdown("""
-        <div style="text-align: center;">
-            <h1>🏡 Property & Legal Assistance</h1>
-            <p style="font-size: 1.2rem; color: #64748B;">Expert Guidance for Your Property and Legal Matters</p>
-            <p style="font-size: 0.9rem; color: #94A3B8;">Connect with qualified professionals for your property and legal needs</p>
-        </div>
-        """, unsafe_allow_html=True)
+        # Header with consistent gradient styling
+        st.markdown("# Property & Legal Assistance")
+        st.markdown("### Expert Guidance for Your Property and Legal Matters")
+        st.markdown("*Connect with qualified professionals for your property and legal needs*")
+        st.markdown("---")
 
         # Initialize counters for form and file uploader
         if "pa_form_counter" not in st.session_state:
@@ -525,13 +693,11 @@ def run():
         # Left Column: Form
         # ---------------------------
         with left_col:
-            st.markdown(
-                """
-                <div class="form-container">
-                <h2>Submit Your Query</h2>
-                """,
-                unsafe_allow_html=True
-            )
+            st.markdown("""
+            <div class="form-container">
+            """, unsafe_allow_html=True)
+            
+            st.markdown("## Submit Your Query")
 
             with st.form(key=f"property_form_{form_counter}", clear_on_submit=False):
                 # Personal Information Section
@@ -574,7 +740,7 @@ def run():
                     key=f"pa_query_type_{form_counter}"
                 )
                 
-                # Urgency selection using radio buttons (properly styled)
+                # Urgency selection using radio buttons
                 urgency_options = ["Normal", "Urgent", "Very Urgent"]
                 urgency = st.radio(
                     "Urgency Level *",
@@ -640,7 +806,7 @@ def run():
 
                     if errors:
                         for e in errors:
-                            st.error(f"❌ {e}")
+                            st.error(f"{e}")
                     else:
                         # Save uploaded files
                         file_names = []
@@ -672,7 +838,7 @@ def run():
                         try:
                             save_query(query_data)
                         except Exception:
-                            st.error("⚠️ Failed to save query. See logs for details.")
+                            st.error("Failed to save query. Please try again.")
                             logging.exception("Failed to save query")
                         else:
                             # Increment counters to force form & uploader reset
@@ -753,7 +919,7 @@ def run():
                     st.info("No queries found.")
 
     except Exception as e:
-        st.error(f"⚠️ An unexpected error occurred: {e}")
+        st.error(f"An unexpected error occurred: {e}")
         st.text(traceback.format_exc())
 
 # ---------------------------
