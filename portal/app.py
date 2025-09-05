@@ -518,90 +518,29 @@ st.set_page_config(
 # Apply styling
 apply_beautiful_styling()
 
-# Check if streamlit-option-menu is available
-try:
-    from streamlit_option_menu import option_menu
-    USE_OPTION_MENU = True
-except ImportError:
-    USE_OPTION_MENU = False
-    st.warning("streamlit-option-menu not installed. Using standard sidebar navigation. Install with: pip install streamlit-option-menu")
-
 # ------------------- Navigation -------------------
-if USE_OPTION_MENU:
-    # Enhanced sidebar navigation with option_menu
-    with st.sidebar:
-        selected = option_menu(
-            menu_title=None,
-            options=[
-                "Home", 
-                "Document Summarizer", 
-                "Fraud Detection", 
-                "Will Generator", 
-                "Property & Legal Help", 
-                "Know Your Rights", 
-                "SASSA Loan Assistant"
-            ],
-            icons=[
-                "house",           # Home
-                "file-text",       # Document Summarizer
-                "shield-lock",     # Fraud Detection
-                "file-earmark",    # Will Generator
-                "building",        # Property & Legal Help
-                "book",            # Know Your Rights
-                "cash-coin"        # SASSA Loan Assistant
-            ],
-            menu_icon="cast",
-            default_index=0,
-            orientation="vertical",
-            styles={
-                "container": {
-                    "padding": "0px", 
-                    "background": "transparent !important"
-                },
-                "icon": {
-                    "color": "white", 
-                    "font-size": "18px"
-                },
-                "nav-link": {
-                    "font-size": "16px",
-                    "text-align": "left",
-                    "margin": "0.25rem 0.5rem",
-                    "padding": "0.75rem 1rem",
-                    "color": "white",
-                    "border-radius": "8px",
-                    "background": "rgba(255, 255, 255, 0.1) !important",
-                    "border-left": "3px solid transparent",
-                    "transition": "all 0.3s ease"
-                },
-                "nav-link-selected": {
-                    "background": "rgba(255,255,255,0.25) !important",
-                    "color": "white",
-                    "font-weight": "600",
-                    "border-left": "3px solid white",
-                    "box-shadow": "0 2px 8px rgba(0, 0, 0, 0.1)"
-                },
-                "nav-link:hover": {
-                    "background": "rgba(255, 255, 255, 0.2) !important",
-                    "border-left": "3px solid white"
-                }
-            }
-        )
-else:
-    # Fallback to standard Streamlit sidebar
-    with st.sidebar:
-        st.markdown("### 📋 Legal Tools")
-        selected = st.selectbox(
-            "Choose a tool:",
-            options=[
-                "Home", 
-                "Document Summarizer", 
-                "Fraud Detection", 
-                "Will Generator", 
-                "Property & Legal Help", 
-                "Know Your Rights", 
-                "SASSA Loan Assistant"
-            ]
-        )
+with st.sidebar:
+    st.markdown("""
+    <div style="text-align: center; padding: 1rem 0 2rem 0;">
+        <h2 style="color: white !important; margin: 0; font-size: 1.5rem; font-weight: 700;">
+            <i class="fas fa-balance-scale"></i> Legal Tools
+        </h2>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    selected = st.selectbox(
+        "Choose a tool:",
+        options=[
+            "Home", 
+            "Document Summarizer", 
+            "Fraud Detection", 
+            "Will Generator", 
+            "Property & Legal Help", 
+            "Know Your Rights", 
+            "SASSA Loan Assistant"
+        ],
+        label_visibility="collapsed"
+    )
 
 # ------------------- Page Routing -------------------
 if selected == "Home":
