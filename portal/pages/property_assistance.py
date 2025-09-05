@@ -1,5 +1,3 @@
-# property_assistance.py
-
 import os
 import sqlite3
 import streamlit as st
@@ -98,13 +96,281 @@ def load_queries():
 # UI helpers
 # ---------------------------
 
+def apply_property_styling():
+    st.markdown("""
+    <style>
+    /* Main container */
+    .main .block-container {
+        padding: 1rem 2rem;
+        max-width: 1200px;
+    }
+    
+    /* Header styling */
+    .property-header {
+        background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        text-align: center;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(37, 99, 235, 0.2);
+    }
+    
+    .property-header h1 {
+        color: white !important;
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .property-header p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Form section */
+    .form-container {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        padding: 2rem;
+        border-radius: 15px;
+        margin: 2rem 0;
+        border: 3px solid #1E3A8A;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    }
+    
+    .form-container h2 {
+        color: #1E3A8A !important;
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+    
+    /* Form sections */
+    .form-section {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin: 1.5rem 0;
+        border-left: 5px solid #1E3A8A;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+    
+    .form-section h3 {
+        color: #1E3A8A !important;
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+    }
+    
+    /* Success card */
+    .success-card {
+        background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        margin: 1.5rem 0;
+        box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
+        border-left: 6px solid #1E40AF;
+    }
+    
+    /* Info sections */
+    .info-section {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin: 1rem 0;
+        border-left: 5px solid #1E3A8A;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+    
+    .info-section h3 {
+        color: #1E3A8A !important;
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+    }
+    
+    /* Terms modal */
+    .terms-modal {
+        background: #f8fafc;
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin: 1rem 0;
+        border: 2px solid #1E3A8A;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    
+    .terms-modal h4 {
+        color: #1E3A8A;
+        margin-bottom: 1rem;
+    }
+    
+    /* Status tracker */
+    .status-tracker {
+        display: flex;
+        justify-content: space-between;
+        margin: 1.5rem 0;
+        position: relative;
+    }
+    
+    .status-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .status-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #e5e7eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+    }
+    
+    .status-icon.active {
+        background: #3B82F6;
+        color: white;
+    }
+    
+    .status-icon.completed {
+        background: #10B981;
+        color: white;
+    }
+    
+    .status-label {
+        font-size: 0.8rem;
+        text-align: center;
+        color: #6B7280;
+    }
+    
+    .status-label.active {
+        color: #1E3A8A;
+        font-weight: bold;
+    }
+    
+    .status-connector {
+        position: absolute;
+        top: 20px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: #e5e7eb;
+        z-index: 1;
+    }
+    
+    .status-connector-progress {
+        height: 100%;
+        background: #10B981;
+        transition: width 0.3s ease;
+    }
+    
+    /* Urgency radio styling */
+    .stRadio > div {
+        flex-direction: row;
+        gap: 1rem;
+    }
+    
+    .stRadio > div > label {
+        background: #f1f5f9;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        border: 2px solid #cbd5e1;
+        transition: all 0.3s ease;
+        flex: 1;
+        text-align: center;
+    }
+    
+    .stRadio > div > label:hover {
+        border-color: #1E3A8A;
+        background: #e0f2fe;
+    }
+    
+    .stRadio > div > label[data-testid="stRadio"] > div:first-child {
+        display: none;
+    }
+    
+    /* Buttons */
+    .stButton > button {
+        background: linear-gradient(45deg, #1E3A8A 0%, #3B82F6 100%) !important;
+        color: white !important;
+        font-weight: bold;
+        font-size: 1.1rem;
+        padding: 0.75rem 2rem;
+        border: none !important;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+    
+    .stButton > button:hover {
+        background: linear-gradient(45deg, #1E40AF 0%, #2563EB 100%) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+    }
+    
+    /* Form elements */
+    .stTextInput > div > div > input, 
+    .stTextArea > div > div > textarea,
+    .stSelectbox > div > div > select {
+        border: 2px solid #1E3A8A;
+        border-radius: 8px;
+        padding: 0.5rem;
+    }
+    
+    /* Checkbox styling */
+    .stCheckbox > label {
+        font-weight: 600;
+        color: #1E3A8A;
+    }
+    
+    /* File uploader styling */
+    .stFileUploader > section {
+        border: 2px dashed #1E3A8A;
+        border-radius: 8px;
+        padding: 1rem;
+        background: #f8fafc;
+    }
+    
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+        .property-header h1 {
+            font-size: 2rem;
+        }
+        
+        .form-container {
+            padding: 1.5rem;
+        }
+        
+        .stRadio > div {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .status-tracker {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .status-connector {
+            display: none;
+        }
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 def show_success_card(query_data):
     """Display a nicely formatted success card with full info."""
     st.markdown(
         f"""
-        <div style="max-width:600px; margin:auto; background-color:#e6f7ee; 
-                    padding:20px; border-radius:12px; border-left:6px solid #2ecc71;">
-            <h3 style="color:#2ecc71; margin-top:0;">✅ Query Submitted Successfully!</h3>
+        <div class="success-card">
+            <h3>✅ Query Submitted Successfully!</h3>
             <p><b>Thank you, {query_data['Name']}!</b></p>
             <p><b>What happens next:</b></p>
             <ul style="line-height:1.7;">
@@ -119,11 +385,69 @@ def show_success_card(query_data):
                 <li>Urgency: {query_data['Urgency']}</li>
                 <li>Uploaded Files: {query_data['Files']}</li>
             </ul>
-            <p style="font-size:13px; color:#555;">Query ID: {query_data['Query_ID']}</p>
+            <p style="font-size:13px; color:#e0f2fe;">Query ID: {query_data['Query_ID']}</p>
         </div>
         """,
         unsafe_allow_html=True
     )
+
+def show_status_tracker(status="Submitted"):
+    """Display a status tracker showing the progress of the query"""
+    statuses = ["Submitted", "Under Review", "In Progress", "Resolved"]
+    current_index = statuses.index(status) if status in statuses else 0
+    
+    st.markdown("""
+    <div class="status-tracker">
+        <div class="status-connector"><div class="status-connector-progress" style="width: {}%;"></div></div>
+    """.format((current_index / (len(statuses) - 1)) * 100), unsafe_allow_html=True)
+    
+    for i, status_name in enumerate(statuses):
+        status_class = ""
+        if i < current_index:
+            status_class = "completed"
+        elif i == current_index:
+            status_class = "active"
+            
+        st.markdown(f"""
+        <div class="status-step">
+            <div class="status-icon {status_class}">{i+1}</div>
+            <div class="status-label {status_class if i == current_index else ''}">{status_name}</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    st.markdown("</div>", unsafe_allow_html=True)
+
+def show_terms_modal():
+    """Display terms and conditions in an expandable section"""
+    with st.expander("📄 Read Terms and Conditions", expanded=False):
+        st.markdown("""
+        <div class="terms-modal">
+            <h4>Property & Legal Assistance Service Terms</h4>
+            <p><strong>Last Updated:</strong> {}
+            </p>
+            
+            <h5>1. Service Description</h5>
+            <p>Our Property & Legal Assistance service connects you with qualified professionals who can provide guidance on property and legal matters. This service is designed to offer preliminary advice and direction.</p>
+            
+            <h5>2. Information Collection</h5>
+            <p>We collect personal information including your name, contact details, and information about your property or legal matter to facilitate connecting you with appropriate professionals.</p>
+            
+            <h5>3. Data Protection</h5>
+            <p>Your information is stored securely and only shared with professionals who need it to provide you with assistance. We implement industry-standard security measures to protect your data.</p>
+            
+            <h5>4. Limitations of Service</h5>
+            <p>This service provides initial guidance and does not constitute formal legal representation. For complex legal matters, we recommend engaging a qualified attorney directly.</p>
+            
+            <h5>5. Response Time</h5>
+            <p>We aim to respond to all queries within 2 business days. Urgent queries will be prioritized accordingly.</p>
+            
+            <h5>6. Privacy Commitment</h5>
+            <p>We respect your privacy and will not share your information with third parties for marketing purposes without your explicit consent.</p>
+            
+            <h5>7. Consent to Communication</h5>
+            <p>By using this service, you consent to receive communications related to your query via email, phone, or other provided contact methods.</p>
+        </div>
+        """.format(datetime.now().strftime("%B %d, %Y")), unsafe_allow_html=True)
 
 # ---------------------------
 # Main app
@@ -132,8 +456,16 @@ def show_success_card(query_data):
 def run():
     try:
         init_db()
+        apply_property_styling()
 
-        st.title("🏡 Property & Legal Assistance")
+        # Header
+        st.markdown("""
+        <div class="property-header">
+            <h1>🏡 Property & Legal Assistance</h1>
+            <p>Expert Guidance for Your Property and Legal Matters</p>
+            <p><small>Connect with qualified professionals for your property and legal needs</small></p>
+        </div>
+        """, unsafe_allow_html=True)
 
         # Initialize counters for form and file uploader
         if "pa_form_counter" not in st.session_state:
@@ -153,51 +485,125 @@ def run():
         with left_col:
             st.markdown(
                 """
-                <div style="background-color:#ffffff; padding:25px; border-radius:12px; 
-                            box-shadow:0 4px 12px rgba(0,0,0,0.06); border:1px solid #eee;">
+                <div class="form-container">
+                <h2>Submit Your Query</h2>
                 """,
                 unsafe_allow_html=True
             )
 
             with st.form(key=f"property_form_{form_counter}", clear_on_submit=False):
-                st.subheader("👤 Personal Information")
-                name = st.text_input("Full Name *", key=f"pa_name_{form_counter}")
-                email = st.text_input("Email Address *", key=f"pa_email_{form_counter}")
-                phone = st.text_input("Phone Number", key=f"pa_phone_{form_counter}")
+                # Personal Information Section
+                st.markdown("""
+                <div class="form-section">
+                    <h3>Personal Information</h3>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                name_col, email_col = st.columns(2)
+                with name_col:
+                    name = st.text_input("Full Name *", key=f"pa_name_{form_counter}", 
+                                        placeholder="Enter your full name")
+                with email_col:
+                    email = st.text_input("Email Address *", key=f"pa_email_{form_counter}", 
+                                         placeholder="your.email@example.com")
+                
+                phone = st.text_input("Phone Number", key=f"pa_phone_{form_counter}", 
+                                     placeholder="+27 123 456 7890")
 
-                st.subheader("📋 Query Information")
+                # Query Information Section
+                st.markdown("""
+                <div class="form-section">
+                    <h3>Query Information</h3>
+                </div>
+                """, unsafe_allow_html=True)
+                
                 query_type = st.selectbox(
                     "Type of Assistance Needed *",
                     [
                         "Select query type...",
-                        "🏠 Property Purchase/Sale",
-                        "📄 Property Documentation",
-                        "⚖️ Property Disputes",
-                        "🏢 Rental/Lease Issues",
-                        "👨‍⚖️ General Legal Advice",
-                        "💼 Business Legal Matters",
-                        "🔧 Other Legal Issue"
+                        "Property Purchase/Sale",
+                        "Property Documentation",
+                        "Property Disputes",
+                        "Rental/Lease Issues",
+                        "General Legal Advice",
+                        "Business Legal Matters",
+                        "Other Legal Issue"
                     ],
                     key=f"pa_query_type_{form_counter}"
                 )
+                
+                # Urgency selection using radio buttons (properly styled)
+                urgency_options = ["Normal", "Urgent", "Very Urgent"]
                 urgency = st.radio(
-                    "Urgency Level",
-                    ["🟢 Normal", "🟡 Urgent", "🔴 Very Urgent"],
-                    key=f"pa_urgency_{form_counter}"
+                    "Urgency Level *",
+                    options=urgency_options,
+                    key=f"pa_urgency_{form_counter}",
+                    horizontal=True
                 )
-                description = st.text_area("Detailed Description *", key=f"pa_description_{form_counter}")
+                
+                description = st.text_area("Detailed Description *", key=f"pa_description_{form_counter}", 
+                                          height=150, placeholder="Please describe your property or legal issue in detail...")
 
-                st.subheader("📎 Supporting Documents")
+                # Supporting Documents Section
+                st.markdown("""
+                <div class="form-section">
+                    <h3>Supporting Documents</h3>
+                </div>
+                """, unsafe_allow_html=True)
+                
                 uploaded_files = st.file_uploader(
-                    "Upload relevant documents",
+                    "Upload relevant documents (PDF, images, text files)",
                     accept_multiple_files=True,
-                    key=f"pa_files_{file_counter}"
+                    key=f"pa_files_{file_counter}",
+                    help="Upload any contracts, photos, or documents related to your query"
                 )
+                
+                if uploaded_files:
+                    st.success(f"{len(uploaded_files)} file(s) selected for upload")
 
-                privacy_agreed = st.checkbox("I agree to the privacy policy and terms", key=f"pa_privacy_{form_counter}")
-                marketing_consent = st.checkbox("I consent to receive follow-up communications", key=f"pa_marketing_{form_counter}")
+                # Privacy & Consent Section
+                st.markdown("""
+                <div class="form-section">
+                    <h3>Privacy & Consent</h3>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                # Terms and conditions - FIXED FORMATTING
+                with st.expander("📄 Read Terms and Conditions", expanded=False):
+                    st.markdown("### Property & Legal Assistance Service Terms")
+                    st.markdown(f"**Last Updated:** {datetime.now().strftime('%B %d, %Y')}")
+                    
+                    st.markdown("#### 1. Service Description")
+                    st.markdown("Our Property & Legal Assistance service connects you with qualified professionals who can provide guidance on property and legal matters. This service is designed to offer preliminary advice and direction.")
+                    
+                    st.markdown("#### 2. Information Collection")
+                    st.markdown("We collect personal information including your name, contact details, and information about your property or legal matter to facilitate connecting you with appropriate professionals.")
+                    
+                    st.markdown("#### 3. Data Protection")
+                    st.markdown("Your information is stored securely and only shared with professionals who need it to provide you with assistance. We implement industry-standard security measures to protect your data.")
+                    
+                    st.markdown("#### 4. Limitations of Service")
+                    st.markdown("This service provides initial guidance and does not constitute formal legal representation. For complex legal matters, we recommend engaging a qualified attorney directly.")
+                    
+                    st.markdown("#### 5. Response Time")
+                    st.markdown("We aim to respond to all queries within 2 business days. Urgent queries will be prioritized accordingly.")
+                    
+                    st.markdown("#### 6. Privacy Commitment")
+                    st.markdown("We respect your privacy and will not share your information with third parties for marketing purposes without your explicit consent.")
+                    
+                    st.markdown("#### 7. Consent to Communication")
+                    st.markdown("By using this service, you consent to receive communications related to your query via email, phone, or other provided contact methods.")
+                
+                privacy_col, marketing_col = st.columns(2)
+                with privacy_col:
+                    privacy_agreed = st.checkbox("I agree to the privacy policy and terms *", 
+                                                key=f"pa_privacy_{form_counter}")
+                with marketing_col:
+                    marketing_consent = st.checkbox("I consent to receive follow-up communications", 
+                                                   key=f"pa_marketing_{form_counter}")
 
-                submit = st.form_submit_button("Submit Query 📤")
+                # Submit button (must be inside the form)
+                submit = st.form_submit_button("Submit Query", use_container_width=True)
 
                 if submit:
                     # Validation
@@ -240,7 +646,7 @@ def run():
                             "Description": description.strip(),
                             "Files": ", ".join(file_names) if file_names else "None",
                             "Marketing_Consent": "Yes" if marketing_consent else "No",
-                            "Status": "Pending Review"
+                            "Status": "Submitted"
                         }
 
                         # Save to DB
@@ -253,27 +659,77 @@ def run():
                             # Increment counters to force form & uploader reset
                             st.session_state["pa_form_counter"] += 1
                             st.session_state["pa_files_counter"] += 1
-
+                            
+                            # Show status tracker
+                            st.markdown("""
+                            <div class="form-section">
+                                <h3>Query Status</h3>
+                            </div>
+                            """, unsafe_allow_html=True)
+                            show_status_tracker("Submitted")
+                            
                             # Show success
                             show_success_card(query_data)
 
             st.markdown("</div>", unsafe_allow_html=True)
 
         # ---------------------------
-        # Right Column: Previous Queries
+        # Right Column: Information & Previous Queries
         # ---------------------------
         with right_col:
-            show_queries = st.checkbox("📂 Show My Previous Queries")
+            # Information section
+            st.markdown("""
+            <div class="info-section">
+                <h3>How It Works</h3>
+                <ol style="line-height:1.7;">
+                    <li>Submit your property or legal query</li>
+                    <li>Our system reviews your information</li>
+                    <li>A qualified professional contacts you</li>
+                    <li>Receive personalized guidance</li>
+                </ol>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Response time information
+            st.markdown("""
+            <div class="info-section">
+                <h3>Expected Response Times</h3>
+                <ul style="line-height:1.7;">
+                    <li><b>Normal queries:</b> 2-3 business days</li>
+                    <li><b>Urgent queries:</b> Within 24 hours</li>
+                    <li><b>Very urgent:</b> Same day response</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Contact information
+            st.markdown("""
+            <div class="info-section">
+                <h3>Need Immediate Help?</h3>
+                <p><b>Phone:</b> 0861 123 456</p>
+                <p><b>Email:</b> help@propertylegal.co.za</p>
+                <p><b>Hours:</b> Mon-Fri, 8am-5pm</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Previous queries section with status tracking
+            show_queries = st.checkbox("View My Previous Queries")
             if show_queries:
-                st.subheader("🔧 Previous Queries")
+                st.markdown("""
+                <div class="info-section">
+                    <h3>Previous Queries</h3>
+                </div>
+                """, unsafe_allow_html=True)
+                
                 df = load_queries()
                 if df is not None and not df.empty:
-                    expected_cols = ["query_id", "timestamp", "query_type", "urgency", "status"]
-                    display_cols = [col for col in expected_cols if col in df.columns]
-                    if display_cols:
-                        st.dataframe(df[display_cols].tail(10), width="stretch")
-                    else:
-                        st.dataframe(df.tail(10), width="stretch")
+                    # Show status for each query
+                    for _, row in df.tail(5).iterrows():
+                        with st.expander(f"Query: {row['query_id']} - {row['query_type']}"):
+                            st.write(f"**Submitted:** {row['timestamp']}")
+                            st.write(f"**Status:** {row.get('status', 'Submitted')}")
+                            show_status_tracker(row.get('status', 'Submitted'))
+                            st.write(f"**Description:** {row['description'][:100]}...")
                 else:
                     st.info("No queries found.")
 
