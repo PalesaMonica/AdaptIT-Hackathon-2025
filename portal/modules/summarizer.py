@@ -106,11 +106,49 @@ def apply_legal_portal_styling():
     }
     
     .next-steps {
-        background: linear-gradient(145deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05));
+        background: linear-gradient(145deg, rgba(139, 92, 246, 0.15), rgba(244, 114, 182, 0.1));
         padding: 2rem;
         border-radius: 16px;
-        border: 2px solid rgba(139, 92, 246, 0.2);
+        border: 2px solid rgba(139, 92, 246, 0.3);
         margin: 2rem 0;
+        color: #1E293B;
+    }
+    
+    .next-steps h4 {
+        background: linear-gradient(135deg, 
+            #1E40AF 0%,
+            #3B82F6 15%,
+            #6366F1 30%,
+            #8B5CF6 45%,
+            #A855F7 60%,
+            #C026D3 75%,
+            #E879F9 90%,
+            #F472B6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .action-step {
+        background: rgba(255, 255, 255, 0.8);
+        padding: 1rem 1.5rem;
+        border-radius: 10px;
+        margin: 0.8rem 0;
+        border-left: 4px solid;
+        border-left-color: #8B5CF6;
+        font-weight: 500;
+        font-size: 1.1rem;
+        color: #1E293B;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(139, 92, 246, 0.1);
+    }
+    
+    .action-step:hover {
+        transform: translateX(5px);
+        box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2);
     }
     
     .risk-indicator {
@@ -140,24 +178,82 @@ def apply_legal_portal_styling():
         color: #166534;
     }
     
-    .easy-button {
-        background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%) !important;
+    /* Blue-Pink Gradient Buttons - Multiple Selectors for Better Coverage */
+    .stButton > button,
+    button[kind="primary"],
+    button[kind="secondary"],
+    .stButton button,
+    div[data-testid="stButton"] > button {
+        background: linear-gradient(135deg, 
+            #1E40AF 0%,
+            #3B82F6 20%,
+            #6366F1 40%,
+            #8B5CF6 60%,
+            #C026D3 80%,
+            #F472B6 100%) !important;
         color: white !important;
         font-weight: 700 !important;
-        font-size: 1.3rem !important;
+        font-size: 1.2rem !important;
         border: none !important;
         border-radius: 12px !important;
-        padding: 1.5rem 2rem !important;
+        padding: 1rem 2rem !important;
         margin: 0.5rem 0 !important;
         transition: all 0.3s ease !important;
-        box-shadow: 0 6px 20px rgba(34, 197, 94, 0.3) !important;
+        box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3) !important;
+        width: 100% !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+        min-height: 3rem !important;
+    }
+    
+    .stButton > button:hover,
+    button[kind="primary"]:hover,
+    button[kind="secondary"]:hover,
+    .stButton button:hover,
+    div[data-testid="stButton"] > button:hover {
+        background: linear-gradient(135deg, 
+            #1E3A8A 0%,
+            #2563EB 20%,
+            #4F46E5 40%,
+            #7C3AED 60%,
+            #A21CAF 80%,
+            #EC4899 100%) !important;
+        transform: translateY(-3px) !important;
+        box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4) !important;
+        color: white !important;
+    }
+    
+    .stButton > button:active,
+    button[kind="primary"]:active,
+    button[kind="secondary"]:active,
+    .stButton button:active,
+    div[data-testid="stButton"] > button:active {
+        transform: translateY(-1px) !important;
+        background: linear-gradient(135deg, 
+            #1E40AF 0%,
+            #3B82F6 20%,
+            #6366F1 40%,
+            #8B5CF6 60%,
+            #C026D3 80%,
+            #F472B6 100%) !important;
+    }
+    
+    /* Force override any default Streamlit button styles */
+    .stButton {
         width: 100% !important;
     }
     
-    .easy-button:hover {
-        background: linear-gradient(135deg, #16A34A 0%, #15803D 100%) !important;
-        transform: translateY(-2px) !important;
-        box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4) !important;
+    .stButton > button[data-testid="baseButton-secondary"],
+    .stButton > button[data-testid="baseButton-primary"] {
+        background: linear-gradient(135deg, 
+            #1E40AF 0%,
+            #3B82F6 20%,
+            #6366F1 40%,
+            #8B5CF6 60%,
+            #C026D3 80%,
+            #F472B6 100%) !important;
+        border: none !important;
+        color: white !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -355,38 +451,38 @@ def get_plain_language_explanation(doc_type):
 def generate_action_steps(doc_type, risks):
     """Generate specific next steps for the user"""
     base_steps = [
-        "Read this summary carefully",
-        "Ask questions about anything unclear",
-        "Keep a copy of the original document",
-        "Note important dates in your calendar"
+        "Read this summary carefully and make sure you understand it",
+        "Ask questions about anything that seems unclear or confusing",
+        "Keep a copy of the original document in a safe place",
+        "Mark any important dates in your calendar with reminders"
     ]
     
     risk_based_steps = []
     
     if any(risk['level'] == 'high' for risk in risks):
         risk_based_steps.extend([
-            "Consider consulting with a lawyer",
-            "Don't sign until you fully understand",
-            "Ask about modifying concerning terms"
+            "Consider consulting with a qualified lawyer before proceeding",
+            "Do not sign until you fully understand all terms and consequences",
+            "Ask if any concerning terms can be modified or removed"
         ])
     
     if doc_type == 'rental_agreement':
         risk_based_steps.extend([
-            "Inspect the property before signing",
-            "Understand your tenant rights",
-            "Know the eviction process in your area"
+            "Inspect the property thoroughly before signing anything",
+            "Research your tenant rights in your specific area",
+            "Understand the eviction process and your protections"
         ])
     elif doc_type == 'employment':
         risk_based_steps.extend([
-            "Negotiate salary and benefits if possible",
-            "Understand your employee rights",
-            "Review company policies"
+            "Negotiate salary and benefits if there's room for improvement",
+            "Review your employee rights and company policies",
+            "Keep records of your work performance and communications"
         ])
     elif doc_type == 'financial':
         risk_based_steps.extend([
-            "Compare with other loan offers",
-            "Calculate total cost of the loan",
-            "Understand bankruptcy implications"
+            "Compare this offer with other loan options available",
+            "Calculate the total cost of the loan over its lifetime",
+            "Understand how this affects your credit and financial future"
         ])
     
     return base_steps + risk_based_steps
@@ -593,7 +689,7 @@ def run():
 
         if extracted_text and len(extracted_text.strip()) > 0:
             
-            # Show the big friendly button
+            # Show the big friendly button with special styling
             st.markdown("---")
             if st.button("Explain This Document to Me!", key="main_analyze", help="Click to get a simple explanation"):
                 
@@ -700,37 +796,44 @@ def run():
                 </div>
                 """, unsafe_allow_html=True)
                 
-                # Next steps
+                # Next steps with enhanced container styling
                 st.markdown("## What Should You Do Next?")
+                
+                # Build the complete HTML string for action steps
+                action_steps_content = ""
+                for i, step in enumerate(next_steps, 1):
+                    action_steps_content += f'<div class="action-step"><strong>Step {i}:</strong> {step}</div>'
+                
+                # Create the complete HTML block
                 st.markdown(f"""
                 <div class="next-steps">
-                    <strong>Your Action Plan:</strong><br><br>
+                    <h4>Your Action Plan</h4>
+                    <p style="margin-bottom: 1.5rem; font-size: 1.1rem; color: #64748B;">
+                        Follow these steps to protect yourself and make informed decisions:
+                    </p>
+                    {action_steps_content}
+                </div>
                 """, unsafe_allow_html=True)
-                
-                for step in next_steps:
-                    st.markdown(f"**{step}**")
-                
-                st.markdown("</div>", unsafe_allow_html=True)
                 
                 # Audio section
                 play_audio_summary(simplified_summary)
                 
-                # Additional resources
+                # Additional resources with gradient buttons
                 st.markdown("---")
                 st.markdown("## Need More Help?")
                 
                 help_col1, help_col2, help_col3 = st.columns(3)
                 
                 with help_col1:
-                    if st.button("Find Legal Aid", help="Find free legal help in your area"):
+                    if st.button("Find Legal Aid", help="Find free legal help in your area", key="legal_aid"):
                         st.info("Search for 'legal aid' + your city name, or call 211 for local resources.")
                 
                 with help_col2:
-                    if st.button("Common Questions", help="See frequently asked questions"):
+                    if st.button("Common Questions", help="See frequently asked questions", key="faq"):
                         st.info("Check our FAQ section in the sidebar for common concerns!")
                 
                 with help_col3:
-                    if st.button("Print Summary", help="Get a printable version"):
+                    if st.button("Print Summary", help="Get a printable version", key="print"):
                         st.info("Use your browser's print function to save this analysis!")
         
         else:
