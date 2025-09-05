@@ -13,6 +13,434 @@ from gtts import gTTS
 SUPPORTED_FORMATS = ["jpg","jpeg","png","webp","pdf","txt","doc","docx"]
 MAX_FILE_SIZE = 10*1024*1024
 
+# ---------------- Enhanced Professional Styling with Better Visibility ----------------
+def apply_legal_portal_styling():
+    st.markdown("""
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    
+    * {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    
+    .main .block-container {
+        padding: 2rem 3rem;
+        background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 25%, #CBD5E1 50%, #94A3B8 75%, #64748B 100%);
+        min-height: 100vh;
+        color: #1E293B;
+    }
+    
+    /* Elegant Blue-to-Pink Gradient Heading */
+    .stMarkdown h1, .main h1 {
+        font-family: 'Inter', sans-serif !important;
+        font-weight: 700 !important;
+        font-size: 3.5rem !important;
+        text-align: center !important;
+        letter-spacing: -0.02em !important;
+        margin: 2rem 0 2.5rem 0 !important;
+        padding: 1.5rem 0 !important;
+        position: relative !important;
+        background: linear-gradient(135deg, 
+            #1E40AF 0%,
+            #3B82F6 15%,
+            #6366F1 30%,
+            #8B5CF6 45%,
+            #A855F7 60%,
+            #C026D3 75%,
+            #E879F9 90%,
+            #F472B6 100%) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        background-clip: text !important;
+        text-shadow: 
+            0 2px 10px rgba(30, 64, 175, 0.4),
+            0 4px 20px rgba(244, 114, 182, 0.3) !important;
+        filter: drop-shadow(0 0 15px rgba(139, 92, 246, 0.3)) !important;
+    }
+    
+    /* Subtle Blue-Pink Accent Lines */
+    .stMarkdown h1::before, .main h1::before {
+        content: '' !important;
+        position: absolute !important;
+        top: -8px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 60% !important;
+        height: 3px !important;
+        background: linear-gradient(90deg, 
+            transparent 0%, 
+            #1E40AF 30%, 
+            #8B5CF6 50%, 
+            #F472B6 70%, 
+            transparent 100%) !important;
+        border-radius: 2px !important;
+        opacity: 0.8 !important;
+    }
+    
+    .stMarkdown h1::after, .main h1::after {
+        content: '' !important;
+        position: absolute !important;
+        bottom: -8px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 40% !important;
+        height: 3px !important;
+        background: linear-gradient(90deg, 
+            transparent 0%, 
+            #3B82F6 25%, 
+            #A855F7 50%, 
+            #F472B6 75%, 
+            transparent 100%) !important;
+        border-radius: 2px !important;
+        opacity: 0.6 !important;
+    }
+    
+    /* Improved Section Headings */
+    .main h2, .main h3 {
+        color: #0F172A !important;
+        font-weight: 700 !important;
+        font-size: 1.5rem !important;
+        border-left: 4px solid #3B82F6 !important;
+        padding-left: 1rem !important;
+        margin: 2rem 0 1rem 0 !important;
+        text-shadow: none !important;
+        background: linear-gradient(145deg, rgba(59, 130, 246, 0.08), rgba(59, 130, 246, 0.05)) !important;
+        padding: 0.75rem 1rem !important;
+        border-radius: 0 8px 8px 0 !important;
+    }
+    
+    /* Enhanced Text Visibility */
+    .main p, .main li, .main div {
+        color: #1E293B !important;
+        line-height: 1.7 !important;
+        text-shadow: none !important;
+        font-weight: 500 !important;
+        font-size: 1rem !important;
+    }
+    
+    /* Stronger text for important content */
+    .main strong, .main b {
+        color: #0F172A !important;
+        font-weight: 700 !important;
+        text-shadow: none !important;
+    }
+    
+    .feature-list {
+        background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(248,250,252,0.9)) !important;
+        padding: 2rem !important;
+        border-radius: 16px !important;
+        border: 2px solid rgba(59, 130, 246, 0.2) !important;
+        margin: 2rem 0 !important;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.08) !important;
+        backdrop-filter: blur(8px) !important;
+    }
+    
+    .feature-list strong {
+        color: #1E40AF !important;
+        font-size: 1.1rem !important;
+        font-weight: 700 !important;
+        text-shadow: none !important;
+    }
+    
+    .feature-list ul {
+        margin: 1rem 0 0 0 !important;
+        padding-left: 1.5rem !important;
+    }
+    
+    .feature-list li {
+        color: #334155 !important;
+        margin: 0.75rem 0 !important;
+        line-height: 1.7 !important;
+        font-size: 1rem !important;
+        text-shadow: none !important;
+        font-weight: 500 !important;
+    }
+    
+    .feature-list li strong {
+        color: #3B82F6 !important;
+        font-weight: 700 !important;
+    }
+    
+    /* Enhanced Buttons */
+    .stButton > button {
+        background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 50%, #F472B6 100%) !important;
+        color: white !important;
+        font-weight: 700 !important;
+        font-size: 1.1rem !important;
+        border: none !important;
+        border-radius: 12px !important;
+        padding: 1rem 2rem !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3) !important;
+        letter-spacing: 0.025em !important;
+        width: 100% !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.2) !important;
+    }
+    
+    .stButton > button:hover {
+        background: linear-gradient(135deg, #1E40AF 0%, #7C3AED 50%, #EC4899 100%) !important;
+        transform: translateY(-3px) !important;
+        box-shadow: 0 12px 32px rgba(59, 130, 246, 0.4) !important;
+    }
+    
+    /* Risk Level Styling - Updated to match blue-pink theme */
+    .risk-high {
+        background: linear-gradient(135deg, #3B82F6, #8B5CF6) !important;
+        color: white !important;
+        padding: 2rem !important;
+        border-radius: 16px !important;
+        border-left: 6px solid #1E40AF !important;
+        margin: 2rem 0 !important;
+        box-shadow: 0 12px 32px rgba(59, 130, 246, 0.3) !important;
+        backdrop-filter: blur(8px) !important;
+        animation: pulseBlue 2s infinite !important;
+    }
+    
+    .risk-medium {
+        background: linear-gradient(135deg, #8B5CF6, #A855F7) !important;
+        color: white !important;
+        padding: 2rem !important;
+        border-radius: 16px !important;
+        border-left: 6px solid #7C3AED !important;
+        margin: 2rem 0 !important;
+        box-shadow: 0 12px 32px rgba(139, 92, 246, 0.3) !important;
+        backdrop-filter: blur(8px) !important;
+        animation: pulsePurple 2s infinite !important;
+    }
+    
+    .risk-low {
+        background: linear-gradient(135deg, #C026D3, #E879F9) !important;
+        color: white !important;
+        padding: 2rem !important;
+        border-radius: 16px !important;
+        border-left: 6px solid #A855F7 !important;
+        margin: 2rem 0 !important;
+        box-shadow: 0 12px 32px rgba(192, 38, 211, 0.3) !important;
+        backdrop-filter: blur(8px) !important;
+    }
+    
+    @keyframes pulseBlue {
+        0%, 100% { box-shadow: 0 12px 32px rgba(59, 130, 246, 0.3); }
+        50% { box-shadow: 0 16px 40px rgba(59, 130, 246, 0.5), 0 0 0 4px rgba(59, 130, 246, 0.1); }
+    }
+    
+    @keyframes pulsePurple {
+        0%, 100% { box-shadow: 0 12px 32px rgba(139, 92, 246, 0.3); }
+        50% { box-shadow: 0 16px 40px rgba(139, 92, 246, 0.5), 0 0 0 4px rgba(139, 92, 246, 0.1); }
+    }
+    
+    /* Enhanced Alert Boxes */
+    .stSuccess, .stInfo, .stWarning, .stError {
+        border-radius: 12px !important;
+        font-weight: 600 !important;
+        text-shadow: none !important;
+        backdrop-filter: blur(8px) !important;
+    }
+    
+    .stSuccess {
+        background: rgba(34, 197, 94, 0.1) !important;
+        border: 1px solid rgba(34, 197, 94, 0.3) !important;
+        color: #166534 !important;
+    }
+    
+    .stInfo {
+        background: rgba(59, 130, 246, 0.1) !important;
+        border: 1px solid rgba(59, 130, 246, 0.3) !important;
+        color: #1E40AF !important;
+    }
+    
+    .stWarning {
+        background: rgba(245, 158, 11, 0.1) !important;
+        border: 1px solid rgba(245, 158, 11, 0.3) !important;
+        color: #92400E !important;
+    }
+    
+    .stError {
+        background: rgba(239, 68, 68, 0.1) !important;
+        border: 1px solid rgba(239, 68, 68, 0.3) !important;
+        color: #DC2626 !important;
+    }
+    
+    /* Enhanced Summary Containers */
+    .analysis-container {
+        background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(248,250,252,0.9)) !important;
+        padding: 2rem !important;
+        border-radius: 16px !important;
+        border: 2px solid rgba(59, 130, 246, 0.2) !important;
+        margin: 1.5rem 0 !important;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.08) !important;
+        backdrop-filter: blur(8px) !important;
+    }
+    
+    .analysis-container strong {
+        color: #1E40AF !important;
+        font-size: 1.2rem !important;
+        font-weight: 700 !important;
+    }
+    
+    .analysis-container p, .analysis-container div {
+        color: #334155 !important;
+        font-weight: 500 !important;
+    }
+    
+    /* Enhanced Audio Section */
+    .audio-section {
+        background: linear-gradient(145deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05)) !important;
+        padding: 2rem !important;
+        border-radius: 16px !important;
+        border: 2px solid rgba(139, 92, 246, 0.2) !important;
+        margin: 2rem 0 !important;
+        box-shadow: 0 8px 32px rgba(139, 92, 246, 0.15) !important;
+        backdrop-filter: blur(8px) !important;
+    }
+    
+    .audio-section h3 {
+        color: #6B21A8 !important;
+        font-weight: 700 !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    .audio-section p {
+        color: #475569 !important;
+        font-weight: 600 !important;
+    }
+    
+    /* File uploader styling */
+    .stFileUploader > div > button {
+        background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(248,250,252,0.8)) !important;
+        border: 2px dashed rgba(59, 130, 246, 0.4) !important;
+        border-radius: 12px !important;
+        color: #1E293B !important;
+        font-weight: 600 !important;
+        padding: 2rem !important;
+        text-shadow: none !important;
+    }
+    
+    /* Metric styling */
+    .metric-container {
+        background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(248,250,252,0.8)) !important;
+        padding: 1.5rem !important;
+        border-radius: 12px !important;
+        text-align: center !important;
+        border: 2px solid rgba(59, 130, 246, 0.2) !important;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.05) !important;
+        backdrop-filter: blur(8px) !important;
+    }
+    
+    /* Interactive tip cards */
+    .tip-card {
+        background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(248,250,252,0.8));
+        padding: 1rem 1.5rem;
+        margin: 0.5rem 0;
+        border-radius: 8px;
+        border-left: 4px solid #3B82F6;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .tip-card:hover {
+        transform: translateX(10px);
+        background: rgba(59, 130, 246, 0.05);
+        box-shadow: 0 4px 16px rgba(59, 130, 246, 0.1);
+    }
+    
+    /* Sidebar improvements */
+    .css-1d391kg {
+        background: linear-gradient(180deg, rgba(248, 250, 252, 0.98), rgba(226, 232, 240, 0.95)) !important;
+        backdrop-filter: blur(12px) !important;
+    }
+    
+    .css-1d391kg .markdown-text-container {
+        color: #1E293B !important;
+        text-shadow: none !important;
+        font-weight: 500 !important;
+    }
+    
+    .css-1d391kg h2 {
+        color: #0F172A !important;
+        font-weight: 700 !important;
+    }
+    
+    .css-1d391kg h3 {
+        color: #1E40AF !important;
+        font-weight: 600 !important;
+    }
+    
+    .css-1d391kg strong {
+        color: #0F172A !important;
+        font-weight: 700 !important;
+    }
+    
+    /* Progress indicator */
+    .progress-step {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        margin: 0 5px;
+        line-height: 20px;
+        text-align: center;
+        font-size: 12px;
+        font-weight: bold;
+        color: white;
+    }
+    
+    .progress-active {
+        background: linear-gradient(45deg, #3B82F6, #8B5CF6);
+        animation: pulse 1s infinite;
+    }
+    
+    .progress-completed {
+        background: #10B981;
+    }
+    
+    .progress-pending {
+        background: #9CA3AF;
+    }
+    
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+# ---------------- Interactive Helper Functions ----------------
+def create_progress_indicator(current_step, total_steps):
+    """Create visual progress indicator"""
+    progress_html = "<div style='text-align: center; margin: 1rem 0;'>"
+    
+    for i in range(1, total_steps + 1):
+        if i < current_step:
+            progress_html += f"<span class='progress-step progress-completed'>{i}</span>"
+        elif i == current_step:
+            progress_html += f"<span class='progress-step progress-active'>{i}</span>"
+        else:
+            progress_html += f"<span class='progress-step progress-pending'>{i}</span>"
+    
+    progress_html += "</div>"
+    st.markdown(progress_html, unsafe_allow_html=True)
+
+def create_interactive_stats(suspicious_count, red_flag_count, risk_score):
+    """Create interactive statistics display"""
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.markdown('<div class="metric-container">', unsafe_allow_html=True)
+        st.metric(label="Suspicious Phrases", value=f"{suspicious_count}")
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown('<div class="metric-container">', unsafe_allow_html=True)
+        st.metric(label="Red Flags", value=f"{red_flag_count}")
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    with col3:
+        st.markdown('<div class="metric-container">', unsafe_allow_html=True)
+        st.metric(label="Risk Score", value=f"{risk_score}/100")
+        st.markdown('</div>', unsafe_allow_html=True)
+
 # ---------------- Fraud Detection Rules ----------------
 class FraudDetector:
     def __init__(self):
@@ -120,87 +548,6 @@ class FraudDetector:
         score += len(metadata_issues) * 15
         
         return min(score, max_score)
-
-# ---------------- Styling ----------------
-def apply_fraud_detection_styling():
-    st.markdown("""
-    <style>
-    :root {
-        --primary-blue: #1E40AF;
-        --secondary-blue: #3B82F6;
-        --light-blue: #DBEAFE;
-        --dark-blue: #1E3A8A;
-        --accent-blue: #2563EB;
-        --neutral-gray: #4B5563;
-    }
-    .main .block-container {
-        padding: 2rem;
-        background: linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%);
-        border-radius: 8px;
-        color: #1F2937;
-    }
-    .main h1 {
-        color: var(--primary-blue) !important;
-        text-align: center;
-        font-weight: 600;
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-    }
-    .main h2, .main h3 {
-        color: var(--dark-blue) !important;
-        border-left: 4px solid var(--accent-blue);
-        padding-left: 12px;
-        font-weight: 500;
-    }
-    .stButton > button {
-        background: linear-gradient(45deg, var(--primary-blue), var(--secondary-blue)) !important;
-        color: white !important;
-        font-weight: 500;
-        border: none;
-        border-radius: 6px;
-        padding: 10px 24px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .risk-high {
-        background: linear-gradient(135deg, #DC2626, #EF4444);
-        color: white;
-        padding: 20px;
-        border-radius: 8px;
-        border-left: 4px solid #B91C1C;
-        margin: 1rem 0;
-    }
-    .risk-medium {
-        background: linear-gradient(135deg, #F59E0B, #FBBF24);
-        color: white;
-        padding: 20px;
-        border-radius: 8px;
-        border-left: 4px solid #D97706;
-        margin: 1rem 0;
-    }
-    .risk-low {
-        background: linear-gradient(135deg, #059669, #10B981);
-        color: white;
-        padding: 20px;
-        border-radius: 8px;
-        border-left: 4px solid #047857;
-        margin: 1rem 0;
-    }
-    .metric-container {
-        background: var(--light-blue);
-        padding: 15px;
-        border-radius: 8px;
-        text-align: center;
-        border: 1px solid var(--secondary-blue);
-    }
-    .sidebar .sidebar-content {
-        background: linear-gradient(180deg, var(--light-blue) 0%, #FFFFFF 100%);
-    }
-    .stAlert {
-        border-radius: 6px;
-        border-left: 4px solid var(--accent-blue);
-    }
-    </style>
-    """, unsafe_allow_html=True)
 
 # ---------------- OCR Functions ----------------
 @st.cache_resource
@@ -315,7 +662,8 @@ def display_fraud_analysis_results(detector, text):
     col1, col2 = st.columns(2)
     
     with col1:
-        st.subheader("Suspicious Patterns Found")
+        st.markdown('<div class="analysis-container">', unsafe_allow_html=True)
+        st.markdown("**Suspicious Patterns Found**")
         
         if patterns['suspicious_phrases']:
             st.error("**Suspicious Phrases Detected:**")
@@ -331,9 +679,11 @@ def display_fraud_analysis_results(detector, text):
             st.warning("**Urgency Indicators:**")
             for indicator in patterns['urgency_indicators']:
                 st.write(f"• {indicator}")
+        st.markdown('</div>', unsafe_allow_html=True)
     
     with col2:
-        st.subheader("Financial & Contact Analysis")
+        st.markdown('<div class="analysis-container">', unsafe_allow_html=True)
+        st.markdown("**Financial & Contact Analysis**")
         
         if patterns['financial_promises']:
             st.warning("**Financial Claims:**")
@@ -344,19 +694,18 @@ def display_fraud_analysis_results(detector, text):
             st.error("**Document Issues:**")
             for issue in metadata_issues:
                 st.write(f"• {issue}")
-        
-        # Show metrics
-        st.subheader("Analysis Metrics")
-        col3, col4, col5 = st.columns(3)
-        with col3:
-            st.metric("Suspicious Phrases", len(patterns['suspicious_phrases']))
-        with col4:
-            st.metric("Red Flags", len(patterns['red_flags']))
-        with col5:
-            st.metric("Risk Score", f"{risk_score}/100")
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    # Show metrics
+    st.markdown("### Analysis Metrics")
+    create_interactive_stats(
+        len(patterns['suspicious_phrases']), 
+        len(patterns['red_flags']), 
+        risk_score
+    )
     
     # Recommendations
-    st.subheader("Security Recommendations")
+    st.markdown("### Security Recommendations")
     
     if risk_score >= 70:
         st.error("""
@@ -384,11 +733,16 @@ def display_fraud_analysis_results(detector, text):
         - Keep copies of all signed documents
         """)
     
-    # Audio alert
-    st.subheader("Audio Risk Alert")
+    # Audio alert with enhanced styling
+    st.markdown('<div class="audio-section">', unsafe_allow_html=True)
+    st.markdown("### Audio Risk Alert")
+    st.markdown("**Listen to automated security briefing:**")
     audio_file = create_audio_alert(risk_score)
     if audio_file:
         st.audio(audio_file, format="audio/mp3")
+    else:
+        st.caption("Audio alert unavailable")
+    st.markdown('</div>', unsafe_allow_html=True)
     
     return risk_score, risk_level
 
@@ -433,39 +787,27 @@ def run():
         initial_sidebar_state="collapsed"
     )
     
-    apply_fraud_detection_styling()
+    apply_legal_portal_styling()
 
-    st.title("Legal Document Fraud Detection")
+    st.markdown("# ⚖️ Legal Document Fraud Detection")
+    
     st.markdown("""
-    **Advanced fraud detection system** for legal documents. Upload any document to:
-    - **Detect suspicious patterns** and common fraud indicators
-    - **Identify red flags** in legal language and structure
-    - **Calculate risk score** based on multiple factors
-    - **Receive audio alerts** about potential risks
-    - **Get security recommendations** for next steps
-    """)
+    <div class="feature-list">
+        <strong>Advanced Fraud Detection System for Legal Documents</strong>
+        <br><br>
+        Upload your legal document and instantly receive:
+        <ul>
+            <li><strong>Pattern Recognition</strong> - Detect suspicious phrases and common fraud indicators</li>
+            <li><strong>Risk Assessment</strong> - Get comprehensive risk scoring based on multiple factors</li>
+            <li><strong>Document Analysis</strong> - Verify structural integrity and authenticity markers</li>
+            <li><strong>Audio Alerts</strong> - Receive spoken security briefings about detected risks</li>
+            <li><strong>Legal Guidance</strong> - Get actionable recommendations for next steps</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
 
     # Initialize fraud detector
     detector = FraudDetector()
-    
-    # Sidebar with fraud education
-    with st.sidebar:
-        st.header("Fraud Education")
-        st.markdown("""
-        ### Common Document Fraud Types:
-        - **Forged signatures**
-        - **Altered dates or amounts**
-        - **Fake notarization**
-        - **Counterfeit letterheads**
-        - **Modified terms after signing**
-        
-        ### Warning Signs:
-        - Pressure to sign quickly
-        - Unrealistic promises
-        - Poor document quality
-        - Spelling/grammar errors
-        - Missing official seals
-        """)
 
     # Load OCR model
     ocr_reader = load_ocr_model()
@@ -473,29 +815,27 @@ def run():
         st.stop()
 
     # File upload section
-    st.subheader("Upload Document for Analysis")
     uploaded_file = st.file_uploader(
-        "Choose a document to analyze for fraud indicators", 
+        "Choose your legal document for fraud analysis", 
         type=SUPPORTED_FORMATS,
-        help="Upload PDF or image files. Max 10MB."
+        help="Supported formats: PDF, JPG, PNG, WEBP (Maximum file size: 10MB)"
     )
 
     if uploaded_file is not None:
         # File size check
         if uploaded_file.size > MAX_FILE_SIZE:
-            st.error(f"File too large ({uploaded_file.size/1024/1024:.1f}MB). Maximum size is 10MB.")
+            st.error(f"File too large ({uploaded_file.size/1024/1024:.1f}MB). Maximum allowed size is 10MB.")
             return
 
-        st.success(f"File uploaded: {uploaded_file.name} ({uploaded_file.size/1024:.1f}KB)")
+        st.success(f"Successfully uploaded: **{uploaded_file.name}** ({uploaded_file.size/1024:.1f}KB)")
 
         # Extract text based on file type
-        with st.spinner("Analyzing document for fraud indicators..."):
+        with st.spinner("Extracting text from your document..."):
             extracted_text = ""
             
             if uploaded_file.type == "application/pdf":
                 extracted_text = extract_text_from_pdf(uploaded_file)
             elif uploaded_file.type == "text/plain" or uploaded_file.name.endswith('.txt'):
-                # Handle TXT files
                 try:
                     extracted_text = str(uploaded_file.read(), "utf-8")
                 except Exception as e:
@@ -512,15 +852,65 @@ def run():
 
         # Analyze the document
         if extracted_text and len(extracted_text.strip()) > 0:
+            word_count = len(extracted_text.split())
+            char_count = len(extracted_text)
+            estimated_read_time = max(1, word_count // 200)  # Average reading speed
             
+            st.success("Text extraction completed successfully!")
             
+            # Interactive statistics
+            st.markdown("### Document Statistics")
+            col1, col2, col3 = st.columns(3)
+            
+            with col1:
+                st.markdown('<div class="metric-container">', unsafe_allow_html=True)
+                st.metric(label="Words", value=f"{word_count:,}")
+                st.markdown('</div>', unsafe_allow_html=True)
+            
+            with col2:
+                st.markdown('<div class="metric-container">', unsafe_allow_html=True)
+                st.metric(label="Characters", value=f"{char_count:,}")
+                st.markdown('</div>', unsafe_allow_html=True)
+            
+            with col3:
+                st.markdown('<div class="metric-container">', unsafe_allow_html=True)
+                st.metric(label="Read Time", value=f"{estimated_read_time} min")
+                st.markdown('</div>', unsafe_allow_html=True)
+            
+            # Show a preview of extracted text
+            with st.expander("Preview Extracted Text", expanded=False):
+                preview_text = extracted_text[:500] + "..." if len(extracted_text) > 500 else extracted_text
+                st.markdown(f"""
+                <div style="
+                    background: rgba(248, 250, 252, 0.8);
+                    padding: 1.5rem;
+                    border-radius: 12px;
+                    border-left: 4px solid #DC2626;
+                    animation: fadeIn 0.8s ease-in;
+                    font-family: 'Courier New', monospace;
+                    color: #334155;
+                    line-height: 1.6;
+                ">
+                {preview_text}
+                </div>
+                
+                <style>
+                @keyframes fadeIn {{
+                    from {{ opacity: 0; transform: translateY(20px); }}
+                    to {{ opacity: 1; transform: translateY(0); }}
+                }}
+                </style>
+                """, unsafe_allow_html=True)
+
             # Document structure verification
-            st.subheader("Document Structure Analysis")
+            st.markdown("### Document Structure Analysis")
             structure_score, structure_issues = verify_document_structure(extracted_text)
             
             col1, col2 = st.columns(2)
             with col1:
+                st.markdown('<div class="metric-container">', unsafe_allow_html=True)
                 st.metric("Structure Score", f"{structure_score}/45")
+                st.markdown('</div>', unsafe_allow_html=True)
             with col2:
                 if structure_score >= 35:
                     st.success("Proper document structure")
@@ -534,16 +924,49 @@ def run():
                 for issue in structure_issues:
                     st.write(f"• {issue}")
 
-            # Run fraud detection analysis
-            if st.button("Run Fraud Detection Analysis", type="primary"):
-                with st.spinner("Analyzing document for fraud patterns..."):
-                    
-                    # Comprehensive fraud analysis
-                    st.subheader("Fraud Detection Results")
-                    risk_score, risk_level = display_fraud_analysis_results(detector, extracted_text)
+            # Enhanced fraud detection button with progress tracking
+            if st.button("Run Comprehensive Fraud Detection", type="primary"):
+                progress_container = st.container()
+                
+                with progress_container:
+                    # Step 1: Pattern Analysis
+                    create_progress_indicator(1, 4)
+                    with st.spinner("Analyzing suspicious patterns..."):
+                        st.sleep(0.5)  # Brief pause for visual effect
+                
+                with progress_container:
+                    # Step 2: Risk Assessment
+                    create_progress_indicator(2, 4)
+                    with st.spinner("Calculating risk factors..."):
+                        st.sleep(0.3)
+                
+                with progress_container:
+                    # Step 3: Document Verification
+                    create_progress_indicator(3, 4)
+                    with st.spinner("Verifying document authenticity..."):
+                        st.sleep(0.3)
+                
+                with progress_container:
+                    # Step 4: Report Generation
+                    create_progress_indicator(4, 4)
+                    with st.spinner("Generating comprehensive report..."):
+                        st.sleep(0.5)
+                
+                # Clear progress and show results
+                progress_container.empty()
+                
+                st.markdown("---")
+                st.markdown("### Fraud Detection Analysis Results")
+                
+                # Success message with visual effect
+                st.balloons()  # Streamlit's built-in celebration animation
+                st.success("Fraud analysis completed successfully!")
+                
+                # Comprehensive fraud analysis
+                risk_score, risk_level = display_fraud_analysis_results(detector, extracted_text)
 
-                    
-                    results_summary = f"""
+                # Generate downloadable report
+                results_summary = f"""
 FRAUD DETECTION ANALYSIS REPORT
 Generated: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 Document: {uploaded_file.name}
@@ -562,56 +985,133 @@ RECOMMENDATION:
 {('DO NOT PROCEED - High fraud risk' if risk_score >= 70 else 
   'PROCEED WITH CAUTION - Medium risk' if risk_score >= 40 else 
   'APPEARS LEGITIMATE - Low risk')}
-                    """
-                    
+                """
+                
+                # Additional interactive features
+                st.markdown("---")
+                st.markdown("### Additional Tools")
+                
+                tool_col1, tool_col2, tool_col3 = st.columns(3)
+                
+                with tool_col1:
                     st.download_button(
-                        label="Download Analysis Report",
+                        label="Download Full Report",
                         data=results_summary,
                         file_name=f"fraud_analysis_{uploaded_file.name}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt",
                         mime="text/plain"
                     )
+                
+                with tool_col2:
+                    if st.button("Risk Breakdown", key="risk_breakdown"):
+                        st.info("Detailed risk analysis:")
+                        patterns = detector.analyze_text_patterns(extracted_text)
+                        st.write(f"• Suspicious Phrases: {len(patterns['suspicious_phrases'])} (15 pts each)")
+                        st.write(f"• Red Flags: {len(patterns['red_flags'])} (25 pts each)")
+                        st.write(f"• Urgency Indicators: {len(patterns['urgency_indicators'])} (10 pts each)")
+                
+                with tool_col3:
+                    if st.button("Security Tips", key="security_tips"):
+                        st.info("Security recommendations based on analysis")
+                        if risk_score >= 70:
+                            st.error("Contact legal professionals immediately")
+                        elif risk_score >= 40:
+                            st.warning("Verify through official channels")
+                        else:
+                            st.success("Document appears legitimate")
 
         else:
-            st.warning("No text could be extracted from the document.")
-            st.markdown("""
-            **Possible reasons:**
-            - Document is purely graphical
-            - Image quality is too poor
-            - Document is password protected
-            - Unsupported file format
+            st.warning("No readable text could be extracted from your document.")
             
-            **Try:**
-            - Using a clearer, higher resolution image
-            - Converting PDF to image format
-            - Ensuring document contains readable text
-            """)
+            # Enhanced tips section with interactive cards
+            st.markdown("### Tips to improve fraud detection:")
+            
+            tips = [
+                ("Image Quality", "Ensure the image is clear and well-lit for better text extraction"),
+                ("Resolution", "Use high-resolution scans (300 DPI or higher)"),
+                ("Orientation", "Make sure text is horizontal and not skewed"),
+                ("Format", "Try uploading a PDF version if available"),
+                ("Content", "Check that the document contains actual readable text"),
+                ("Authenticity", "Look for official seals, letterheads, and proper formatting")
+            ]
+            
+            for i, (title, description) in enumerate(tips):
+                st.markdown(f"""
+                <div class="tip-card" style="animation: slideIn {0.2 * (i + 1)}s ease-out;">
+                    <strong style="color: #DC2626;">{title}:</strong> 
+                    <span style="color: #475569;">{description}</span>
+                </div>
+                
+                <style>
+                @keyframes slideIn {{
+                    from {{ opacity: 0; transform: translateX(-20px); }}
+                    to {{ opacity: 1; transform: translateX(0); }}
+                }}
+                </style>
+                """, unsafe_allow_html=True)
 
-    # Help section
-    st.sidebar.write("""
-        #### How Does Fraud Detection Work?                  
-        **Pattern Analysis:**
-        - Scans for common fraud phrases and suspicious language
-        - Identifies urgency tactics and pressure techniques
-        - Detects unrealistic financial promises
+    # Enhanced sidebar with fraud education
+    with st.sidebar:
+        st.markdown("""
+        ## Fraud Detection Guide
+
+        ### **How This System Works:**
         
-        **Document Structure:**
-        - Verifies proper legal document formatting
-        - Checks for standard clauses and sections
-        - Validates date consistency and logic
+        **1. Upload Document**
+        - Submit PDF or image files
+        - Maximum file size: 10MB
+        - Supports multiple formats
+
+        **2. Text Analysis**
+        - Advanced OCR extraction
+        - Pattern recognition algorithms
+        - Structural verification
+
+        **3. Risk Assessment**
+        - Multi-factor scoring system
+        - Suspicious phrase detection
+        - Document authenticity checks
+
+        **4. Comprehensive Report**
+        - Detailed risk breakdown
+        - Actionable recommendations
+        - Audio security briefings
+
+        ---
+
+        ### **Common Fraud Types:**
+        - **Forged signatures**
+        - **Altered dates or amounts**
+        - **Fake notarization**
+        - **Counterfeit letterheads**
+        - **Modified terms after signing**
+        - **Phishing documents**
         
-        **Risk Scoring:**
-        - Provides actionable risk assessment
-        
-        **Limitations:**
-        - This tool provides guidance, not legal advice
-        - Always consult legal professionals for important documents
-        - Human judgment is essential for final decisions
+        ### **Warning Signs:**
+        - Pressure to sign quickly
+        - Unrealistic promises
+        - Poor document quality
+        - Spelling/grammar errors
+        - Missing official seals
+        - Urgent action required
+
+        ---
+
+        ### **Best Practices:**
+        - **Always verify** document sources
+        - **Check official channels** before acting
+        - **Consult legal professionals** for important documents
+        - **Keep copies** of all signed documents
+        - **Report suspicious** activity to authorities
         """)
 
     # Legal disclaimer
     st.markdown("---")
     st.caption("""
-    **Disclaimer:** This fraud detection tool is for informational purposes only and does not constitute legal advice. 
+    **Legal Disclaimer:** This fraud detection tool is for informational purposes only and does not constitute legal advice. 
     Always consult with qualified legal professionals for important document verification. 
-    The tool may not detect all types of fraud or may flag legitimate documents.
+    The tool may not detect all types of fraud or may flag legitimate documents as suspicious.
+    Use this tool as part of a comprehensive document verification process.
     """)
+
+if __name__ == "__main__":
+    run()
