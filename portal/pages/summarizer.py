@@ -7,6 +7,7 @@ import tempfile
 from gtts import gTTS
 import fitz  # PyMuPDF
 import time
+import pytesseract
 # ---------------- Config ----------------
 SUPPORTED_FORMATS = ["jpg","jpeg","png","webp","pdf","txt","doc","docx"]
 MAX_FILE_SIZE = 10*1024*1024
@@ -327,18 +328,6 @@ def apply_legal_portal_styling():
     """, unsafe_allow_html=True)
 
 # ---------------- OCR ----------------
-@st.cache_resource
-def load_ocr_model():
-    try:
-        import easyocr
-        return easyocr.Reader(['en'], gpu=False)
-    except ImportError:
-        st.error("EasyOCR not installed. Please install: pip install easyocr")
-        return None
-    except Exception as e:
-        st.error(f"Error loading OCR model: {str(e)}")
-        return None
-
 def preprocess_image(image):
     """Enhanced image preprocessing for better OCR results"""
     if image.mode != 'RGB': 
@@ -357,16 +346,12 @@ def preprocess_image(image):
     
     return image
 
-def extract_text_from_image(image, ocr_reader):
-    """Extract text from image using OCR"""
-    if ocr_reader is None:
-        return "OCR model not available"
-    
+def extract_text_from_image(image):
+    """Extract text from image using Tesseract OCR"""
     try:
         processed = preprocess_image(image)
-        arr = np.array(processed)
-        results = ocr_reader.readtext(arr, detail=0, paragraph=True)
-        return ' '.join(results).strip()
+        text = pytesseract.image_to_string(processed, lang='eng')
+        return text.strip()
     except Exception as e:
         st.error(f"OCR extraction failed: {str(e)}")
         return ""
@@ -509,11 +494,6 @@ def run():
     </div>
     """, unsafe_allow_html=True)
 
-    # Load OCR model
-    ocr_reader = load_ocr_model()
-    if ocr_reader is None:
-        st.stop()
-
     # File uploader
     uploaded_file = st.file_uploader(
         "Choose your legal document", 
@@ -546,7 +526,7 @@ def run():
                 try:
                     image = Image.open(uploaded_file)
                     st.image(image, caption="Document Preview", use_container_width=True)
-                    extracted_text = extract_text_from_image(image, ocr_reader)
+                    extracted_text = extract_text_from_image(image)
                 except Exception as e:
                     st.error(f"Failed to process image: {str(e)}")
                     return
