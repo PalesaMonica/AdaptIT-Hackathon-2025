@@ -1,11 +1,11 @@
-# app.py - Enhanced Legal Portal with Conditional Header
+# app.py - Enhanced Legal Portal with Font Awesome Icons
 import streamlit as st
 
 # Import your page modules
-from pages import summarizer, fraud_checker, property_assistance, educational, will_generator, sassa_loan, login
+from modules import summarizer, fraud_checker, property_assistance, educational, will_generator, sassa_loan, home
 
 def apply_beautiful_styling():
-    """Apply beautiful styling with transparent header design"""
+    """Apply beautiful styling with transparent header design and enhanced navigation"""
     st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap');
@@ -52,9 +52,8 @@ def apply_beautiful_styling():
         text-align: center;
         padding: 4rem 2rem 3rem 2rem;
         margin: -2rem -2rem 3rem -2rem;
-        /* Removed background, border-radius, box-shadow, backdrop-filter, and border */
         position: relative;
-        overflow: visible; /* Changed from hidden to visible */
+        overflow: visible;
     }
     
     /* Keep floating particles effect but make it more subtle */
@@ -71,7 +70,7 @@ def apply_beautiful_styling():
             radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.1) 1px, transparent 1px);
         background-size: 50px 50px, 80px 80px, 30px 30px;
         animation: floatingParticles 30s linear infinite;
-        opacity: 0.3; /* Reduced opacity */
+        opacity: 0.3;
         pointer-events: none;
     }
     
@@ -99,7 +98,6 @@ def apply_beautiful_styling():
         -webkit-text-fill-color: transparent !important;
         background-clip: text !important;
         animation: titleGlow 3s ease-in-out infinite alternate !important;
-        /* Enhanced text shadow for better visibility */
         filter: drop-shadow(0 4px 20px rgba(59, 130, 246, 0.4)) drop-shadow(0 2px 8px rgba(255, 255, 255, 0.8)) !important;
         letter-spacing: -0.02em !important;
         line-height: 1.1 !important;
@@ -121,14 +119,13 @@ def apply_beautiful_styling():
     /* Subtitle styling - Enhanced for visibility */
     .hero-subtitle {
         font-size: 1.4rem !important;
-        color: #334155 !important; /* Darker for better contrast */
-        font-weight: 600 !important; /* Increased weight */
+        color: #334155 !important;
+        font-weight: 600 !important;
         margin: 0 0 2rem 0 !important;
         letter-spacing: 0.02em !important;
         position: relative;
         z-index: 2;
         animation: subtitleFade 2s ease-out !important;
-        /* Enhanced text shadow for visibility */
         text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8), 0 1px 2px rgba(0, 0, 0, 0.1) !important;
     }
     
@@ -149,13 +146,13 @@ def apply_beautiful_styling():
     }
     
     .feature-badge {
-        background: rgba(255, 255, 255, 0.95) !important; /* Increased opacity */
+        background: rgba(255, 255, 255, 0.95) !important;
         color: #1E293B;
         padding: 0.5rem 1rem;
         border-radius: 50px;
         font-size: 0.9rem;
         font-weight: 600;
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(59, 130, 246, 0.2) !important; /* Enhanced shadow */
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(59, 130, 246, 0.2) !important;
         border: 1px solid rgba(59, 130, 246, 0.3);
         transition: all 0.3s ease;
         animation: badgeFloat 4s ease-in-out infinite;
@@ -290,11 +287,101 @@ def apply_beautiful_styling():
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
     }
     
-    /* Sidebar styling - Light theme */
+    /* ENHANCED SIDEBAR STYLING - COMPLETE GRADIENT COVERAGE */
     section[data-testid="stSidebar"] {
-        background: rgba(255, 255, 255, 0.95) !important;
-        border-right: 1px solid rgba(59, 130, 246, 0.2) !important;
-        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05) !important;
+        background: linear-gradient(to bottom, #3B82F6 0%, #8B5CF6 100%) !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.2) !important;
+        box-shadow: 2px 0 12px rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    /* Remove all white/grey backgrounds from sidebar */
+    section[data-testid="stSidebar"] > div {
+        background: transparent !important;
+    }
+    
+    section[data-testid="stSidebar"] .block-container {
+        background: transparent !important;
+        padding: 1rem 0.75rem !important;
+    }
+    
+    /* Fix selectbox (fallback navigation) background */
+    section[data-testid="stSidebar"] .stSelectbox {
+        background: transparent !important;
+    }
+    
+    section[data-testid="stSidebar"] .stSelectbox > div {
+        background: rgba(255, 255, 255, 0.15) !important;
+        border-radius: 8px !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    }
+    
+    section[data-testid="stSidebar"] .stSelectbox select {
+        background: transparent !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 8px !important;
+    }
+    
+    section[data-testid="stSidebar"] .stSelectbox select:focus {
+        background: rgba(255, 255, 255, 0.2) !important;
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3) !important;
+    }
+    
+    /* Fix any remaining white containers in sidebar */
+    section[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
+        background: transparent !important;
+    }
+    
+    section[data-testid="stSidebar"] [data-testid="element-container"] {
+        background: transparent !important;
+    }
+    
+    /* Force all sidebar elements to transparent background */
+    section[data-testid="stSidebar"] * {
+        background-color: transparent !important;
+    }
+    
+    /* Exception for specific interactive elements that need subtle backgrounds */
+    section[data-testid="stSidebar"] .nav-link,
+    section[data-testid="stSidebar"] button,
+    section[data-testid="stSidebar"] select {
+        background: rgba(255, 255, 255, 0.1) !important;
+    }
+    
+    section[data-testid="stSidebar"] .nav-link:hover,
+    section[data-testid="stSidebar"] button:hover,
+    section[data-testid="stSidebar"] select:hover {
+        background: rgba(255, 255, 255, 0.2) !important;
+    }
+    
+    section[data-testid="stSidebar"] .nav-link-selected,
+    section[data-testid="stSidebar"] button:focus,
+    section[data-testid="stSidebar"] select:focus {
+        background: rgba(255, 255, 255, 0.25) !important;
+    }
+    
+    /* Option menu styling - Enhanced */
+    .nav-link {
+        color: white !important;
+        background: rgba(255, 255, 255, 0.1) !important;
+        border-radius: 8px !important;
+        margin: 0.25rem 0 !important;
+        padding: 0.75rem 1rem !important;
+        transition: all 0.3s ease !important;
+        border-left: 3px solid transparent !important;
+    }
+    
+    .nav-link:hover {
+        background: rgba(255, 255, 255, 0.2) !important;
+        border-left: 3px solid white !important;
+        transform: translateX(5px);
+    }
+    
+    .nav-link-selected {
+        background: rgba(255, 255, 255, 0.25) !important;
+        border-left: 3px solid white !important;
+        font-weight: 600 !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
     }
     
     /* Text colors */
@@ -306,9 +393,23 @@ def apply_beautiful_styling():
         color: #1E293B !important;
     }
     
-    /* Sidebar text colors */
+    /* Sidebar text colors - Force white text everywhere */
     section[data-testid="stSidebar"] * {
-        color: #1E293B !important;
+        color: white !important;
+    }
+    
+    /* Specifically target common text elements */
+    section[data-testid="stSidebar"] p,
+    section[data-testid="stSidebar"] span,
+    section[data-testid="stSidebar"] div,
+    section[data-testid="stSidebar"] label,
+    section[data-testid="stSidebar"] h1,
+    section[data-testid="stSidebar"] h2,
+    section[data-testid="stSidebar"] h3,
+    section[data-testid="stSidebar"] h4,
+    section[data-testid="stSidebar"] option {
+        color: white !important;
+        background: transparent !important;
     }
     
     /* Links */
@@ -322,7 +423,7 @@ def apply_beautiful_styling():
         text-decoration: underline !important;
     }
     
-    /* Footer styling - Added to match the design */
+    /* Footer styling */
     .footer-section {
         text-align: center !important;
         padding: 3rem !important;
@@ -372,6 +473,10 @@ def apply_beautiful_styling():
             padding: 2rem 1rem !important;
             margin-top: 2rem !important;
         }
+        
+        section[data-testid="stSidebar"] .block-container {
+            padding: 1rem 0.5rem !important;
+        }
     }
     
     /* Tablet responsive */
@@ -401,50 +506,124 @@ def show_hero_header():
         </div>
     </div>
     """, unsafe_allow_html=True)
+
 # Configure the app
 st.set_page_config(
     page_title="Legal Literacy Portal - Professional Legal Services",
     page_icon="⚖️",
     layout="wide",
-    initial_sidebar_state="expanded"  # This ensures sidebar is visible
+    initial_sidebar_state="expanded"
 )
 
 # Apply styling
 apply_beautiful_styling()
 
-# ------------------- Pages with Icons ------------------- 
-pages = {
-    "Home": [st.Page("pages/home.py", title="Home")],
-    "Legal Tools": [
-        st.Page("pages/summarizer.py", title="Document Summarizer"),
-        st.Page("pages/sassa_loan.py", title="SASSA Loan Assistant"),
-        st.Page("pages/fraud_checker.py", title="Fraud Detection"),
-        st.Page("pages/will_generator.py", title="Will Generator"),
-        st.Page("pages/property_assistance.py", title="Property & Legal Help"),
-        st.Page("pages/educational.py", title="Know Your Rights"),
-    ]
-}
+# Check if streamlit-option-menu is available
+try:
+    from streamlit_option_menu import option_menu
+    USE_OPTION_MENU = True
+except ImportError:
+    USE_OPTION_MENU = False
+    st.warning("streamlit-option-menu not installed. Using standard sidebar navigation. Install with: pip install streamlit-option-menu")
 
-# Create navigation - this should show in the sidebar
-selected_page = st.navigation(pages)
+# ------------------- Navigation -------------------
+if USE_OPTION_MENU:
+    # Enhanced sidebar navigation with option_menu
+    with st.sidebar:
+        selected = option_menu(
+            menu_title=None,
+            options=[
+                "Home", 
+                "Document Summarizer", 
+                "Fraud Detection", 
+                "Will Generator", 
+                "Property & Legal Help", 
+                "Know Your Rights", 
+                "SASSA Loan Assistant"
+            ],
+            icons=[
+                "house",           # Home
+                "file-text",       # Document Summarizer
+                "shield-lock",     # Fraud Detection
+                "file-earmark",    # Will Generator
+                "building",        # Property & Legal Help
+                "book",            # Know Your Rights
+                "cash-coin"        # SASSA Loan Assistant
+            ],
+            menu_icon="cast",
+            default_index=0,
+            orientation="vertical",
+            styles={
+                "container": {
+                    "padding": "0px", 
+                    "background": "transparent !important"
+                },
+                "icon": {
+                    "color": "white", 
+                    "font-size": "18px"
+                },
+                "nav-link": {
+                    "font-size": "16px",
+                    "text-align": "left",
+                    "margin": "0.25rem 0.5rem",
+                    "padding": "0.75rem 1rem",
+                    "color": "white",
+                    "border-radius": "8px",
+                    "background": "rgba(255, 255, 255, 0.1) !important",
+                    "border-left": "3px solid transparent",
+                    "transition": "all 0.3s ease"
+                },
+                "nav-link-selected": {
+                    "background": "rgba(255,255,255,0.25) !important",
+                    "color": "white",
+                    "font-weight": "600",
+                    "border-left": "3px solid white",
+                    "box-shadow": "0 2px 8px rgba(0, 0, 0, 0.1)"
+                },
+                "nav-link:hover": {
+                    "background": "rgba(255, 255, 255, 0.2) !important",
+                    "border-left": "3px solid white"
+                }
+            }
+        )
+else:
+    # Fallback to standard Streamlit sidebar
+    with st.sidebar:
+        st.markdown("### 📋 Legal Tools")
+        selected = st.selectbox(
+            "Choose a tool:",
+            options=[
+                "Home", 
+                "Document Summarizer", 
+                "Fraud Detection", 
+                "Will Generator", 
+                "Property & Legal Help", 
+                "Know Your Rights", 
+                "SASSA Loan Assistant"
+            ]
+        )
 
-# ------------------- Routing ------------------- 
-if selected_page.title == "Home":
-    # Show hero header only on home page
+# ------------------- Page Routing -------------------
+if selected == "Home":
     show_hero_header()
-    import pages.home as home
     home.run()
-elif selected_page.title == "Document Summarizer":
+elif selected == "Document Summarizer":
+    st.title("Document Summarizer")
     summarizer.run()
-elif selected_page.title == "Fraud Detection":
+elif selected == "Fraud Detection":
+    st.title("Fraud Detection")
     fraud_checker.run()
-elif selected_page.title == "Will Generator":
+elif selected == "Will Generator":
+    st.title("Will Generator")
     will_generator.run()
-elif selected_page.title == "Property & Legal Help":
+elif selected == "Property & Legal Help":
+    st.title("Property & Legal Help")
     property_assistance.run()
-elif selected_page.title == "Know Your Rights":
+elif selected == "Know Your Rights":
+    st.title("Know Your Rights")
     educational.run()
-elif selected_page.title == "SASSA Loan Assistant":
+elif selected == "SASSA Loan Assistant":
+    st.title("SASSA Loan Assistant")
     sassa_loan.run()
 
 # Enhanced Transparent Footer
