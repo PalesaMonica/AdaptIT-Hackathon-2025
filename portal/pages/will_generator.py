@@ -143,7 +143,7 @@ def download_pdf(pdf):
             
             with open(tmp.name, "rb") as f:
                 b64 = base64.b64encode(f.read()).decode()
-            return f'<a href="data:application/octet-stream;base64,{b64}" download="Will.pdf" style="text-decoration: none; background: linear-gradient(to right, #4361ee, #7209b7); color: white; padding: 12px 24px; border-radius: 8px; font-weight: bold;">📥 Download Your Will</a>'
+            return f'<a href="data:application/octet-stream;base64,{b64}" download="Will.pdf" style="display: inline-block; text-decoration: none; background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 50%, #F472B6 100%); color: white; padding: 15px 30px; border-radius: 12px; font-weight: 700; font-size: 1.1rem; box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3); transition: all 0.3s ease;">Download Your Will</a>'
     except Exception as e:
         st.error(f"Error generating PDF: {str(e)}")
         return ""
@@ -158,117 +158,427 @@ def play_audio(text):
     except Exception as e:
         st.warning(f"Audio generation failed: {str(e)}")
 
-# --- run APP ---
-def run():
-    st.set_page_config(page_title="South African Will Generator", page_icon="✍️", layout="wide")
-
-    # --- CUSTOM CSS ---
+def apply_will_styling():
     st.markdown("""
     <style>
-        :root {
-            --primary: #4361ee;
-            --secondary: #7209b7;
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    
+    * {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    
+    .main .block-container {
+        padding: 2rem 3rem;
+        background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 25%, #CBD5E1 50%, #94A3B8 75%, #64748B 100%);
+        min-height: 100vh;
+        color: #1E293B;
+    }
+    
+    /* Elegant Blue-to-Pink Gradient Heading */
+    .stMarkdown h1, .main h1 {
+        font-family: 'Inter', sans-serif !important;
+        font-weight: 700 !important;
+        font-size: 3.5rem !important;
+        text-align: center !important;
+        letter-spacing: -0.02em !important;
+        margin: 2rem 0 2.5rem 0 !important;
+        padding: 1.5rem 0 !important;
+        position: relative !important;
+        background: linear-gradient(135deg, 
+            #1E40AF 0%,
+            #3B82F6 15%,
+            #6366F1 30%,
+            #8B5CF6 45%,
+            #A855F7 60%,
+            #C026D3 75%,
+            #E879F9 90%,
+            #F472B6 100%) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        background-clip: text !important;
+        text-shadow: 
+            0 2px 10px rgba(30, 64, 175, 0.4),
+            0 4px 20px rgba(244, 114, 182, 0.3) !important;
+        filter: drop-shadow(0 0 15px rgba(139, 92, 246, 0.3)) !important;
+    }
+    
+    /* Subtle Blue-Pink Accent Lines */
+    .stMarkdown h1::before, .main h1::before {
+        content: '' !important;
+        position: absolute !important;
+        top: -8px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 60% !important;
+        height: 3px !important;
+        background: linear-gradient(90deg, 
+            transparent 0%, 
+            #1E40AF 30%, 
+            #8B5CF6 50%, 
+            #F472B6 70%, 
+            transparent 100%) !important;
+        border-radius: 2px !important;
+        opacity: 0.8 !important;
+    }
+    
+    .stMarkdown h1::after, .main h1::after {
+        content: '' !important;
+        position: absolute !important;
+        bottom: -8px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 40% !important;
+        height: 3px !important;
+        background: linear-gradient(90deg, 
+            transparent 0%, 
+            #3B82F6 25%, 
+            #A855F7 50%, 
+            #F472B6 75%, 
+            transparent 100%) !important;
+        border-radius: 2px !important;
+        opacity: 0.6 !important;
+    }
+    
+    /* Improved Section Headings */
+    .main h2, .main h3 {
+        color: #0F172A !important;
+        font-weight: 700 !important;
+        font-size: 1.5rem !important;
+        border-left: 4px solid #3B82F6 !important;
+        padding-left: 1rem !important;
+        margin: 2rem 0 1rem 0 !important;
+        text-shadow: none !important;
+        background: linear-gradient(145deg, rgba(59, 130, 246, 0.08), rgba(59, 130, 246, 0.05)) !important;
+        padding: 0.75rem 1rem !important;
+        border-radius: 0 8px 8px 0 !important;
+    }
+    
+    /* Enhanced Text Visibility */
+    .main p, .main li, .main div {
+        color: #1E293B !important;
+        line-height: 1.7 !important;
+        text-shadow: none !important;
+        font-weight: 500 !important;
+        font-size: 1rem !important;
+    }
+    
+    /* Stronger text for important content */
+    .main strong, .main b {
+        color: #0F172A !important;
+        font-weight: 700 !important;
+        text-shadow: none !important;
+    }
+    
+    /* Enhanced Buttons */
+    .stButton > button {
+        background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 50%, #F472B6 100%) !important;
+        color: white !important;
+        font-weight: 700 !important;
+        font-size: 1.1rem !important;
+        border: none !important;
+        border-radius: 12px !important;
+        padding: 1rem 2rem !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3) !important;
+        letter-spacing: 0.025em !important;
+        width: 100% !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.2) !important;
+    }
+    
+    .stButton > button:hover {
+        background: linear-gradient(135deg, #1E40AF 0%, #7C3AED 50%, #EC4899 100%) !important;
+        transform: translateY(-3px) !important;
+        box-shadow: 0 12px 32px rgba(59, 130, 246, 0.4) !important;
+    }
+    
+    /* Progress bar styling */
+    .stProgress > div > div > div > div {
+        background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 50%, #F472B6 100%) !important;
+        border-radius: 10px !important;
+    }
+    
+    .stProgress > div > div {
+        background: rgba(255,255,255,0.8) !important;
+        border-radius: 10px !important;
+        height: 12px !important;
+    }
+    
+    /* Form sections */
+    .form-section {
+        background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(248,250,252,0.9)) !important;
+        padding: 2rem !important;
+        border-radius: 16px !important;
+        margin: 1.5rem 0 !important;
+        border-left: 5px solid #1E40AF !important;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.05) !important;
+        backdrop-filter: blur(8px) !important;
+    }
+    
+    .form-section h3 {
+        color: #1E40AF !important;
+        margin-bottom: 1rem !important;
+        font-weight: 700 !important;
+        font-size: 1.3rem !important;
+        text-shadow: none !important;
+        background: none !important;
+        border: none !important;
+        padding: 0 !important;
+    }
+    
+    /* Section headers with numbers */
+    .section-header {
+        display: flex !important;
+        align-items: center !important;
+        margin: 2rem 0 1rem 0 !important;
+        background: linear-gradient(145deg, rgba(59, 130, 246, 0.08), rgba(59, 130, 246, 0.05)) !important;
+        padding: 1rem !important;
+        border-radius: 0 12px 12px 0 !important;
+        border-left: 5px solid #3B82F6 !important;
+    }
+    
+    .section-number {
+        background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%) !important;
+        color: white !important;
+        width: 40px !important;
+        height: 40px !important;
+        border-radius: 50% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin-right: 15px !important;
+        font-weight: 700 !important;
+        font-size: 1.2rem !important;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.2) !important;
+    }
+    
+    .section-header h3 {
+        color: #0F172A !important;
+        font-weight: 700 !important;
+        margin: 0 !important;
+        font-size: 1.5rem !important;
+        background: none !important;
+        border: none !important;
+        padding: 0 !important;
+    }
+    
+    /* Awareness cards */
+    .awareness-card {
+        background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(248,250,252,0.9)) !important;
+        padding: 2rem !important;
+        border-radius: 16px !important;
+        margin: 1.5rem 0 !important;
+        border-left: 5px solid #1E40AF !important;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.05) !important;
+        backdrop-filter: blur(8px) !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    .awareness-card:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 12px 40px rgba(59, 130, 246, 0.15) !important;
+    }
+    
+    .info-point {
+        display: flex !important;
+        align-items: flex-start !important;
+        margin-bottom: 0 !important;
+    }
+    
+    .info-icon {
+        background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%) !important;
+        color: white !important;
+        min-width: 35px !important;
+        height: 35px !important;
+        border-radius: 50% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin-right: 15px !important;
+        font-weight: 700 !important;
+        font-size: 1rem !important;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+        flex-shrink: 0 !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.2) !important;
+    }
+    
+    .info-point h4 {
+        color: #1E40AF !important;
+        margin: 0 0 0.5rem 0 !important;
+        font-weight: 700 !important;
+        font-size: 1.1rem !important;
+    }
+    
+    .info-point p {
+        color: #334155 !important;
+        margin: 0 !important;
+        line-height: 1.6 !important;
+        font-weight: 500 !important;
+    }
+    
+    /* Beneficiary forms */
+    .beneficiary-form {
+        background: linear-gradient(145deg, rgba(139, 92, 246, 0.08), rgba(139, 92, 246, 0.05)) !important;
+        padding: 1.5rem !important;
+        border-radius: 12px !important;
+        margin: 1rem 0 !important;
+        border: 2px solid rgba(139, 92, 246, 0.2) !important;
+        backdrop-filter: blur(4px) !important;
+    }
+    
+    /* Success card */
+    .success-card {
+        background: linear-gradient(145deg, rgba(30, 64, 175, 0.95), rgba(30, 58, 138, 0.9)) !important;
+        color: white !important;
+        padding: 2rem !important;
+        border-radius: 16px !important;
+        margin: 2rem 0 !important;
+        box-shadow: 0 8px 32px rgba(30, 64, 175, 0.2) !important;
+        backdrop-filter: blur(8px) !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.2) !important;
+        border-left: 6px solid #1E3A8A !important;
+    }
+    
+    .success-card h3 {
+        color: white !important;
+        font-weight: 700 !important;
+        margin-bottom: 1rem !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.2) !important;
+        background: none !important;
+        border: none !important;
+        padding: 0 !important;
+    }
+    
+    .success-card p, .success-card ul, .success-card li {
+        color: white !important;
+        font-weight: 600 !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.1) !important;
+        line-height: 1.6 !important;
+    }
+    
+    .success-card strong, .success-card b {
+        color: white !important;
+        font-weight: 700 !important;
+    }
+    
+    /* Enhanced Form Elements */
+    .stTextInput > div > div > input, 
+    .stTextArea > div > div > textarea,
+    .stSelectbox > div > div > select {
+        background: rgba(255,255,255,0.95) !important;
+        color: #1E293B !important;
+        border: 2px solid rgba(59, 130, 246, 0.3) !important;
+        border-radius: 12px !important;
+        font-size: 1rem !important;
+        text-shadow: none !important;
+        font-weight: 500 !important;
+        backdrop-filter: blur(4px) !important;
+        padding: 0.75rem !important;
+    }
+    
+    .stTextInput > div > div > input:focus, 
+    .stTextArea > div > div > textarea:focus,
+    .stSelectbox > div > div > select:focus {
+        border-color: #3B82F6 !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+    }
+    
+    /* Checkbox styling */
+    .stCheckbox > label {
+        font-weight: 600 !important;
+        color: #1E293B !important;
+        text-shadow: none !important;
+        background: rgba(255,255,255,0.8) !important;
+        padding: 0.75rem !important;
+        border-radius: 8px !important;
+        border: 1px solid rgba(59, 130, 246, 0.2) !important;
+        margin: 0.5rem 0 !important;
+        display: block !important;
+        transition: all 0.3s ease !important;
+        backdrop-filter: blur(4px) !important;
+    }
+    
+    .stCheckbox > label:hover {
+        border-color: #3B82F6 !important;
+        background: rgba(59, 130, 246, 0.05) !important;
+    }
+    
+    /* Enhanced Alert Boxes */
+    .stSuccess, .stInfo, .stWarning, .stError {
+        border-radius: 12px !important;
+        font-weight: 600 !important;
+        text-shadow: none !important;
+        backdrop-filter: blur(8px) !important;
+        margin: 1rem 0 !important;
+    }
+    
+    .stSuccess {
+        background: rgba(34, 197, 94, 0.1) !important;
+        border: 1px solid rgba(34, 197, 94, 0.3) !important;
+        color: #166534 !important;
+    }
+    
+    .stInfo {
+        background: rgba(59, 130, 246, 0.1) !important;
+        border: 1px solid rgba(59, 130, 246, 0.3) !important;
+        color: #1E40AF !important;
+    }
+    
+    .stWarning {
+        background: rgba(244, 114, 182, 0.1) !important;
+        border: 1px solid rgba(244, 114, 182, 0.3) !important;
+        color: #BE185D !important;
+    }
+    
+    .stError {
+        background: rgba(30, 64, 175, 0.1) !important;
+        border: 1px solid rgba(30, 64, 175, 0.3) !important;
+        color: #1E40AF !important;
+    }
+    
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+        .stMarkdown h1, .main h1 {
+            font-size: 2.5rem !important;
         }
-        body {
-            background: linear-gradient(135deg, #f7f9fc 0%, #eef2f7 100%);
-            color: #333333;
-            font-family: 'Segoe UI', sans-serif;
+        
+        .main .block-container {
+            padding: 1rem 1.5rem !important;
         }
-        .stButton>button {
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            color: white;
-            border-radius: 8px;
-            padding: 10px 24px;
-            font-size: 16px;
-            font-weight: 600;
-            border: none;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        
+        .form-section, .awareness-card {
+            padding: 1.5rem !important;
         }
-        .stButton>button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-            background: linear-gradient(to right, #3a56d4, #6506a1);
-            color: #ffffff;
-        }
-        .stProgress .st-bo {
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-        }
-        .title {
-            font-size: 32px;
-            font-weight: 800;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-align: center;
-            margin-bottom: 20px;
-            padding: 10px;
-        }
-        .subtitle {
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--primary);
-            margin-top: 10px;
-            margin-bottom: 15px;
-        }
-        .card {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.08);
-            margin-bottom: 25px;
-            border-left: 5px solid var(--primary);
-        }
-        .awareness-card {
-            background: linear-gradient(135deg, #f0f4ff 0%, #f8f0ff 100%);
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            border: 1px solid #e0e0ff;
-        }
-        .beneficiary-form {
-            background: #f8f9ff;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #e0e5ff;
-        }
-        .section-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
+        
         .section-number {
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            color: white;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 10px;
-            font-weight: bold;
+            width: 35px !important;
+            height: 35px !important;
+            font-size: 1rem !important;
         }
-        .info-point {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 15px;
-        }
+        
         .info-icon {
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            color: white;
-            min-width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 15px;
-            font-weight: bold;
+            min-width: 30px !important;
+            height: 30px !important;
+            font-size: 0.9rem !important;
         }
+        
+        .section-header {
+            flex-direction: column !important;
+            text-align: center !important;
+            gap: 1rem !important;
+        }
+        
+        .section-number {
+            margin-right: 0 !important;
+        }
+    }
     </style>
     """, unsafe_allow_html=True)
+
+# --- run APP ---
+def run():
+    # Apply consistent styling
+    apply_will_styling()
 
     # --- SESSION STATE ---
     if "step" not in st.session_state:
@@ -281,12 +591,18 @@ def run():
         st.session_state.witnesses = []
 
     # --- HEADER ---
-    st.markdown('<div class="title">✍️ South African Will Generator</div>', unsafe_allow_html=True)
+    st.markdown('# South African Will Generator')
+    st.markdown("### Create Your Legal Will in Minutes")
+    st.markdown("*Professional will generation tool for South African law*")
+    st.markdown("---")
+    
+    # Progress indicator
     st.progress(st.session_state.step / 5)
+    st.caption(f"Step {st.session_state.step} of 5")
 
     # --- STEP 1: Awareness ---
     if st.session_state.step == 1:
-        st.markdown('<div class="section-header"><div class="section-number">1</div><div class="subtitle">Why You Need a Will</div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-header"><div class="section-number">1</div><h3>Why You Need a Will</h3></div>', unsafe_allow_html=True)
         
         awareness_points = [
             {
@@ -311,7 +627,7 @@ def run():
             },
             {
                 "title": "Emotional Barriers",
-                "content": "It's not easy to think about — but making a will is an act of love and protection for your family."
+                "content": "Making a will is an act of love and protection for your family."
             }
         ]
         
@@ -321,8 +637,8 @@ def run():
                 <div class="info-point">
                     <div class="info-icon">{i+1}</div>
                     <div>
-                        <h4 style="margin: 0; color: var(--primary);">{point['title']}</h4>
-                        <p style="margin: 5px 0 0 0;">{point['content']}</p>
+                        <h4>{point['title']}</h4>
+                        <p>{point['content']}</p>
                     </div>
                 </div>
             </div>
@@ -330,14 +646,14 @@ def run():
         
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
-            if st.button("Create My Will →", key="start_btn", use_container_width=True):
+            if st.button("Create My Will", key="start_btn", use_container_width=True):
                 st.session_state.step = 2
                 st.rerun()
 
     # --- STEP 2: Assets ---
     elif st.session_state.step == 2:
-        st.markdown('<div class="section-header"><div class="section-number">2</div><div class="subtitle">Select Your Assets</div></div>', unsafe_allow_html=True)
-        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.markdown('<div class="section-header"><div class="section-number">2</div><h3>Select Your Assets</h3></div>', unsafe_allow_html=True)
+        st.markdown('<div class="form-section">', unsafe_allow_html=True)
         
         assets_options = [
             "Residential Property", "Vehicle", "Bank Accounts", 
@@ -360,15 +676,15 @@ def run():
         
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
-            if st.button("Continue →", key="assets_btn", use_container_width=True):
+            if st.button("Continue", key="assets_btn", use_container_width=True):
                 st.session_state.form_data["assets"] = selected_assets
                 st.session_state.step = 3
                 st.rerun()
 
     # --- STEP 3: Beneficiaries ---
     elif st.session_state.step == 3:
-        st.markdown('<div class="section-header"><div class="section-number">3</div><div class="subtitle">Add Beneficiaries</div></div>', unsafe_allow_html=True)
-        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.markdown('<div class="section-header"><div class="section-number">3</div><h3>Add Beneficiaries</h3></div>', unsafe_allow_html=True)
+        st.markdown('<div class="form-section">', unsafe_allow_html=True)
         
         st.info("A beneficiary is someone who will receive part of your estate. You can add multiple beneficiaries.")
         
@@ -384,7 +700,7 @@ def run():
                 if relationship == "Other Relative":
                     relationship = st.text_input("Specify relationship")
             
-            add_beneficiary = st.form_submit_button("➕ Add Beneficiary")
+            add_beneficiary = st.form_submit_button("Add Beneficiary")
             
             if add_beneficiary and name:
                 new_beneficiary = {
@@ -400,21 +716,23 @@ def run():
         if st.session_state.beneficiaries:
             st.markdown("### Current Beneficiaries")
             for i, beneficiary in enumerate(st.session_state.beneficiaries):
-                st.markdown(f"""
-                <div class="beneficiary-form">
-                    <b>{beneficiary['name']}</b> ({beneficiary['relationship']}) - To receive: {beneficiary['share']}
-                    <button style="float: right; background: #ff4b4b; color: white; border: none; border-radius: 4px; padding: 2px 8px;" 
-                            onclick="window.parent.postMessage({{'type': 'removeBeneficiary', 'index': {i}}}, '*');">
-                        Remove
-                    </button>
-                </div>
-                """, unsafe_allow_html=True)
+                col1, col2 = st.columns([4, 1])
+                with col1:
+                    st.markdown(f"""
+                    <div class="beneficiary-form">
+                        <strong>{beneficiary['name']}</strong> ({beneficiary['relationship']}) - To receive: {beneficiary['share']}
+                    </div>
+                    """, unsafe_allow_html=True)
+                with col2:
+                    if st.button("Remove", key=f"remove_{i}"):
+                        st.session_state.beneficiaries.pop(i)
+                        st.rerun()
         
         st.markdown('</div>', unsafe_allow_html=True)
         
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
-            if st.button("Continue →", key="beneficiaries_btn", use_container_width=True) and st.session_state.beneficiaries:
+            if st.button("Continue", key="beneficiaries_btn", use_container_width=True) and st.session_state.beneficiaries:
                 st.session_state.form_data["beneficiaries"] = st.session_state.beneficiaries
                 st.session_state.step = 4
                 st.rerun()
@@ -423,8 +741,8 @@ def run():
 
     # --- STEP 4: Executor ---
     elif st.session_state.step == 4:
-        st.markdown('<div class="section-header"><div class="section-number">4</div><div class="subtitle">Appoint an Executor</div></div>', unsafe_allow_html=True)
-        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.markdown('<div class="section-header"><div class="section-number">4</div><h3>Appoint an Executor</h3></div>', unsafe_allow_html=True)
+        st.markdown('<div class="form-section">', unsafe_allow_html=True)
         
         st.info("The executor is responsible for carrying out the instructions in your will and managing your estate.")
         
@@ -437,7 +755,7 @@ def run():
         
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
-            if st.button("Continue →", key="executor_btn", use_container_width=True) and executor_name:
+            if st.button("Continue", key="executor_btn", use_container_width=True) and executor_name:
                 st.session_state.form_data["executor"] = f"{executor_name} ({executor_contact})" if executor_contact else executor_name
                 if alternate_executor:
                     st.session_state.form_data["executor"] += f" with {alternate_executor} as alternate"
@@ -448,8 +766,8 @@ def run():
 
     # --- STEP 5: Witnesses + Generate Will ---
     elif st.session_state.step == 5:
-        st.markdown('<div class="section-header"><div class="section-number">5</div><div class="subtitle">Final Details</div></div>', unsafe_allow_html=True)
-        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.markdown('<div class="section-header"><div class="section-number">5</div><h3>Final Details</h3></div>', unsafe_allow_html=True)
+        st.markdown('<div class="form-section">', unsafe_allow_html=True)
         
         # Personal information
         cols = st.columns(2)
@@ -490,17 +808,25 @@ def run():
                 try:
                     pdf = create_will_pdf(st.session_state.form_data)
                     
-                    st.success("""
-                     Your will has been generated successfully! 
+                    st.markdown("""
+                    <div class="success-card">
+                        <h3>Your will has been generated successfully!</h3>
+                        
+                        <p><strong>Next Steps:</strong></p>
+                        <ol style="line-height:1.7; color: white;">
+                            <li>Download and print your will</li>
+                            <li>Sign it in the presence of two competent witnesses</li>
+                            <li>Have your witnesses sign in your presence and in each other's presence</li>
+                            <li>Store it in a safe place and inform your executor of its location</li>
+                        </ol>
+                    </div>
+                    """, unsafe_allow_html=True)
                     
-                    **Next Steps:**
-                    1. Download and print your will
-                    2. Sign it in the presence of two competent witnesses
-                    3. Have your witnesses sign in your presence and in each other's presence
-                    4. Store it in a safe place and inform your executor of its location
-                    """)
+                    # Center the download button
+                    col_dl1, col_dl2, col_dl3 = st.columns([1, 2, 1])
+                    with col_dl2:
+                        st.markdown(f'<div style="text-align: center; margin: 2rem 0;">{download_pdf(pdf)}</div>', unsafe_allow_html=True)
                     
-                    st.markdown(download_pdf(pdf), unsafe_allow_html=True)
                     play_audio("Your will has been successfully generated. Please remember to print it and sign in front of two witnesses.")
                 except Exception as e:
                     st.error(f"Error generating will: {str(e)}")
@@ -509,16 +835,5 @@ def run():
             elif len(witnesses) < 2:
                 st.warning("Please provide at least two witnesses")
 
-# JavaScript to handle beneficiary removal
-st.components.v1.html("""
-<script>
-window.addEventListener('message', function(event) {
-    if (event.data.type === 'removeBeneficiary') {
-        // This is a placeholder - in a real implementation, you would need to
-        // handle this with Streamlit's component system
-        alert('Remove functionality would be implemented here');
-    }
-});
-</script>
-""", height=0)
-
+if __name__ == "__main__":
+    run()
