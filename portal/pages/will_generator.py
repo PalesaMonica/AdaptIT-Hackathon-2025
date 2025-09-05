@@ -1,730 +1,524 @@
 import streamlit as st
-import datetime
 from fpdf import FPDF
+import base64
+from gtts import gTTS
 import tempfile
 import os
-from gtts import gTTS
-import base64
+from datetime import datetime
 
-# ---------------- Config ----------------
-class WillGenerator:
-    def __init__(self):
-        self.will_data = {}
-        self.template_path = "will_templates"
-        
-    def create_simple_will_template(self, data):
-        """Create a simple will document"""
-        
-        will_text = f"""
-LAST WILL AND TESTAMENT
-
-I, {data.get('full_name', '[NAME]')}, of {data.get('address', '[ADDRESS]')}, South Africa, 
-being of sound mind and disposing memory, do hereby make, publish and declare this to be my Last Will and Testament, 
-hereby revoking all former wills and codicils by me at any time heretofore made.
-
-ARTICLE I - FAMILY STATUS
-I am {data.get('marital_status', '[STATUS]')}. {'I have ' + str(data.get('num_children', 0)) + ' child(ren).' if data.get('num_children', 0) > 0 else 'I have no children.'}
-
-ARTICLE II - DEBTS AND FUNERAL EXPENSES
-I direct that all my just debts, funeral expenses, and the expenses of administering my estate be paid as soon as practicable after my death.
-
-ARTICLE III - SPECIFIC BEQUESTS
-{self._format_specific_bequests(data.get('specific_bequests', []))}
-
-ARTICLE IV - RESIDUARY ESTATE
-I give, devise and bequeath all the rest, residue and remainder of my estate, both real and personal, of whatsoever kind and wheresoever situated, to {data.get('primary_beneficiary', '[BENEFICIARY]')}.
-
-ARTICLE V - ALTERNATE BENEFICIARY
-In the event that {data.get('primary_beneficiary', '[BENEFICIARY]')} predeceases me or is unable to inherit, I give my entire estate to {data.get('alternate_beneficiary', '[ALTERNATE BENEFICIARY]')}.
-
-ARTICLE VI - EXECUTOR
-I hereby nominate and appoint {data.get('executor_name', '[EXECUTOR]')} of {data.get('executor_address', '[EXECUTOR ADDRESS]')} as the Executor of this my Last Will and Testament.
-
-In the event that {data.get('executor_name', '[EXECUTOR]')} is unable or unwilling to serve, I nominate {data.get('alternate_executor', '[ALTERNATE EXECUTOR]')} as alternate Executor.
-
-ARTICLE VII - POWERS OF EXECUTOR
-I grant to my Executor full power and authority to:
-- Sell, transfer, or dispose of any property in my estate
-- Pay all debts and expenses
-- Distribute assets according to this Will
-- Engage legal and financial professionals as needed
-
-ARTICLE VIII - GUARDIANSHIP (if applicable)
-{self._format_guardianship_clause(data)}
-
-IN WITNESS WHEREOF, I have hereunto set my hand and seal this {data.get('date', datetime.date.today().strftime('%d day of %B, %Y'))}.
-
-TESTATOR:
-_________________________________
-{data.get('full_name', '[NAME]')}
-
-WITNESSES:
-We, the undersigned, being at least two in number, each being above the age of 14 years, do hereby certify that the above-named Testator signed this Will in our presence, and that we, in the Testator's presence and in the presence of each other, have signed our names as witnesses hereto.
-
-Witness 1:
-_________________________________
-Name: {data.get('witness1_name', '[WITNESS 1 NAME]')}
-Address: {data.get('witness1_address', '[WITNESS 1 ADDRESS]')}
-Signature: _________________________
-Date: ____________________________
-
-Witness 2:
-_________________________________
-Name: {data.get('witness2_name', '[WITNESS 2 NAME]')}
-Address: {data.get('witness2_address', '[WITNESS 2 ADDRESS]')}
-Signature: _________________________
-Date: ____________________________
-
-COMMISSIONER OF OATHS (Optional but Recommended):
-I certify that the deponent has acknowledged that he/she knows and understands the contents of this affidavit which was signed and sworn to before me at _____________ on this _____ day of _______, 2025, and that the Regulations contained in Government Notice R1258 of 21 July 1972 have been complied with.
-
-_________________________________
-COMMISSIONER OF OATHS
-Full Names: _____________________
-Designation: ____________________
-Address: _______________________
-"""
-        return will_text
+# --- PDF GENERATOR ---
+def create_will_pdf(data):
+    pdf = FPDF()
+    pdf.add_page()
     
-    def _format_specific_bequests(self, bequests):
-        if not bequests:
-            return "I make no specific bequests at this time."
-        
-        text = "I make the following specific bequests:\n"
-        for i, bequest in enumerate(bequests, 1):
-            text += f"{i}. I give {bequest.get('item', '')} to {bequest.get('beneficiary', '')}.\n"
-        return text
+    # Add decorative border
+    pdf.set_draw_color(100, 70, 180)
+    pdf.set_line_width(1.0)
+    pdf.rect(5, 5, 200, 287)
     
-    def _format_guardianship_clause(self, data):
-        if data.get('minor_children', False) and data.get('guardian_name'):
-            return f"""Should any of my children be minors at the time of my death, I nominate {data.get('guardian_name', '')} of {data.get('guardian_address', '')} as guardian of the person and property of such minor children. 
+    # Title
+    pdf.set_font("Arial", 'B', 22)
+    pdf.set_text_color(70, 50, 160)
+    pdf.cell(200, 20, txt="LAST WILL AND TESTAMENT", ln=True, align="C")
+    pdf.ln(5)
+    
+    # Horizontal line
+    pdf.set_draw_color(70, 50, 160)
+    pdf.set_line_width(0.5)
+    pdf.line(20, pdf.get_y(), 190, pdf.get_y())
+    pdf.ln(10)
+    
+    # Introduction
+    pdf.set_font("Arial", size=12)
+    pdf.set_text_color(0, 0, 0)
+    pdf.multi_cell(0, 8, f"I, {data['name']}, Identity Number: {data.get('id_number', '__________')}, residing at {data['address']}, being of sound mind and memory, do hereby make, publish, and declare this to be my Last Will and Testament, hereby revoking all other Wills and Codicils previously made by me.")
+    pdf.ln(8)
 
-In the event that {data.get('guardian_name', '')} is unable or unwilling to serve, I nominate {data.get('alternate_guardian', '[ALTERNATE GUARDIARIAN]')} as alternate guardian."""
-        return "This clause does not apply as I have no minor children."
+    # Marital status
+    pdf.multi_cell(0, 8, f"I declare that I am {data.get('marital_status', 'single').lower()}.")
+    pdf.ln(5)
+    
+    # Assets section
+    pdf.set_font("Arial", 'B', 14)
+    pdf.set_text_color(70, 50, 160)
+    pdf.cell(0, 10, txt="ARTICLE I: ESTATE ASSETS", ln=True)
+    pdf.set_font("Arial", size=12)
+    pdf.set_text_color(0, 0, 0)
+    pdf.multi_cell(0, 8, "I declare that my estate consists of the following assets:")
+    pdf.ln(3)
+    
+    for asset in data.get("assets", []):
+        pdf.cell(10)  # Indentation
+        pdf.multi_cell(0, 8, f"- {asset}")
 
-    def create_pdf_will(self, will_text, filename="will_document.pdf"):
-        """Convert will text to PDF"""
-        try:
-            pdf = FPDF()
-            pdf.add_page()
-            pdf.set_font("Arial", size=12)
+    pdf.ln(5)
+    
+    # Beneficiaries section
+    pdf.set_font("Arial", 'B', 14)
+    pdf.set_text_color(70, 50, 160)
+    pdf.cell(0, 10, txt="ARTICLE II: BENEFICIARIES", ln=True)
+    pdf.set_font("Arial", size=12)
+    pdf.set_text_color(0, 0, 0)
+    pdf.multi_cell(0, 8, "I hereby give, devise, and bequeath all my estate, both real and personal, of whatever kind and wherever situated, to the following beneficiaries:")
+    pdf.ln(3)
+    
+    for i, b in enumerate(data.get("beneficiaries", []), 1):
+        relationship = b.get('relationship', '')
+        share = b.get('share', 'a share')
+        pdf.cell(10)  # Indentation
+        # Handle special characters by encoding to Latin-1
+        beneficiary_text = f"{i}. {b['name']} ({relationship}): To receive {share} of my estate"
+        pdf.multi_cell(0, 8, beneficiary_text.encode('latin-1', 'replace').decode('latin-1'))
+    pdf.ln(5)
+    
+    # Executor section
+    pdf.set_font("Arial", 'B', 14)
+    pdf.set_text_color(70, 50, 160)
+    pdf.cell(0, 10, txt="ARTICLE III: APPOINTMENT OF EXECUTOR", ln=True)
+    pdf.set_font("Arial", size=12)
+    pdf.set_text_color(0, 0, 0)
+    executor_text = f"I hereby nominate, constitute, and appoint {data['executor']} as the Executor of this my Last Will and Testament. I direct that my said Executor shall not be required to furnish any sureties on his/her official bond."
+    pdf.multi_cell(0, 8, executor_text.encode('latin-1', 'replace').decode('latin-1'))
+    pdf.ln(5)
+    
+    # Witnesses section
+    pdf.set_font("Arial", 'B', 14)
+    pdf.set_text_color(70, 50, 160)
+    pdf.cell(0, 10, txt="ARTICLE IV: WITNESSES", ln=True)
+    pdf.set_font("Arial", size=12)
+    pdf.set_text_color(0, 0, 0)
+    pdf.multi_cell(0, 8, "This Will shall be signed by me in the presence of two competent witnesses who shall attest thereto in my presence and in the presence of each other.")
+    pdf.ln(3)
+    
+    for i, w in enumerate(data.get("witnesses", []), 1):
+        pdf.cell(10)  # Indentation
+        pdf.multi_cell(0, 8, f"Witness {i}: {w}")
+    pdf.ln(10)
+    
+    # Closing
+    pdf.multi_cell(0, 8, "IN WITNESS WHEREOF, I have hereunto set my hand this ______ day of ________________________, 20______.")
+    pdf.ln(15)
+    
+    # Signature line
+    pdf.multi_cell(0, 8, "________________________________________")
+    pdf.multi_cell(0, 8, data['name'])
+    pdf.multi_cell(0, 8, "Testator/Testatrix")
+    pdf.ln(10)
+    
+    # Witness signatures
+    pdf.multi_cell(0, 8, "SIGNED by the Testator/Testatrix in our presence and attested by us in the presence of the Testator/Testatrix and of each other:")
+    pdf.ln(10)
+    
+    for i in range(2):
+        pdf.multi_cell(0, 8, "________________________________________")
+        pdf.multi_cell(0, 8, f"Witness {i+1}")
+        pdf.multi_cell(0, 8, "Address: ____________________________________________________")
+        pdf.multi_cell(0, 8, "ID Number: __________________________________________________")
+        pdf.ln(5)
+    
+    # Notary section
+    pdf.add_page()
+    pdf.set_font("Arial", 'B', 16)
+    pdf.set_text_color(70, 50, 160)
+    pdf.cell(0, 10, txt="AFFIDAVIT OF WITNESSES", ln=True)
+    pdf.ln(8)
+    
+    pdf.set_font("Arial", size=12)
+    pdf.set_text_color(0, 0, 0)
+    pdf.multi_cell(0, 8, "On this ______ day of ________________________, 20______, before me, the undersigned authority, personally appeared the Testator/Testatrix and the witnesses, known to me to be the persons described in and who executed the foregoing instrument, and they acknowledged that they executed the same as their free act and deed.")
+    pdf.ln(15)
+    
+    pdf.multi_cell(0, 8, "________________________________________")
+    pdf.multi_cell(0, 8, "Notary Public")
+    pdf.multi_cell(0, 8, "My commission expires: ________________________")
+    
+    return pdf
+
+def download_pdf(pdf):
+    try:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+            pdf_bytes = pdf.output(dest='S').encode('latin-1')
+            tmp.write(pdf_bytes)
+            tmp.flush()
             
-            # Split text into lines and add to PDF
-            lines = will_text.split('\n')
-            for line in lines:
-                # Handle long lines
-                if len(line) > 90:
-                    words = line.split(' ')
-                    current_line = ""
-                    for word in words:
-                        if len(current_line + word) < 90:
-                            current_line += word + " "
-                        else:
-                            pdf.cell(0, 6, current_line.strip(), ln=True)
-                            current_line = word + " "
-                    if current_line:
-                        pdf.cell(0, 6, current_line.strip(), ln=True)
-                else:
-                    pdf.cell(0, 6, line, ln=True)
-            
-            # Save PDF
-            temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
-            pdf.output(temp_file.name)
-            return temp_file.name
-        except Exception as e:
-            st.error(f"Error creating PDF: {str(e)}")
-            return None
+            with open(tmp.name, "rb") as f:
+                b64 = base64.b64encode(f.read()).decode()
+            return f'<a href="data:application/octet-stream;base64,{b64}" download="Will.pdf" style="text-decoration: none; background: linear-gradient(to right, #4361ee, #7209b7); color: white; padding: 12px 24px; border-radius: 8px; font-weight: bold;">📥 Download Your Will</a>'
+    except Exception as e:
+        st.error(f"Error generating PDF: {str(e)}")
+        return ""
 
-# ---------------- Styling ----------------
-def apply_will_generator_styling():
+# --- AUDIO HELPER ---
+def play_audio(text):
+    try:
+        tts = gTTS(text=text, lang="en")
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as tmp:
+            tts.save(tmp.name)
+            st.audio(tmp.name, format="audio/mp3")
+    except Exception as e:
+        st.warning(f"Audio generation failed: {str(e)}")
+
+# --- run APP ---
+def run():
+    st.set_page_config(page_title="South African Will Generator", page_icon="✍️", layout="wide")
+
+    # --- CUSTOM CSS ---
     st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-    
-    * {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    }
-    
-    .main .block-container {
-        padding: 2rem 3rem;
-        background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 25%, #CBD5E1 50%, #94A3B8 75%, #64748B 100%);
-        min-height: 100vh;
-        color: #1E293B;
-    }
-    
-    /* Elegant Blue-to-Pink Gradient Heading */
-    .stMarkdown h1, .main h1 {
-        font-family: 'Inter', sans-serif !important;
-        font-weight: 700 !important;
-        font-size: 3.5rem !important;
-        text-align: center !important;
-        letter-spacing: -0.02em !important;
-        margin: 2rem 0 2.5rem 0 !important;
-        padding: 1.5rem 0 !important;
-        position: relative !important;
-        background: linear-gradient(135deg, 
-            #1E40AF 0%,
-            #3B82F6 15%,
-            #6366F1 30%,
-            #8B5CF6 45%,
-            #A855F7 60%,
-            #C026D3 75%,
-            #E879F9 90%,
-            #F472B6 100%) !important;
-        -webkit-background-clip: text !important;
-        -webkit-text-fill-color: transparent !important;
-        background-clip: text !important;
-        text-shadow: 
-            0 2px 10px rgba(30, 64, 175, 0.4),
-            0 4px 20px rgba(244, 114, 182, 0.3) !important;
-        filter: drop-shadow(0 0 15px rgba(139, 92, 246, 0.3)) !important;
-    }
-    
-    /* Subtle Blue-Pink Accent Lines */
-    .stMarkdown h1::before, .main h1::before {
-        content: '' !important;
-        position: absolute !important;
-        top: -8px !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        width: 60% !important;
-        height: 3px !important;
-        background: linear-gradient(90deg, 
-            transparent 0%, 
-            #1E40AF 30%, 
-            #8B5CF6 50%, 
-            #F472B6 70%, 
-            transparent 100%) !important;
-        border-radius: 2px !important;
-        opacity: 0.8 !important;
-    }
-    
-    .stMarkdown h1::after, .main h1::after {
-        content: '' !important;
-        position: absolute !important;
-        bottom: -8px !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        width: 40% !important;
-        height: 3px !important;
-        background: linear-gradient(90deg, 
-            transparent 0%, 
-            #3B82F6 25%, 
-            #A855F7 50%, 
-            #F472B6 75%, 
-            transparent 100%) !important;
-        border-radius: 2px !important;
-        opacity: 0.6 !important;
-    }
-    
-    /* Improved Section Headings */
-    .main h2, .main h3 {
-        color: #0F172A !important;
-        font-weight: 700 !important;
-        font-size: 1.5rem !important;
-        border-left: 4px solid #3B82F6 !important;
-        padding-left: 1rem !important;
-        margin: 2rem 0 1rem 0 !important;
-        text-shadow: none !important;
-        background: linear-gradient(145deg, rgba(59, 130, 246, 0.08), rgba(59, 130, 246, 0.05)) !important;
-        padding: 0.75rem 1rem !important;
-        border-radius: 0 8px 8px 0 !important;
-    }
-    
-    /* Enhanced Text Visibility */
-    .main p, .main li, .main div {
-        color: #1E293B !important;
-        line-height: 1.7 !important;
-        text-shadow: none !important;
-        font-weight: 500 !important;
-        font-size: 1rem !important;
-    }
-    
-    /* Stronger text for important content */
-    .main strong, .main b {
-        color: #0F172A !important;
-        font-weight: 700 !important;
-        text-shadow: none !important;
-    }
-    
-    .will-header {
-        background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
-        color: white;
-        padding: 2rem;
-        border-radius: 15px;
-        text-align: center;
-        margin-bottom: 2rem;
-        box-shadow: 0 8px 32px rgba(37, 99, 235, 0.2);
-    }
-    
-    .will-header h1 {
-        color: white !important;
-        font-size: 2.5rem;
-        font-weight: bold;
-        margin-bottom: 0.5rem;
-    }
-    
-    .will-header p {
-        font-size: 1.2rem;
-        opacity: 0.9;
-        color: white !important;
-    }
-    
-    /* Section cards */
-    .section-card {
-        background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(248,250,252,0.9)) !important;
-        padding: 1.5rem !important;
-        border-radius: 16px !important;
-        border: 2px solid rgba(59, 130, 246, 0.2) !important;
-        margin: 1rem 0 !important;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.08) !important;
-        backdrop-filter: blur(8px) !important;
-    }
-    
-    .section-card h2 {
-        color: #1E40AF !important;
-        font-size: 1.5rem;
-        margin-bottom: 1rem;
-        border-bottom: 2px solid #e2e8f0;
-        padding-bottom: 0.5rem;
-    }
-    
-    /* Legal notice */
-    .legal-notice {
-        background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05)) !important;
-        padding: 1.5rem;
-        border-radius: 12px;
-        margin: 1.5rem 0;
-        border-left: 6px solid #1D4ED8;
-        color: #1E293B !important;
-    }
-    
-    .legal-notice h3, .legal-notice p, .legal-notice li {
-        color: #1E293B !important;
-    }
-    
-    /* Buttons */
-    .stButton > button {
-        background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 50%, #F472B6 100%) !important;
-        color: white !important;
-        font-weight: 700 !important;
-        font-size: 1.1rem !important;
-        border: none !important;
-        border-radius: 12px !important;
-        padding: 1rem 2rem !important;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3) !important;
-        letter-spacing: 0.025em !important;
-        width: 100% !important;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.2) !important;
-        margin: 1rem 0 !important;
-    }
-    
-    .stButton > button:hover {
-        background: linear-gradient(135deg, #1E40AF 0%, #7C3AED 50%, #EC4899 100%) !important;
-        transform: translateY(-3px) !important;
-        box-shadow: 0 12px 32px rgba(59, 130, 246, 0.4) !important;
-    }
-    
-    /* Will preview */
-    .will-preview {
-        background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(248,250,252,0.9)) !important;
-        padding: 2rem !important;
-        border-radius: 16px !important;
-        border: 2px solid rgba(59, 130, 246, 0.2) !important;
-        margin: 1.5rem 0 !important;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.08) !important;
-        backdrop-filter: blur(8px) !important;
-    }
-    
-    .will-preview h3 {
-        color: #1E40AF !important;
-        text-align: center;
-        margin-bottom: 1rem;
-        font-size: 1.5rem;
-    }
-    
-    /* Form elements */
-    .stTextInput input, .stTextArea textarea, .stNumberInput input, .stSelectbox select {
-        border: 2px solid rgba(59, 130, 246, 0.3) !important;
-        border-radius: 8px !important;
-        padding: 0.75rem !important;
-        color: #1E293B !important;
-        background-color: rgba(255,255,255,0.9) !important;
-        font-size: 1rem !important;
-        font-weight: 500 !important;
-    }
-    
-    .stTextInput input:focus, .stTextArea textarea:focus, .stNumberInput input:focus, .stSelectbox select:focus {
-        border-color: #3B82F6 !important;
-        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
-    }
-    
-    /* Success box */
-    .success-box {
-        background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05)) !important;
-        padding: 1.5rem !important;
-        border-radius: 16px !important;
-        border: 2px solid rgba(34, 197, 94, 0.2) !important;
-        margin: 1.5rem 0 !important;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.08) !important;
-        backdrop-filter: blur(8px) !important;
-    }
-    
-    .success-box h3 {
-        color: #166534 !important;
-        margin-bottom: 0.5rem;
-    }
-    
-    .success-box p {
-        color: #166534 !important;
-    }
-    
-    /* Responsive design */
-    @media (max-width: 768px) {
-        .will-header h1 {
-            font-size: 2rem;
+        :root {
+            --primary: #4361ee;
+            --secondary: #7209b7;
         }
-        
-        .section-card {
-            padding: 1rem;
+        body {
+            background: linear-gradient(135deg, #f7f9fc 0%, #eef2f7 100%);
+            color: #333333;
+            font-family: 'Segoe UI', sans-serif;
         }
-        
-        .main .block-container {
-            padding: 1rem;
+        .stButton>button {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 8px;
+            padding: 10px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-    }
+        .stButton>button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            background: linear-gradient(to right, #3a56d4, #6506a1);
+            color: #ffffff;
+        }
+        .stProgress .st-bo {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+        }
+        .title {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 10px;
+        }
+        .subtitle {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+            border-left: 5px solid var(--primary);
+        }
+        .awareness-card {
+            background: linear-gradient(135deg, #f0f4ff 0%, #f8f0ff 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0ff;
+        }
+        .beneficiary-form {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #e0e5ff;
+        }
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .section-number {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        .info-point {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        .info-icon {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            min-width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+        }
     </style>
     """, unsafe_allow_html=True)
 
-# ---------------- Helper Functions ----------------
-def get_binary_file_downloader_html(bin_file, file_label='File'):
-    """Generate a download link for a binary file"""
-    with open(bin_file, 'rb') as f:
-        data = f.read()
-    bin_str = base64.b64encode(data).decode()
-    href = f'<a href="data:application/octet-stream;base64,{bin_str}" download="{os.path.basename(bin_file)}" style="display: inline-block; text-align: center; text-decoration: none;"><div class="stButton"><button>Download {file_label}</button></div></a>'
-    return href
+    # --- SESSION STATE ---
+    if "step" not in st.session_state:
+        st.session_state.step = 1
+    if "form_data" not in st.session_state:
+        st.session_state.form_data = {}
+    if "beneficiaries" not in st.session_state:
+        st.session_state.beneficiaries = []
+    if "witnesses" not in st.session_state:
+        st.session_state.witnesses = []
 
-# ---------------- Audio Guidance ----------------
-def create_will_audio_guide(section, language='en'):
-    """Create audio guidance for will sections"""
-    guides = {
-        'intro': "Welcome to the Will Generator. This tool will help you create a basic will document. Please note that while this generates a legal framework, you should consult with an attorney for complex estates or specific legal requirements.",
-        'personal_info': "Please provide your full legal name and current address. This information will identify you as the testator in your will.",
-        'beneficiaries': "Choose who will inherit your assets. Consider naming alternate beneficiaries in case your primary choice cannot inherit.",
-        'executor': "Select a trustworthy person to carry out your will's instructions. This should be someone organized and responsible.",
-        'witnesses': "Your will must be signed by at least two witnesses who are not beneficiaries. They confirm you signed the will voluntarily.",
-        'completion': "Your will has been generated. Remember to sign it in front of witnesses and consider having it notarized for additional validity."
+    # --- HEADER ---
+    st.markdown('<div class="title">✍️ South African Will Generator</div>', unsafe_allow_html=True)
+    st.progress(st.session_state.step / 5)
+
+    # --- STEP 1: Awareness ---
+    if st.session_state.step == 1:
+        st.markdown('<div class="section-header"><div class="section-number">1</div><div class="subtitle">Why You Need a Will</div></div>', unsafe_allow_html=True)
+        
+        awareness_points = [
+            {
+                "title": "Lack of Awareness & Understanding",
+                "content": "Without a will, your family may face financial limbo. South African intestate succession laws decide who inherits, which might not align with your wishes."
+            },
+            {
+                "title": "Belief in Insufficient Assets",
+                "content": "Even if you only own a car, furniture, or a bank account — a will ensures your wishes are followed and prevents disputes among family members."
+            },
+            {
+                "title": "Procrastination",
+                "content": "Most people delay making a will. This tool helps you complete one in less than 10 minutes, giving you peace of mind."
+            },
+            {
+                "title": "Not Knowing Where to Start",
+                "content": "We guide you step by step through the entire process. No legal training needed."
+            },
+            {
+                "title": "Perceived High Costs",
+                "content": "This tool is completely free. All you need is to print and sign in front of two witnesses."
+            },
+            {
+                "title": "Emotional Barriers",
+                "content": "It's not easy to think about — but making a will is an act of love and protection for your family."
+            }
+        ]
+        
+        for i, point in enumerate(awareness_points):
+            st.markdown(f'''
+            <div class="awareness-card">
+                <div class="info-point">
+                    <div class="info-icon">{i+1}</div>
+                    <div>
+                        <h4 style="margin: 0; color: var(--primary);">{point['title']}</h4>
+                        <p style="margin: 5px 0 0 0;">{point['content']}</p>
+                    </div>
+                </div>
+            </div>
+            ''', unsafe_allow_html=True)
+        
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            if st.button("Create My Will →", key="start_btn", use_container_width=True):
+                st.session_state.step = 2
+                st.rerun()
+
+    # --- STEP 2: Assets ---
+    elif st.session_state.step == 2:
+        st.markdown('<div class="section-header"><div class="section-number">2</div><div class="subtitle">Select Your Assets</div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        
+        assets_options = [
+            "Residential Property", "Vehicle", "Bank Accounts", 
+            "Investments", "Retirement Funds", "Life Insurance",
+            "Personal Possessions", "Business Interests", "Digital Assets"
+        ]
+        
+        selected_assets = []
+        cols = st.columns(3)
+        for i, asset in enumerate(assets_options):
+            with cols[i % 3]:
+                if st.checkbox(asset, key=f"asset_{i}"):
+                    selected_assets.append(asset)
+        
+        other_asset = st.text_input("Other assets not listed above:")
+        if other_asset:
+            selected_assets.append(other_asset)
+            
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            if st.button("Continue →", key="assets_btn", use_container_width=True):
+                st.session_state.form_data["assets"] = selected_assets
+                st.session_state.step = 3
+                st.rerun()
+
+    # --- STEP 3: Beneficiaries ---
+    elif st.session_state.step == 3:
+        st.markdown('<div class="section-header"><div class="section-number">3</div><div class="subtitle">Add Beneficiaries</div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        
+        st.info("A beneficiary is someone who will receive part of your estate. You can add multiple beneficiaries.")
+        
+        # Form to add a new beneficiary
+        with st.form("beneficiary_form"):
+            cols = st.columns(2)
+            with cols[0]:
+                name = st.text_input("Full Name")
+                relationship = st.selectbox("Relationship", 
+                                          ["Spouse", "Child", "Parent", "Sibling", "Other Relative", "Friend", "Charity"])
+            with cols[1]:
+                share = st.text_input("Share of Estate", help="E.g., '50%', 'the remainder', 'my car'")
+                if relationship == "Other Relative":
+                    relationship = st.text_input("Specify relationship")
+            
+            add_beneficiary = st.form_submit_button("➕ Add Beneficiary")
+            
+            if add_beneficiary and name:
+                new_beneficiary = {
+                    "name": name,
+                    "relationship": relationship,
+                    "share": share if share else "a share"
+                }
+                st.session_state.beneficiaries.append(new_beneficiary)
+                st.success(f"Added {name} as a beneficiary")
+                st.rerun()
+        
+        # Display current beneficiaries
+        if st.session_state.beneficiaries:
+            st.markdown("### Current Beneficiaries")
+            for i, beneficiary in enumerate(st.session_state.beneficiaries):
+                st.markdown(f"""
+                <div class="beneficiary-form">
+                    <b>{beneficiary['name']}</b> ({beneficiary['relationship']}) - To receive: {beneficiary['share']}
+                    <button style="float: right; background: #ff4b4b; color: white; border: none; border-radius: 4px; padding: 2px 8px;" 
+                            onclick="window.parent.postMessage({{'type': 'removeBeneficiary', 'index': {i}}}, '*');">
+                        Remove
+                    </button>
+                </div>
+                """, unsafe_allow_html=True)
+        
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            if st.button("Continue →", key="beneficiaries_btn", use_container_width=True) and st.session_state.beneficiaries:
+                st.session_state.form_data["beneficiaries"] = st.session_state.beneficiaries
+                st.session_state.step = 4
+                st.rerun()
+            elif not st.session_state.beneficiaries:
+                st.warning("Please add at least one beneficiary before continuing")
+
+    # --- STEP 4: Executor ---
+    elif st.session_state.step == 4:
+        st.markdown('<div class="section-header"><div class="section-number">4</div><div class="subtitle">Appoint an Executor</div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        
+        st.info("The executor is responsible for carrying out the instructions in your will and managing your estate.")
+        
+        executor_name = st.text_input("Executor's Full Name")
+        executor_contact = st.text_input("Executor's Contact Information")
+        alternate_executor = st.text_input("Alternate Executor (optional)", 
+                                         help="Someone to serve as executor if your first choice is unable to")
+        
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            if st.button("Continue →", key="executor_btn", use_container_width=True) and executor_name:
+                st.session_state.form_data["executor"] = f"{executor_name} ({executor_contact})" if executor_contact else executor_name
+                if alternate_executor:
+                    st.session_state.form_data["executor"] += f" with {alternate_executor} as alternate"
+                st.session_state.step = 5
+                st.rerun()
+            elif not executor_name:
+                st.warning("Please appoint an executor before continuing")
+
+    # --- STEP 5: Witnesses + Generate Will ---
+    elif st.session_state.step == 5:
+        st.markdown('<div class="section-header"><div class="section-number">5</div><div class="subtitle">Final Details</div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        
+        # Personal information
+        cols = st.columns(2)
+        with cols[0]:
+            name = st.text_input("Your Full Name", value=st.session_state.form_data.get("name", ""))
+            id_number = st.text_input("Your ID Number (optional)")
+        with cols[1]:
+            address = st.text_input("Your Residential Address", value=st.session_state.form_data.get("address", ""))
+            marital_status = st.selectbox("Marital Status", 
+                                        ["Single", "Married", "Divorced", "Widowed", "Life Partnership"])
+        
+        # Witnesses
+        st.markdown("### Witnesses")
+        st.info("Your will must be signed in the presence of two competent witnesses who are not beneficiaries.")
+        
+        witness_cols = st.columns(2)
+        witnesses = []
+        for i in range(2):
+            with witness_cols[i]:
+                st.subheader(f"Witness {i+1}")
+                witness_name = st.text_input(f"Witness {i+1} Full Name", key=f"witness_{i}_name")
+                witness_id = st.text_input(f"Witness {i+1} ID Number (optional)", key=f"witness_{i}_id")
+                witness_address = st.text_input(f"Witness {i+1} Address", key=f"witness_{i}_address")
+                if witness_name:
+                    witnesses.append(witness_name)
+        
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            if st.button("Generate My Will", key="generate_btn", use_container_width=True) and name and address and len(witnesses) >= 2:
+                st.session_state.form_data["name"] = name
+                st.session_state.form_data["address"] = address
+                st.session_state.form_data["id_number"] = id_number
+                st.session_state.form_data["marital_status"] = marital_status
+                st.session_state.form_data["witnesses"] = witnesses
+                
+                try:
+                    pdf = create_will_pdf(st.session_state.form_data)
+                    
+                    st.success("""
+                     Your will has been generated successfully! 
+                    
+                    **Next Steps:**
+                    1. Download and print your will
+                    2. Sign it in the presence of two competent witnesses
+                    3. Have your witnesses sign in your presence and in each other's presence
+                    4. Store it in a safe place and inform your executor of its location
+                    """)
+                    
+                    st.markdown(download_pdf(pdf), unsafe_allow_html=True)
+                    play_audio("Your will has been successfully generated. Please remember to print it and sign in front of two witnesses.")
+                except Exception as e:
+                    st.error(f"Error generating will: {str(e)}")
+            elif not (name and address):
+                st.warning("Please enter your name and address")
+            elif len(witnesses) < 2:
+                st.warning("Please provide at least two witnesses")
+
+# JavaScript to handle beneficiary removal
+st.components.v1.html("""
+<script>
+window.addEventListener('message', function(event) {
+    if (event.data.type === 'removeBeneficiary') {
+        // This is a placeholder - in a real implementation, you would need to
+        // handle this with Streamlit's component system
+        alert('Remove functionality would be implemented here');
     }
-    
-    try:
-        text = guides.get(section, "Section guidance not available.")
-        tts = gTTS(text=text, lang=language, slow=False)
-        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3")
-        tts.save(temp_file.name)
-        return temp_file.name
-    except:
-        return None
+});
+</script>
+""", height=0)
 
-# ---------------- Main Application ----------------
-def run():
-    apply_will_generator_styling()
-    
-    # Header with gradient text
-    st.markdown(""" 
-    <h1> ⚖️ Will Generator Tool</h1>
-    <p style="text-align: center; font-size: 1.2rem; color: #64748B; margin-bottom: 2rem;">
-        Create a legally sound will document to protect your assets and provide for your loved ones
-    </p>
-    """, unsafe_allow_html=True)
-    
-    # Legal notice
-    st.markdown("""
-    <div class="legal-notice">
-        <h3>Legal Notice</h3>
-        <p>This tool provides a basic will template. For complex estates, multiple properties, or specific legal requirements, 
-        we strongly recommend consulting with a qualified legal professional. This document should be signed in the presence 
-        of two competent witnesses who are not beneficiaries.</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    if "will_data" not in st.session_state:
-        st.session_state.will_data = {}
-
-    # Step 1: Personal Details
-    st.markdown("""
-    <div class="section-card">
-        <h2>Step 1: Personal Details</h2>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    col1, col2 = st.columns(2)
-    with col1:
-        st.session_state.will_data['full_name'] = st.text_input(
-            "Full Legal Name", 
-            value=st.session_state.will_data.get('full_name', ''), 
-            key="full_name",
-            help="Enter your complete legal name as it appears on official documents"
-        )
-    with col2:
-        st.session_state.will_data['id_number'] = st.text_input(
-            "South African ID Number", 
-            value=st.session_state.will_data.get('id_number', ''), 
-            key="id_number",
-            help="13-digit South African identity number"
-        )
-    
-    st.session_state.will_data['address'] = st.text_area(
-        "Current Residential Address", 
-        value=st.session_state.will_data.get('address', ''), 
-        key="address",
-        height=80,
-        help="Full physical address including city and postal code"
-    )
-
-    # Step 2: Beneficiaries
-    st.markdown("""
-    <div class="section-card">
-        <h2>Step 2: Beneficiary Information</h2>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    col1, col2, col3 = st.columns([2, 2, 1])
-    with col1:
-        st.session_state.will_data['primary_beneficiary'] = st.text_input(
-            "Primary Beneficiary Full Name", 
-            value=st.session_state.will_data.get('primary_beneficiary', ''), 
-            key="primary_beneficiary",
-            help="Person who will inherit your estate"
-        )
-    with col2:
-        st.session_state.will_data['beneficiary_relationship'] = st.text_input(
-            "Relationship to Beneficiary", 
-            value=st.session_state.will_data.get('beneficiary_relationship', ''), 
-            key="beneficiary_relationship",
-            help="e.g., Spouse, Child, Sibling, Friend"
-        )
-    with col3:
-        st.session_state.will_data['beneficiary_share'] = st.number_input(
-            "Estate Percentage", 
-            min_value=0, 
-            max_value=100, 
-            value=st.session_state.will_data.get('beneficiary_share', 100), 
-            key="beneficiary_share",
-            help="Percentage of estate to inherit"
-        )
-
-    st.session_state.will_data['alternate_beneficiary'] = st.text_input(
-        "Alternate Beneficiary", 
-        value=st.session_state.will_data.get('alternate_beneficiary', ''), 
-        key="alternate_beneficiary",
-        help="Who should inherit if your primary beneficiary cannot"
-    )
-
-    # Step 3: Executor
-    st.markdown("""
-    <div class="section-card">
-        <h2>Step 3: Executor Appointment</h2>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    col1, col2 = st.columns(2)
-    with col1:
-        st.session_state.will_data['executor_name'] = st.text_input(
-            "Executor Full Name", 
-            value=st.session_state.will_data.get('executor_name', ''), 
-            key="executor_name",
-            help="Person responsible for administering your estate"
-        )
-    with col2:
-        st.session_state.will_data['executor_address'] = st.text_input(
-            "Executor Address", 
-            value=st.session_state.will_data.get('executor_address', ''), 
-            key="executor_address",
-            help="Executor's full address"
-        )
-
-    st.session_state.will_data['alternate_executor'] = st.text_input(
-        "Alternate Executor", 
-        value=st.session_state.will_data.get('alternate_executor', ''), 
-        key="alternate_executor",
-        help="Who should serve as executor if your first choice cannot"
-    )
-
-    # Step 4: Guardian (Optional)
-    st.markdown("""
-    <div class="section-card">
-        <h2>Step 4: Guardian Appointment (Optional)</h2>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.session_state.will_data['minor_children'] = st.checkbox(
-        "I have minor children who would need a guardian",
-        value=st.session_state.will_data.get('minor_children', False),
-        key="minor_children"
-    )
-    
-    if st.session_state.will_data.get('minor_children', False):
-        col1, col2 = st.columns(2)
-        with col1:
-            st.session_state.will_data['guardian_name'] = st.text_input(
-                "Guardian Full Name", 
-                value=st.session_state.will_data.get('guardian_name', ''), 
-                key="guardian_name",
-                help="Guardian for minor children"
-            )
-        with col2:
-            st.session_state.will_data['guardian_address'] = st.text_input(
-                "Guardian Address", 
-                value=st.session_state.will_data.get('guardian_address', ''), 
-                key="guardian_address",
-                help="Guardian's full address"
-            )
-
-        st.session_state.will_data['alternate_guardian'] = st.text_input(
-            "Alternate Guardian", 
-            value=st.session_state.will_data.get('alternate_guardian', ''), 
-            key="alternate_guardian",
-            help="Alternate guardian if your first choice cannot serve"
-        )
-
-    # Step 5: Witnesses
-    st.markdown("""
-    <div class="section-card">
-        <h2>Step 5: Witness Information</h2>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    col1, col2 = st.columns(2)
-    with col1:
-        st.session_state.will_data['witness1_name'] = st.text_input(
-            "Witness 1 Full Name", 
-            value=st.session_state.will_data.get('witness1_name', ''), 
-            key="witness1_name",
-            help="First witness (cannot be a beneficiary)"
-        )
-        st.session_state.will_data['witness1_address'] = st.text_input(
-            "Witness 1 Address", 
-            value=st.session_state.will_data.get('witness1_address', ''), 
-            key="witness1_address",
-            help="Witness 1's full address"
-        )
-    with col2:
-        st.session_state.will_data['witness2_name'] = st.text_input(
-            "Witness 2 Full Name", 
-            value=st.session_state.will_data.get('witness2_name', ''), 
-            key="witness2_name",
-            help="Second witness (cannot be a beneficiary)"
-        )
-        st.session_state.will_data['witness2_address'] = st.text_input(
-            "Witness 2 Address", 
-            value=st.session_state.will_data.get('witness2_address', ''), 
-            key="witness2_address",
-            help="Witness 2's full address"
-        )
-
-    # Specific bequests
-    st.markdown("""
-    <div class="section-card">
-        <h2>Specific Bequests (Optional)</h2>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("List specific items you want to leave to specific people")
-    
-    if "specific_bequests" not in st.session_state:
-        st.session_state.specific_bequests = []
-    
-    with st.expander("Add Specific Bequest"):
-        col1, col2 = st.columns(2)
-        with col1:
-            item = st.text_input("Item to Bequeath", key="bequest_item")
-        with col2:
-            beneficiary = st.text_input("Beneficiary Name", key="bequest_beneficiary")
-        
-        if st.button("Add Bequest", key="add_bequest"):
-            if item and beneficiary:
-                st.session_state.specific_bequests.append({
-                    "item": item,
-                    "beneficiary": beneficiary
-                })
-                st.success("Bequest added!")
-                st.rerun()
-    
-    if st.session_state.specific_bequests:
-        st.markdown("**Current Bequests:**")
-        for i, bequest in enumerate(st.session_state.specific_bequests):
-            st.markdown(f"{i+1}. {bequest['item']} → {bequest['beneficiary']}")
-            if st.button(f"Remove #{i+1}", key=f"remove_{i}"):
-                st.session_state.specific_bequests.pop(i)
-                st.rerun()
-
-    # Generate Will Button
-    st.markdown("""
-    <div style="text-align: center; margin: 2rem 0;">
-    """, unsafe_allow_html=True)
-    
-    if st.button("Generate Will Document", key="generate_will", help="Create your will document based on the provided information"):
-        # Validation
-        required_fields = ['full_name', 'address', 'primary_beneficiary', 'executor_name']
-        missing_fields = [field for field in required_fields if not st.session_state.will_data.get(field)]
-        
-        if missing_fields:
-            st.error(f"Please complete the following required fields: {', '.join(missing_fields)}")
-        else:
-            st.subheader("Generated Will Document")
-            
-            will_generator = WillGenerator()
-            st.session_state.will_data['specific_bequests'] = st.session_state.specific_bequests
-            will_text = will_generator.create_simple_will_template(st.session_state.will_data)
-            
-            st.markdown("""
-            <div class="will-preview">
-                <h3>Will Document Preview</h3>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            st.text_area("Generated Will Content", will_text, height=400, key="will_preview")
-            
-            # Download options
-            st.markdown("""
-            <div class="success-box">
-                <h3>✅ Will Generation Complete</h3>
-                <p>Your will document has been successfully generated. Please review it carefully and download using the buttons below.</p>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                # Download as PDF
-                pdf_file = will_generator.create_pdf_will(will_text)
-                if pdf_file:
-                    st.markdown(get_binary_file_downloader_html(pdf_file, "PDF Will"), unsafe_allow_html=True)
-            
-            with col2:
-                # Download as text
-                text_file = tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.txt', encoding='utf-8')
-                text_file.write(will_text)
-                text_file.close()
-                st.markdown(get_binary_file_downloader_html(text_file.name, "Text Will"), unsafe_allow_html=True)
-            
-            # Important instructions
-            st.markdown("""
-            <div class="legal-notice">
-                <h3>Next Steps</h3>
-                <ol>
-                    <li>Print your will document</li>
-                    <li>Sign it in the presence of two competent witnesses (who are not beneficiaries)</li>
-                    <li>Have your witnesses sign in your presence and in each other's presence</li>
-                    <li>Consider having the document notarized for additional legal validity</li>
-                    <li>Store the original in a safe place and inform your executor of its location</li>
-                </ol>
-            </div>
-            """, unsafe_allow_html=True)
-
-    st.markdown("</div>", unsafe_allow_html=True)
-
-if __name__ == "__main__":
-    run()
