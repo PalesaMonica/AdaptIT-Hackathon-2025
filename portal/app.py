@@ -414,14 +414,14 @@ apply_beautiful_styling()
 
 # ------------------- Pages with Icons ------------------- 
 pages = {
-    "Home": [st.Page("pages/home.py", title="🏠 Home")],
+    "Home": [st.Page("pages/home.py", title="Home")],
     "Legal Tools": [
-        st.Page("pages/summarizer.py", title="📄 Document Summarizer"),
-        st.Page("pages/sassa_loan.py", title="💰 SASSA Loan Assistant"),
-        st.Page("pages/fraud_checker.py", title="🛡️ Fraud Detection"),
-        st.Page("pages/will_generator.py", title="📜 Will Generator"),
-        st.Page("pages/property_assistance.py", title="🏡 Property & Legal Help"),
-        st.Page("pages/educational.py", title="📚 Know Your Rights"),
+        st.Page("pages/summarizer.py", title="Document Summarizer"),
+        st.Page("pages/sassa_loan.py", title="SASSA Loan Assistant"),
+        st.Page("pages/fraud_checker.py", title="Fraud Detection"),
+        st.Page("pages/will_generator.py", title="Will Generator"),
+        st.Page("pages/property_assistance.py", title="Property & Legal Help"),
+        st.Page("pages/educational.py", title="Know Your Rights"),
     ]
 }
 
@@ -429,22 +429,22 @@ pages = {
 selected_page = st.navigation(pages)
 
 # ------------------- Routing ------------------- 
-if selected_page.title == "🏠 Home":
+if selected_page.title == "Home":
     # Show hero header only on home page
     show_hero_header()
     import pages.home as home
     home.run()
-elif selected_page.title == "📄 Document Summarizer":
+elif selected_page.title == "Document Summarizer":
     summarizer.run()
-elif selected_page.title == "🛡️ Fraud Detection":
+elif selected_page.title == "Fraud Detection":
     fraud_checker.run()
-elif selected_page.title == "📜 Will Generator":
+elif selected_page.title == "Will Generator":
     will_generator.run()
-elif selected_page.title == "🏡 Property & Legal Help":
+elif selected_page.title == "Property & Legal Help":
     property_assistance.run()
-elif selected_page.title == "📚 Know Your Rights":
+elif selected_page.title == "Know Your Rights":
     educational.run()
-elif selected_page.title == "💰 SASSA Loan Assistant":
+elif selected_page.title == "SASSA Loan Assistant":
     sassa_loan.run()
 
 # Enhanced Transparent Footer
