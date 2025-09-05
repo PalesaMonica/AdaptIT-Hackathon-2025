@@ -99,35 +99,82 @@ def load_queries():
 def apply_property_styling():
     st.markdown("""
     <style>
-    /* Main container */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    
+    * {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    
     .main .block-container {
-        padding: 1rem 2rem;
-        max-width: 1200px;
+        padding: 2rem 3rem;
+        background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 25%, #CBD5E1 50%, #94A3B8 75%, #64748B 100%);
+        min-height: 100vh;
+        color: #1E293B;
     }
     
-    /* Header styling */
-    .property-header {
-        background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
-        color: white;
-        padding: 2rem;
-        border-radius: 15px;
-        text-align: center;
-        margin-bottom: 2rem;
-        box-shadow: 0 8px 32px rgba(37, 99, 235, 0.2);
+    /* Elegant Blue-to-Pink Gradient Heading - FIXED SELECTOR */
+    .main h1, h1, .stMarkdown h1 {
+        font-family: 'Inter', sans-serif !important;
+        font-weight: 700 !important;
+        font-size: 3.5rem !important;
+        text-align: center !important;
+        letter-spacing: -0.02em !important;
+        margin: 2rem 0 2.5rem 0 !important;
+        padding: 1.5rem 0 !important;
+        position: relative !important;
+        background: linear-gradient(135deg, 
+            #1E40AF 0%,
+            #3B82F6 15%,
+            #6366F1 30%,
+            #8B5CF6 45%,
+            #A855F7 60%,
+            #C026D3 75%,
+            #E879F9 90%,
+            #F472B6 100%) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        background-clip: text !important;
+        text-shadow: 
+            0 2px 10px rgba(30, 64, 175, 0.4),
+            0 4px 20px rgba(244, 114, 182, 0.3) !important;
+        filter: drop-shadow(0 0 15px rgba(139, 92, 246, 0.3)) !important;
     }
     
-    .property-header h1 {
-        color: white !important;
-        font-size: 2.5rem;
-        font-weight: bold;
-        margin-bottom: 0.5rem;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    /* Subtle Blue-Pink Accent Lines */
+    .main h1::before, h1::before, .stMarkdown h1::before {
+        content: '' !important;
+        position: absolute !important;
+        top: -8px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 60% !important;
+        height: 3px !important;
+        background: linear-gradient(90deg, 
+            transparent 0%, 
+            #1E40AF 30%, 
+            #8B5CF6 50%, 
+            #F472B6 70%, 
+            transparent 100%) !important;
+        border-radius: 2px !important;
+        opacity: 0.8 !important;
     }
     
-    .property-header p {
-        font-size: 1.2rem;
-        opacity: 0.9;
-        margin-bottom: 0.5rem;
+    .main h1::after, h1::after, .stMarkdown h1::after {
+        content: '' !important;
+        position: absolute !important;
+        bottom: -8px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 40% !important;
+        height: 3px !important;
+        background: linear-gradient(90deg, 
+            transparent 0%, 
+            #3B82F6 25%, 
+            #A855F7 50%, 
+            #F472B6 75%, 
+            transparent 100%) !important;
+        border-radius: 2px !important;
+        opacity: 0.6 !important;
     }
     
     /* Form section */
@@ -340,8 +387,8 @@ def apply_property_styling():
     
     /* Mobile responsiveness */
     @media (max-width: 768px) {
-        .property-header h1 {
-            font-size: 2rem;
+        .main h1, h1, .stMarkdown h1 {
+            font-size: 2.5rem !important;
         }
         
         .form-container {
@@ -420,34 +467,29 @@ def show_status_tracker(status="Submitted"):
 def show_terms_modal():
     """Display terms and conditions in an expandable section"""
     with st.expander("📄 Read Terms and Conditions", expanded=False):
-        st.markdown("""
-        <div class="terms-modal">
-            <h4>Property & Legal Assistance Service Terms</h4>
-            <p><strong>Last Updated:</strong> {}
-            </p>
-            
-            <h5>1. Service Description</h5>
-            <p>Our Property & Legal Assistance service connects you with qualified professionals who can provide guidance on property and legal matters. This service is designed to offer preliminary advice and direction.</p>
-            
-            <h5>2. Information Collection</h5>
-            <p>We collect personal information including your name, contact details, and information about your property or legal matter to facilitate connecting you with appropriate professionals.</p>
-            
-            <h5>3. Data Protection</h5>
-            <p>Your information is stored securely and only shared with professionals who need it to provide you with assistance. We implement industry-standard security measures to protect your data.</p>
-            
-            <h5>4. Limitations of Service</h5>
-            <p>This service provides initial guidance and does not constitute formal legal representation. For complex legal matters, we recommend engaging a qualified attorney directly.</p>
-            
-            <h5>5. Response Time</h5>
-            <p>We aim to respond to all queries within 2 business days. Urgent queries will be prioritized accordingly.</p>
-            
-            <h5>6. Privacy Commitment</h5>
-            <p>We respect your privacy and will not share your information with third parties for marketing purposes without your explicit consent.</p>
-            
-            <h5>7. Consent to Communication</h5>
-            <p>By using this service, you consent to receive communications related to your query via email, phone, or other provided contact methods.</p>
-        </div>
-        """.format(datetime.now().strftime("%B %d, %Y")), unsafe_allow_html=True)
+        st.markdown("### Property & Legal Assistance Service Terms")
+        st.markdown(f"**Last Updated:** {datetime.now().strftime('%B %d, %Y')}")
+        
+        st.markdown("#### 1. Service Description")
+        st.markdown("Our Property & Legal Assistance service connects you with qualified professionals who can provide guidance on property and legal matters. This service is designed to offer preliminary advice and direction.")
+        
+        st.markdown("#### 2. Information Collection")
+        st.markdown("We collect personal information including your name, contact details, and information about your property or legal matter to facilitate connecting you with appropriate professionals.")
+        
+        st.markdown("#### 3. Data Protection")
+        st.markdown("Your information is stored securely and only shared with professionals who need it to provide you with assistance. We implement industry-standard security measures to protect your data.")
+        
+        st.markdown("#### 4. Limitations of Service")
+        st.markdown("This service provides initial guidance and does not constitute formal legal representation. For complex legal matters, we recommend engaging a qualified attorney directly.")
+        
+        st.markdown("#### 5. Response Time")
+        st.markdown("We aim to respond to all queries within 2 business days. Urgent queries will be prioritized accordingly.")
+        
+        st.markdown("#### 6. Privacy Commitment")
+        st.markdown("We respect your privacy and will not share your information with third parties for marketing purposes without your explicit consent.")
+        
+        st.markdown("#### 7. Consent to Communication")
+        st.markdown("By using this service, you consent to receive communications related to your query via email, phone, or other provided contact methods.")
 
 # ---------------------------
 # Main app
@@ -458,12 +500,12 @@ def run():
         init_db()
         apply_property_styling()
 
-        # Header
+        # Header with blue-purple gradient - FIXED: Using proper HTML structure
         st.markdown("""
-        <div class="property-header">
+        <div style="text-align: center;">
             <h1>🏡 Property & Legal Assistance</h1>
-            <p>Expert Guidance for Your Property and Legal Matters</p>
-            <p><small>Connect with qualified professionals for your property and legal needs</small></p>
+            <p style="font-size: 1.2rem; color: #64748B;">Expert Guidance for Your Property and Legal Matters</p>
+            <p style="font-size: 0.9rem; color: #94A3B8;">Connect with qualified professionals for your property and legal needs</p>
         </div>
         """, unsafe_allow_html=True)
 
@@ -568,31 +610,8 @@ def run():
                 </div>
                 """, unsafe_allow_html=True)
                 
-                # Terms and conditions - FIXED FORMATTING
-                with st.expander("📄 Read Terms and Conditions", expanded=False):
-                    st.markdown("### Property & Legal Assistance Service Terms")
-                    st.markdown(f"**Last Updated:** {datetime.now().strftime('%B %d, %Y')}")
-                    
-                    st.markdown("#### 1. Service Description")
-                    st.markdown("Our Property & Legal Assistance service connects you with qualified professionals who can provide guidance on property and legal matters. This service is designed to offer preliminary advice and direction.")
-                    
-                    st.markdown("#### 2. Information Collection")
-                    st.markdown("We collect personal information including your name, contact details, and information about your property or legal matter to facilitate connecting you with appropriate professionals.")
-                    
-                    st.markdown("#### 3. Data Protection")
-                    st.markdown("Your information is stored securely and only shared with professionals who need it to provide you with assistance. We implement industry-standard security measures to protect your data.")
-                    
-                    st.markdown("#### 4. Limitations of Service")
-                    st.markdown("This service provides initial guidance and does not constitute formal legal representation. For complex legal matters, we recommend engaging a qualified attorney directly.")
-                    
-                    st.markdown("#### 5. Response Time")
-                    st.markdown("We aim to respond to all queries within 2 business days. Urgent queries will be prioritized accordingly.")
-                    
-                    st.markdown("#### 6. Privacy Commitment")
-                    st.markdown("We respect your privacy and will not share your information with third parties for marketing purposes without your explicit consent.")
-                    
-                    st.markdown("#### 7. Consent to Communication")
-                    st.markdown("By using this service, you consent to receive communications related to your query via email, phone, or other provided contact methods.")
+                # Terms and conditions
+                show_terms_modal()
                 
                 privacy_col, marketing_col = st.columns(2)
                 with privacy_col:
