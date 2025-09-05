@@ -8,6 +8,9 @@ from gtts import gTTS
 import fitz  # PyMuPDF
 import time
 import pytesseract
+import re
+from datetime import datetime, timedelta
+
 # ---------------- Config ----------------
 SUPPORTED_FORMATS = ["jpg","jpeg","png","webp","pdf","txt","doc","docx"]
 MAX_FILE_SIZE = 10*1024*1024
@@ -64,270 +67,102 @@ def apply_legal_portal_styling():
         filter: drop-shadow(0 0 15px rgba(139, 92, 246, 0.3)) !important;
     }
     
-    /* Subtle Blue-Pink Accent Lines */
-    .stMarkdown h1::before, .main h1::before {
-        content: '' !important;
-        position: absolute !important;
-        top: -8px !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        width: 60% !important;
-        height: 3px !important;
-        background: linear-gradient(90deg, 
-            transparent 0%, 
-            #1E40AF 30%, 
-            #8B5CF6 50%, 
-            #F472B6 70%, 
-            transparent 100%) !important;
-        border-radius: 2px !important;
-        opacity: 0.8 !important;
+    .alert-box {
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin: 1rem 0;
+        border-left: 4px solid;
+        font-weight: 600;
+        font-size: 1.1rem;
     }
     
-    .stMarkdown h1::after, .main h1::after {
-        content: '' !important;
-        position: absolute !important;
-        bottom: -8px !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        width: 40% !important;
-        height: 3px !important;
-        background: linear-gradient(90deg, 
-            transparent 0%, 
-            #3B82F6 25%, 
-            #A855F7 50%, 
-            #F472B6 75%, 
-            transparent 100%) !important;
-        border-radius: 2px !important;
-        opacity: 0.6 !important;
+    .alert-danger {
+        background: rgba(220, 38, 38, 0.1);
+        border-left-color: #DC2626;
+        color: #DC2626;
     }
     
-    /* Improved Section Headings */
-    .main h2, .main h3 {
-        color: #0F172A !important;
-        font-weight: 700 !important;
-        font-size: 1.5rem !important;
-        border-left: 4px solid #3B82F6 !important;
-        padding-left: 1rem !important;
-        margin: 2rem 0 1rem 0 !important;
-        text-shadow: none !important;
-        background: linear-gradient(145deg, rgba(59, 130, 246, 0.08), rgba(59, 130, 246, 0.05)) !important;
-        padding: 0.75rem 1rem !important;
-        border-radius: 0 8px 8px 0 !important;
+    .alert-warning {
+        background: rgba(245, 158, 11, 0.1);
+        border-left-color: #F59E0B;
+        color: #D97706;
     }
     
-    /* Enhanced Text Visibility */
-    .main p, .main li, .main div {
-        color: #1E293B !important;
-        line-height: 1.7 !important;
-        text-shadow: none !important;
-        font-weight: 500 !important;
-        font-size: 1rem !important;
+    .alert-info {
+        background: rgba(59, 130, 246, 0.1);
+        border-left-color: #3B82F6;
+        color: #1E40AF;
     }
     
-    /* Stronger text for important content */
-    .main strong, .main b {
-        color: #0F172A !important;
-        font-weight: 700 !important;
-        text-shadow: none !important;
+    .plain-speak {
+        background: linear-gradient(145deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05));
+        padding: 2rem;
+        border-radius: 16px;
+        border: 2px solid rgba(34, 197, 94, 0.2);
+        margin: 1.5rem 0;
+        font-size: 1.2rem;
+        line-height: 1.8;
+        color: #166534;
     }
     
-    .feature-list {
-        background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(248,250,252,0.9)) !important;
-        padding: 2rem !important;
-        border-radius: 16px !important;
-        border: 2px solid rgba(59, 130, 246, 0.2) !important;
-        margin: 2rem 0 !important;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.08) !important;
-        backdrop-filter: blur(8px) !important;
+    .next-steps {
+        background: linear-gradient(145deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05));
+        padding: 2rem;
+        border-radius: 16px;
+        border: 2px solid rgba(139, 92, 246, 0.2);
+        margin: 2rem 0;
     }
     
-    .feature-list strong {
-        color: #1E40AF !important;
-        font-size: 1.1rem !important;
-        font-weight: 700 !important;
-        text-shadow: none !important;
+    .risk-indicator {
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        margin: 0.5rem 0;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
     }
     
-    .feature-list ul {
-        margin: 1rem 0 0 0 !important;
-        padding-left: 1.5rem !important;
+    .risk-high {
+        background: rgba(239, 68, 68, 0.1);
+        border: 2px solid #EF4444;
+        color: #DC2626;
     }
     
-    .feature-list li {
-        color: #334155 !important;
-        margin: 0.75rem 0 !important;
-        line-height: 1.7 !important;
-        font-size: 1rem !important;
-        text-shadow: none !important;
-        font-weight: 500 !important;
+    .risk-medium {
+        background: rgba(245, 158, 11, 0.1);
+        border: 2px solid #F59E0B;
+        color: #D97706;
     }
     
-    .feature-list li strong {
-        color: #3B82F6 !important;
-        font-weight: 700 !important;
+    .risk-low {
+        background: rgba(34, 197, 94, 0.1);
+        border: 2px solid #22C55E;
+        color: #166534;
     }
     
-    /* Enhanced Buttons */
-    .stButton > button {
-        background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 50%, #F472B6 100%) !important;
+    .easy-button {
+        background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%) !important;
         color: white !important;
         font-weight: 700 !important;
-        font-size: 1.1rem !important;
+        font-size: 1.3rem !important;
         border: none !important;
         border-radius: 12px !important;
-        padding: 1rem 2rem !important;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3) !important;
-        letter-spacing: 0.025em !important;
+        padding: 1.5rem 2rem !important;
+        margin: 0.5rem 0 !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 6px 20px rgba(34, 197, 94, 0.3) !important;
         width: 100% !important;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.2) !important;
     }
     
-    .stButton > button:hover {
-        background: linear-gradient(135deg, #1E40AF 0%, #7C3AED 50%, #EC4899 100%) !important;
-        transform: translateY(-3px) !important;
-        box-shadow: 0 12px 32px rgba(59, 130, 246, 0.4) !important;
-    }
-    
-    /* Improved Form Elements */
-    .stTextArea > div > div > textarea {
-        background: rgba(255,255,255,0.9) !important;
-        color: #1E293B !important;
-        border: 2px solid rgba(59, 130, 246, 0.3) !important;
-        border-radius: 8px !important;
-        font-size: 1rem !important;
-        text-shadow: none !important;
-        font-weight: 500 !important;
-    }
-    
-    /* Enhanced Alert Boxes */
-    .stSuccess, .stInfo, .stWarning, .stError {
-        border-radius: 12px !important;
-        font-weight: 600 !important;
-        text-shadow: none !important;
-        backdrop-filter: blur(8px) !important;
-    }
-    
-    .stSuccess {
-        background: rgba(34, 197, 94, 0.1) !important;
-        border: 1px solid rgba(34, 197, 94, 0.3) !important;
-        color: #166534 !important;
-    }
-    
-    .stInfo {
-        background: rgba(59, 130, 246, 0.1) !important;
-        border: 1px solid rgba(59, 130, 246, 0.3) !important;
-        color: #1E40AF !important;
-    }
-    
-    .stWarning {
-        background: rgba(245, 158, 11, 0.1) !important;
-        border: 1px solid rgba(245, 158, 11, 0.3) !important;
-        color: #92400E !important;
-    }
-    
-    .stError {
-        background: rgba(239, 68, 68, 0.1) !important;
-        border: 1px solid rgba(239, 68, 68, 0.3) !important;
-        color: #DC2626 !important;
-    }
-    
-    /* Enhanced Summary Containers */
-    .summary-container {
-        background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(248,250,252,0.9)) !important;
-        padding: 2rem !important;
-        border-radius: 16px !important;
-        border: 2px solid rgba(59, 130, 246, 0.2) !important;
-        margin: 1.5rem 0 !important;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.08) !important;
-        backdrop-filter: blur(8px) !important;
-    }
-    
-    .summary-container strong {
-        color: #1E40AF !important;
-        font-size: 1.2rem !important;
-        font-weight: 700 !important;
-    }
-    
-    .summary-container p, .summary-container div {
-        color: #334155 !important;
-        font-weight: 500 !important;
-    }
-    
-    /* Enhanced Audio Section */
-    .audio-section {
-        background: linear-gradient(145deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05)) !important;
-        padding: 2rem !important;
-        border-radius: 16px !important;
-        border: 2px solid rgba(139, 92, 246, 0.2) !important;
-        margin: 2rem 0 !important;
-        box-shadow: 0 8px 32px rgba(139, 92, 246, 0.15) !important;
-        backdrop-filter: blur(8px) !important;
-    }
-    
-    .audio-section h3 {
-        color: #6B21A8 !important;
-        font-weight: 700 !important;
-        margin-bottom: 1rem !important;
-    }
-    
-    .audio-section p {
-        color: #475569 !important;
-        font-weight: 600 !important;
-    }
-    
-    /* File uploader styling */
-    .stFileUploader > div > button {
-        background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(248,250,252,0.8)) !important;
-        border: 2px dashed rgba(59, 130, 246, 0.4) !important;
-        border-radius: 12px !important;
-        color: #1E293B !important;
-        font-weight: 600 !important;
-        padding: 2rem !important;
-        text-shadow: none !important;
-    }
-    
-    /* Sidebar improvements */
-    .css-1d391kg {
-        background: linear-gradient(180deg, rgba(248, 250, 252, 0.98), rgba(226, 232, 240, 0.95)) !important;
-        backdrop-filter: blur(12px) !important;
-    }
-    
-    .css-1d391kg .markdown-text-container {
-        color: #1E293B !important;
-        text-shadow: none !important;
-        font-weight: 500 !important;
-    }
-    
-    .css-1d391kg h2 {
-        color: #0F172A !important;
-        font-weight: 700 !important;
-    }
-    
-    .css-1d391kg h3 {
-        color: #1E40AF !important;
-        font-weight: 600 !important;
-    }
-    
-    .css-1d391kg strong {
-        color: #0F172A !important;
-        font-weight: 700 !important;
-    }
-    
-    /* Improved spinner */
-    .stSpinner {
-        color: #3B82F6 !important;
-    }
-    
-    /* Enhanced caption styling */
-    .stCaption {
-        color: #64748B !important;
-        font-weight: 500 !important;
+    .easy-button:hover {
+        background: linear-gradient(135deg, #16A34A 0%, #15803D 100%) !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4) !important;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# ---------------- OCR ----------------
+# ---------------- Enhanced OCR ----------------
 def preprocess_image(image):
     """Enhanced image preprocessing for better OCR results"""
     if image.mode != 'RGB': 
@@ -375,9 +210,190 @@ def extract_text_from_pdf(uploaded_file):
         st.error(f"PDF extraction failed: {str(e)}")
         return ""
 
-# ---------------- Summarizer ----------------
-def simple_text_summarizer(text, max_sentences=3):
-    """Simple rule-based summarizer as fallback"""
+# ---------------- Document Type Detection ----------------
+def detect_document_type(text):
+    """Detect the type of legal document"""
+    text_lower = text.lower()
+    
+    if any(word in text_lower for word in ['lease', 'tenant', 'landlord', 'rent', 'premises']):
+        return "rental_agreement", "Rental/Lease Agreement"
+    elif any(word in text_lower for word in ['employment', 'employee', 'employer', 'salary', 'wages']):
+        return "employment", "Employment Contract"
+    elif any(word in text_lower for word in ['loan', 'credit', 'debt', 'payment', 'interest']):
+        return "financial", "Financial/Loan Agreement"
+    elif any(word in text_lower for word in ['insurance', 'policy', 'coverage', 'claim', 'premium']):
+        return "insurance", "Insurance Policy"
+    elif any(word in text_lower for word in ['purchase', 'sale', 'buyer', 'seller', 'goods']):
+        return "purchase", "Purchase/Sales Agreement"
+    elif any(word in text_lower for word in ['service', 'provider', 'client', 'services']):
+        return "service", "Service Agreement"
+    else:
+        return "general", "Legal Document"
+
+# ---------------- Risk Assessment ----------------
+def assess_document_risks(text, doc_type):
+    """Assess potential risks in the document"""
+    risks = []
+    text_lower = text.lower()
+    
+    # High-risk patterns
+    high_risk_terms = [
+        'penalty', 'forfeit', 'liable', 'damages', 'breach', 'default',
+        'terminate', 'evict', 'garnish', 'sue', 'court', 'legal action'
+    ]
+    
+    medium_risk_terms = [
+        'fee', 'charge', 'deposit', 'non-refundable', 'binding',
+        'irrevocable', 'waive', 'surrender'
+    ]
+    
+    # Check for high-risk terms
+    high_risk_found = [term for term in high_risk_terms if term in text_lower]
+    medium_risk_found = [term for term in medium_risk_terms if term in text_lower]
+    
+    if high_risk_found:
+        risks.append({
+            'level': 'high',
+            'title': 'High Risk Terms Found',
+            'description': f"This document contains serious consequences: {', '.join(high_risk_found[:3])}",
+            'advice': 'Consider getting legal advice before signing!'
+        })
+    
+    if medium_risk_found:
+        risks.append({
+            'level': 'medium',
+            'title': 'Important Terms to Note',
+            'description': f"Pay attention to these terms: {', '.join(medium_risk_found[:3])}",
+            'advice': 'Make sure you understand these terms completely.'
+        })
+    
+    # Check for dates and deadlines
+    date_patterns = re.findall(r'\b\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b', text)
+    if date_patterns:
+        risks.append({
+            'level': 'medium',
+            'title': 'Important Dates Found',
+            'description': f"Document contains dates: {', '.join(date_patterns[:2])}",
+            'advice': 'Mark these dates on your calendar!'
+        })
+    
+    return risks
+
+# ---------------- Plain Language Explanations ----------------
+def get_plain_language_explanation(doc_type):
+    """Get plain language explanation based on document type"""
+    explanations = {
+        'rental_agreement': {
+            'what_it_is': "This is an agreement about renting a place to live. It sets the rules between you (the tenant) and your landlord.",
+            'key_things': [
+                "How much rent you pay and when",
+                "What happens if you're late with rent",
+                "Rules about pets, guests, and noise",
+                "Who pays for repairs and utilities",
+                "How to end the lease properly"
+            ],
+            'watch_out': [
+                "Penalty fees for late payments",
+                "Rules that seem unfair or too strict",
+                "Who is responsible for damages",
+                "Notice periods for moving out"
+            ]
+        },
+        'employment': {
+            'what_it_is': "This is your job contract. It explains your work duties, pay, and the rules you need to follow at work.",
+            'key_things': [
+                "Your salary or hourly wage",
+                "Your job duties and responsibilities",
+                "Benefits like health insurance or vacation",
+                "Work schedule and hours",
+                "How to quit or be fired"
+            ],
+            'watch_out': [
+                "Non-compete clauses (limits future jobs)",
+                "Unpaid overtime requirements",
+                "Confidentiality agreements",
+                "Probation period terms"
+            ]
+        },
+        'financial': {
+            'what_it_is': "This is about borrowing or lending money. It explains how much you owe, when to pay, and what happens if you can't pay.",
+            'key_things': [
+                "Total amount you're borrowing",
+                "Interest rate (extra money you pay)",
+                "Monthly payment amount",
+                "When payments are due",
+                "Total amount you'll pay back"
+            ],
+            'watch_out': [
+                "Very high interest rates",
+                "Penalties for early payment",
+                "What they can take if you don't pay",
+                "Hidden fees or charges"
+            ]
+        },
+        'general': {
+            'what_it_is': "This is a legal agreement that creates rules and obligations between different parties.",
+            'key_things': [
+                "Who are the parties involved",
+                "What each party must do",
+                "When things must be done",
+                "How much money is involved",
+                "How to end the agreement"
+            ],
+            'watch_out': [
+                "Penalties for breaking the agreement",
+                "Unfair or one-sided terms",
+                "Automatic renewal clauses",
+                "Dispute resolution requirements"
+            ]
+        }
+    }
+    
+    return explanations.get(doc_type, explanations['general'])
+
+# ---------------- Action Steps Generator ----------------
+def generate_action_steps(doc_type, risks):
+    """Generate specific next steps for the user"""
+    base_steps = [
+        "Read this summary carefully",
+        "Ask questions about anything unclear",
+        "Keep a copy of the original document",
+        "Note important dates in your calendar"
+    ]
+    
+    risk_based_steps = []
+    
+    if any(risk['level'] == 'high' for risk in risks):
+        risk_based_steps.extend([
+            "Consider consulting with a lawyer",
+            "Don't sign until you fully understand",
+            "Ask about modifying concerning terms"
+        ])
+    
+    if doc_type == 'rental_agreement':
+        risk_based_steps.extend([
+            "Inspect the property before signing",
+            "Understand your tenant rights",
+            "Know the eviction process in your area"
+        ])
+    elif doc_type == 'employment':
+        risk_based_steps.extend([
+            "Negotiate salary and benefits if possible",
+            "Understand your employee rights",
+            "Review company policies"
+        ])
+    elif doc_type == 'financial':
+        risk_based_steps.extend([
+            "Compare with other loan offers",
+            "Calculate total cost of the loan",
+            "Understand bankruptcy implications"
+        ])
+    
+    return base_steps + risk_based_steps
+
+# ---------------- Enhanced Summarizer ----------------
+def simple_text_summarizer(text, max_sentences=5):
+    """Simple rule-based summarizer with more sentences for clarity"""
     if not text or len(text.strip()) < 100:
         return text
     
@@ -386,7 +402,8 @@ def simple_text_summarizer(text, max_sentences=3):
     if len(sentences) <= max_sentences:
         return text
     
-    indices = [0, len(sentences)//2, -1]
+    # Take more varied sentences for better coverage
+    indices = [0, len(sentences)//4, len(sentences)//2, 3*len(sentences)//4, -1]
     summary_sentences = [sentences[i] for i in indices if i < len(sentences)]
     
     return '. '.join(summary_sentences) + '.'
@@ -400,30 +417,31 @@ def summarize_text(text):
         from transformers import pipeline
         summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
         
-        max_length = 1000
+        max_length = 1500  # Increased for more comprehensive summary
         if len(text) > max_length:
             text = text[:max_length] + "..."
         
-        summary = summarizer(text, max_length=120, min_length=30, do_sample=False)
+        summary = summarizer(text, max_length=200, min_length=80, do_sample=False)
         return summary[0]['summary_text']
     
     except ImportError:
-        st.warning("Advanced summarizer not available. Using simple summarizer.")
-        return simple_text_summarizer(text)
+        st.warning("Using simplified summarizer for better accessibility.")
+        return simple_text_summarizer(text, max_sentences=5)
     except Exception as e:
-        st.warning(f"Summarization error: {str(e)}. Using simple summarizer.")
-        return simple_text_summarizer(text)
+        st.warning(f"Using simplified summarizer: {str(e)}")
+        return simple_text_summarizer(text, max_sentences=5)
 
-# ---------------- Legal Text Simplification ----------------
+# ---------------- Enhanced Legal Simplification ----------------
 def simplify_legal_text(text):
-    """Convert legal jargon to plain language"""
+    """Convert legal jargon to plain language with expanded dictionary"""
     replacements = {
+        # Basic legal terms
         "whereas": "because",
         "heretofore": "before now",
         "hereafter": "from now on",
         "aforementioned": "mentioned above",
         "pursuant to": "according to",
-        "notwithstanding": "despite",
+        "notwithstanding": "even though",
         "hereinafter": "from now on called",
         "therefor": "for that reason",
         "whereby": "by which",
@@ -431,15 +449,37 @@ def simplify_legal_text(text):
         "therein": "in it",
         "party of the first part": "first party",
         "party of the second part": "second party",
+        
+        # More complex terms
+        "indemnify": "protect from loss",
+        "covenant": "promise",
+        "remedy": "solution or fix",
+        "breach": "breaking the rules",
+        "default": "failing to pay or do what's required",
+        "liquidated damages": "pre-agreed penalty amount",
+        "force majeure": "uncontrollable events (like natural disasters)",
+        "arbitration": "private court hearing",
+        "jurisdiction": "which court has authority",
+        "severability": "if one part is invalid, the rest still applies",
+        "waiver": "giving up a right",
+        "consideration": "something of value exchanged",
+        "amendment": "change to the agreement",
+        "assignment": "transferring rights to someone else",
+        "subletting": "renting to someone else while you rent",
+        "lien": "legal claim on property",
+        "escrow": "money held by a third party",
+        "pro rata": "proportionally divided"
     }
     
-    simplified = text.lower()
+    simplified = text
     for legal_term, plain_term in replacements.items():
-        simplified = simplified.replace(legal_term.lower(), plain_term)
+        # Case-insensitive replacement
+        pattern = re.compile(re.escape(legal_term), re.IGNORECASE)
+        simplified = pattern.sub(plain_term, simplified)
     
-    return simplified.capitalize()
+    return simplified
 
-# ---------------- Audio Guidance ----------------
+# ---------------- Audio with Multiple Languages ----------------
 def create_audio_summary(text, language='en'):
     """Create audio file from text"""
     try:
@@ -455,63 +495,83 @@ def create_audio_summary(text, language='en'):
         return None
 
 def play_audio_summary(summary_text):
-    """Play audio summary"""
-    st.markdown('<div class="audio-section">', unsafe_allow_html=True)
-    st.markdown("### Audio Summary")
-    st.markdown("**English Audio:**")
+    """Play audio summary with multiple language options"""
+    st.markdown("### Listen to Your Summary")
     
-    audio_file_en = create_audio_summary(summary_text, 'en')
-    if audio_file_en:
-        st.audio(audio_file_en, format="audio/mp3")
-    else:
-        st.caption("English audio unavailable")
+    col1, col2 = st.columns(2)
     
-    st.markdown('</div>', unsafe_allow_html=True)
+    with col1:
+        st.markdown("**English Audio:**")
+        audio_file_en = create_audio_summary(summary_text, 'en')
+        if audio_file_en:
+            st.audio(audio_file_en, format="audio/mp3")
+        
+    with col2:
+        language_options = {
+            "IsiZulu":"zu"
+        }
+        
+        selected_lang = st.selectbox("Choose another language:", 
+                                   ['Select a language'] + list(language_options.keys()))
+        
+        if selected_lang != 'Select a language':
+            st.markdown(f"**{selected_lang} Audio:**")
+            audio_file = create_audio_summary(summary_text, language_options[selected_lang])
+            if audio_file:
+                st.audio(audio_file, format="audio/mp3")
 
-# ---------------- Main App ----------------
+# ---------------- Main Enhanced App ----------------
 def run():
     st.set_page_config(
-        page_title="Legal Document Summarizer", 
+        page_title="Legal Document Helper - Made Simple", 
         layout="wide",
-        initial_sidebar_state="collapsed"
+        initial_sidebar_state="expanded"
     )
     
     apply_legal_portal_styling()
 
-    st.markdown("# Legal Document Summarizer")
+    st.markdown("# Legal Document Helper")
+    st.markdown("### Making Legal Documents Easy to Understand")
     
+    # Friendly introduction
     st.markdown("""
-    <div class="feature-list">
-        <strong>Transform Complex Legal Documents into Clear Summaries</strong>
-        <br><br>
-        Upload your legal document and instantly receive:
-        <ul>
-            <li><strong>Advanced Text Extraction</strong> - Extract text from PDFs and scanned images</li>
-            <li><strong>Intelligent Summarization</strong> - Get concise summaries of lengthy documents</li>
-            <li><strong>Plain Language Translation</strong> - Convert legal jargon into everyday language</li>
-            <li><strong>Multi-Language Audio</strong> - Listen to summaries in your preferred language</li>
-        </ul>
+    <div class="alert-box alert-info">
+        <strong>Welcome!</strong><br>
+        This tool helps you understand legal documents in simple language. 
+        Upload your document and we'll explain it in plain English, highlight important risks, 
+        and tell you what to do next.
     </div>
     """, unsafe_allow_html=True)
 
-    # File uploader
+    # File uploader with better instructions
+    st.markdown("## Upload Your Document")
     uploaded_file = st.file_uploader(
-        "Choose your legal document", 
+        "Choose your document (we keep it private and secure)", 
         type=SUPPORTED_FORMATS,
-        help="Supported formats: PDF, JPG, PNG, WEBP (Maximum file size: 10MB)"
+        help="We support PDF files, images (JPG, PNG), and text files. Maximum size: 10MB"
     )
 
     if uploaded_file is not None:
-        # Check file size
+        # File validation
         if uploaded_file.size > MAX_FILE_SIZE:
-            st.error(f"File too large ({uploaded_file.size/1024/1024:.1f}MB). Maximum allowed size is 10MB.")
+            st.markdown("""
+            <div class="alert-box alert-danger">
+                <strong>File too large!</strong><br>
+                Your file is {:.1f}MB, but we can only handle files up to 10MB. 
+                Try compressing your file or taking a clearer photo.
+            </div>
+            """.format(uploaded_file.size/1024/1024), unsafe_allow_html=True)
             return
 
-        # Show file info
-        st.success(f"Successfully uploaded: **{uploaded_file.name}** ({uploaded_file.size/1024:.1f}KB)")
+        st.markdown(f"""
+        <div class="alert-box alert-info">
+            <strong>File uploaded successfully!</strong><br>
+            File: {uploaded_file.name} ({uploaded_file.size/1024:.1f}KB)
+        </div>
+        """, unsafe_allow_html=True)
 
-        # Extract text based on file type
-        with st.spinner("Extracting text from your document..."):
+        # Extract text
+        with st.spinner("Reading your document..."):
             extracted_text = ""
             
             if uploaded_file.type == "application/pdf":
@@ -520,212 +580,173 @@ def run():
                 try:
                     extracted_text = str(uploaded_file.read(), "utf-8")
                 except Exception as e:
-                    st.error(f"Failed to read text file: {str(e)}")
+                    st.error(f"Could not read text file: {str(e)}")
                     return
             else:
                 try:
                     image = Image.open(uploaded_file)
-                    st.image(image, caption="Document Preview", use_container_width=True)
+                    st.image(image, caption="Your Document", use_container_width=True)
                     extracted_text = extract_text_from_image(image)
                 except Exception as e:
-                    st.error(f"Failed to process image: {str(e)}")
+                    st.error(f"Could not read image: {str(e)}")
                     return
 
-        # Display extracted text
         if extracted_text and len(extracted_text.strip()) > 0:
-            word_count = len(extracted_text.split())
-            char_count = len(extracted_text)
-            estimated_read_time = max(1, word_count // 200)  # Average reading speed
             
-            st.success("Text extraction completed successfully!")
-            
-            # Show a preview of extracted text with fade-in effect
-            with st.expander("Preview Extracted Text", expanded=False):
-                preview_text = extracted_text[:500] + "..." if len(extracted_text) > 500 else extracted_text
-                st.markdown(f"""
-                <div style="
-                    background: rgba(248, 250, 252, 0.8);
-                    padding: 1.5rem;
-                    border-radius: 12px;
-                    border-left: 4px solid #3B82F6;
-                    animation: fadeIn 0.8s ease-in;
-                    font-family: 'Courier New', monospace;
-                    color: #334155;
-                    line-height: 1.6;
-                ">
-                {preview_text}
-                </div>
+            # Show the big friendly button
+            st.markdown("---")
+            if st.button("Explain This Document to Me!", key="main_analyze", help="Click to get a simple explanation"):
                 
-                <style>
-                @keyframes fadeIn {{
-                    from {{ opacity: 0; transform: translateY(20px); }}
-                    to {{ opacity: 1; transform: translateY(0); }}
-                }}
-                </style>
-                """, unsafe_allow_html=True)
-
-            # Enhanced summarization button with progress tracking
-            if st.button("Generate Summary & Audio", type="primary"):
+                # Progress tracking
                 progress_container = st.container()
                 
                 with progress_container:
-                    # Step 1: Text Processing
-                    create_progress_indicator(1, 4)
-                    with st.spinner("Analyzing document structure..."):
-                        time.sleep(0.5)  # Brief pause for visual effect
-                
-                with progress_container:
-                    # Step 2: Summarization
-                    create_progress_indicator(2, 4)
-                    with st.spinner("Creating intelligent summary..."):
-                        summary = summarize_text(extracted_text)
-                        time.sleep(0.3)
-                
-                with progress_container:
-                    # Step 3: Simplification
-                    create_progress_indicator(3, 4)
-                    with st.spinner("Translating to plain language..."):
-                        simplified_summary = simplify_legal_text(summary)
-                        time.sleep(0.3)
-                
-                with progress_container:
-                    # Step 4: Audio Generation
-                    create_progress_indicator(4, 4)
-                    with st.spinner("Generating audio summary..."):
+                    create_progress_indicator(1, 5)
+                    with st.spinner("Understanding your document..."):
+                        # Detect document type
+                        doc_type, doc_type_display = detect_document_type(extracted_text)
                         time.sleep(0.5)
                 
-                # Clear progress and show results
+                with progress_container:
+                    create_progress_indicator(2, 5)
+                    with st.spinner("Checking for important risks..."):
+                        # Assess risks
+                        risks = assess_document_risks(extracted_text, doc_type)
+                        time.sleep(0.5)
+                
+                with progress_container:
+                    create_progress_indicator(3, 5)
+                    with st.spinner("Creating simple summary..."):
+                        # Generate summaries
+                        summary = summarize_text(extracted_text)
+                        simplified_summary = simplify_legal_text(summary)
+                        time.sleep(0.5)
+                
+                with progress_container:
+                    create_progress_indicator(4, 5)
+                    with st.spinner("Preparing your action plan..."):
+                        # Get explanations and next steps
+                        explanation = get_plain_language_explanation(doc_type)
+                        next_steps = generate_action_steps(doc_type, risks)
+                        time.sleep(0.5)
+                
+                with progress_container:
+                    create_progress_indicator(5, 5)
+                    with st.spinner("Creating audio version..."):
+                        time.sleep(0.3)
+                
+                # Clear progress
                 progress_container.empty()
                 
                 st.markdown("---")
-                st.subheader("Document Analysis Results")
+                st.markdown("# Your Document Analysis")
                 
-                # Success message with confetti effect
-                st.success("Summary generated successfully!")
+                # Document type
+                st.markdown(f"""
+                <div class="alert-box alert-info">
+                    <strong>Document Type:</strong> {doc_type_display}
+                </div>
+                """, unsafe_allow_html=True)
                 
+                # Risk assessment
+                if risks:
+                    st.markdown("## Important Warnings")
+                    for risk in risks:
+                        risk_class = f"risk-{risk['level']}"
+                        st.markdown(f"""
+                        <div class="risk-indicator {risk_class}">
+                            <div>
+                                <strong>{risk['title']}</strong><br>
+                                {risk['description']}<br>
+                                <em>{risk['advice']}</em>
+                            </div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                else:
+                    st.markdown("""
+                    <div class="risk-indicator risk-low">
+                        <strong>No Major Risks Found</strong><br>
+                        This document appears to have standard terms, but still read carefully!
+                    </div>
+                    """, unsafe_allow_html=True)
+                
+                # Plain language explanation
+                st.markdown("## What Is This Document?")
+                st.markdown(f"""
+                <div class="plain-speak">
+                    <strong>In Simple Terms:</strong><br>
+                    {explanation['what_it_is']}
+                </div>
+                """, unsafe_allow_html=True)
+                
+                # Key points
                 col1, col2 = st.columns(2)
+                
                 with col1:
-                    st.markdown('<div class="summary-container">', unsafe_allow_html=True)
-                    st.markdown("**Professional Summary:**")
-                    st.write(summary)
-                    st.markdown('</div>', unsafe_allow_html=True)
+                    st.markdown("### Key Things This Document Covers:")
+                    for point in explanation['key_things']:
+                        st.markdown(f"• **{point}**")
                 
                 with col2:
-                    st.markdown('<div class="summary-container">', unsafe_allow_html=True)
-                    st.markdown("**Plain Language Version:**")
-                    st.write(simplified_summary)
-                    st.markdown('</div>', unsafe_allow_html=True)
+                    st.markdown("### Watch Out For:")
+                    for warning in explanation['watch_out']:
+                        st.markdown(f"• **{warning}**")
                 
+                # Simplified summary
+                st.markdown("## Simple Summary")
+                st.markdown(f"""
+                <div class="plain-speak">
+                    {simplified_summary}
+                </div>
+                """, unsafe_allow_html=True)
+                
+                # Next steps
+                st.markdown("## What Should You Do Next?")
+                st.markdown(f"""
+                <div class="next-steps">
+                    <strong>Your Action Plan:</strong><br><br>
+                """, unsafe_allow_html=True)
+                
+                for step in next_steps:
+                    st.markdown(f"**{step}**")
+                
+                st.markdown("</div>", unsafe_allow_html=True)
+                
+                # Audio section
                 play_audio_summary(simplified_summary)
                 
-                # Additional interactive features
+                # Additional resources
                 st.markdown("---")
-                st.markdown("### Additional Tools")
+                st.markdown("## Need More Help?")
                 
-                tool_col1, tool_col2, tool_col3 = st.columns(3)
+                help_col1, help_col2, help_col3 = st.columns(3)
                 
-                with tool_col1:
-                    if st.button("Copy Summary", key="copy_summary"):
-                        st.info("Summary copied to clipboard!")
-                        st.code(summary, language=None)
+                with help_col1:
+                    if st.button("Find Legal Aid", help="Find free legal help in your area"):
+                        st.info("Search for 'legal aid' + your city name, or call 211 for local resources.")
                 
-                with tool_col2:
-                    if st.button("Word Cloud", key="word_cloud"):
-                        st.info("Word cloud feature coming soon!")
+                with help_col2:
+                    if st.button("Common Questions", help="See frequently asked questions"):
+                        st.info("Check our FAQ section in the sidebar for common concerns!")
                 
-                with tool_col3:
-                    if st.button("Complexity Score", key="complexity"):
-                        # Simple complexity calculation
-                        avg_word_length = sum(len(word) for word in summary.split()) / len(summary.split())
-                        complexity_score = min(100, int(avg_word_length * 10))
-                        st.metric("Complexity Score", f"{complexity_score}%", 
-                                delta="Lower is better" if complexity_score > 70 else "Good readability")
-                    
-        else:
-            st.warning("No readable text could be extracted from your document.")
-            
-            # Enhanced tips section with interactive cards
-            st.markdown("### Tips to improve text extraction:")
-            
-            tips = [
-                ("Image Quality", "Ensure the image is clear and well-lit"),
-                ("Resolution", "Use high-resolution scans (300 DPI or higher)"),
-                ("Orientation", "Make sure text is horizontal and not skewed"),
-                ("Format", "Try uploading a PDF version if available"),
-                ("Content", "Check that the document contains actual text")
-            ]
-            
-            for i, (title, description) in enumerate(tips):
-                st.markdown(f"""
-                <div style="
-                    background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(248,250,252,0.8));
-                    padding: 1rem 1.5rem;
-                    margin: 0.5rem 0;
-                    border-radius: 8px;
-                    border-left: 4px solid #3B82F6;
-                    transition: all 0.3s ease;
-                    animation: slideIn {0.2 * (i + 1)}s ease-out;
-                " onmouseover="this.style.transform='translateX(10px)'; this.style.backgroundColor='rgba(59, 130, 246, 0.05)'"
-                   onmouseout="this.style.transform='translateX(0)'; this.style.backgroundColor='rgba(248,250,252,0.8)'">
-                    <strong style="color: #1E40AF;">{title}:</strong> 
-                    <span style="color: #475569;">{description}</span>
-                </div>
-                
-                <style>
-                @keyframes slideIn {{
-                    from {{ opacity: 0; transform: translateX(-20px); }}
-                    to {{ opacity: 1; transform: translateX(0); }}
-                }}
-                </style>
-                """, unsafe_allow_html=True)
-
-    # Enhanced sidebar instructions
-    with st.sidebar:
-        st.markdown("""
-        ## How to Use This Tool
-
-        ### **Step-by-Step Guide:**
+                with help_col3:
+                    if st.button("Print Summary", help="Get a printable version"):
+                        st.info("Use your browser's print function to save this analysis!")
         
-        **1. Upload Your Document**
-        - Click "Choose your legal document"
-        - Select PDF or image files
-        - Maximum file size: 10MB
-
-        **2. Review Text Extraction**
-        - Check that text was extracted correctly
-        - View document preview for images
-
-        **3. Generate Summary**
-        - Click "Generate Summary & Audio"
-        - Get both professional and simplified versions
-
-        **4. Listen to Audio**
-        - Use audio playback feature
-        - Perfect for accessibility
-
-        ---
-
-        ### **Supported File Types:**
-        - **PDF**: Best for text extraction
-        - **Images**: JPG, PNG, WEBP
-        - **Text**: TXT files
-
-        ---
-
-        ### **Pro Tips:**
-        - **High-quality images** work best
-        - **Horizontal text** extracts more accurately  
-        - **PDF files** generally provide better results
-        - **Clear, unblurred** documents are essential
-
-        ---
-
-        ### **Technical Features:**
-        - AI-powered text extraction
-        - Advanced summarization algorithms
-        - Legal jargon simplification
-        - Multi-language audio generation
-        """)
+        else:
+            st.markdown("""
+            <div class="alert-box alert-warning">
+                <strong>We couldn't read any text from your document.</strong><br><br>
+                This might happen if:<br>
+                • The image is blurry or unclear<br>
+                • The text is too small or at an angle<br>
+                • It's a scanned image with poor quality<br><br>
+                <strong>Try:</strong><br>
+                • Taking a clearer, straight-on photo<br>
+                • Using a PDF version if you have one<br>
+                • Making sure there's good lighting
+            </div>
+            """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     run()
