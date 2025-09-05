@@ -11,7 +11,7 @@ import fitz  # PyMuPDF
 SUPPORTED_FORMATS = ["jpg","jpeg","png","webp","pdf","txt","doc","docx"]
 MAX_FILE_SIZE = 10*1024*1024
 
-# ---------------- Enhanced Professional Styling ----------------
+# ---------------- Enhanced Professional Styling with Better Visibility ----------------
 def apply_legal_portal_styling():
     st.markdown("""
     <style>
@@ -23,9 +23,9 @@ def apply_legal_portal_styling():
     
     .main .block-container {
         padding: 2rem 3rem;
-        background: linear-gradient(135deg, #1E293B 0%, #334155 25%, #475569 50%, #64748B 75%, #94A3B8 100%);
+        background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 25%, #CBD5E1 50%, #94A3B8 75%, #64748B 100%);
         min-height: 100vh;
-        color: white;
+        color: #1E293B;
     }
     
     /* Elegant Blue-to-Pink Gradient Heading */
@@ -39,21 +39,21 @@ def apply_legal_portal_styling():
         padding: 1.5rem 0 !important;
         position: relative !important;
         background: linear-gradient(135deg, 
-            #3B82F6 0%,
-            #5B9BF7 15%,
-            #7BB3F8 30%,
-            #9BCCF9 45%,
-            #BBE4FA 60%,
-            #D4A5E8 75%,
-            #EC7BB8 90%,
+            #1E40AF 0%,
+            #3B82F6 15%,
+            #6366F1 30%,
+            #8B5CF6 45%,
+            #A855F7 60%,
+            #C026D3 75%,
+            #E879F9 90%,
             #F472B6 100%) !important;
         -webkit-background-clip: text !important;
         -webkit-text-fill-color: transparent !important;
         background-clip: text !important;
         text-shadow: 
-            0 2px 10px rgba(59, 130, 246, 0.3),
-            0 4px 20px rgba(244, 114, 182, 0.2) !important;
-        filter: drop-shadow(0 0 15px rgba(139, 92, 246, 0.2)) !important;
+            0 2px 10px rgba(30, 64, 175, 0.4),
+            0 4px 20px rgba(244, 114, 182, 0.3) !important;
+        filter: drop-shadow(0 0 15px rgba(139, 92, 246, 0.3)) !important;
     }
     
     /* Subtle Blue-Pink Accent Lines */
@@ -64,15 +64,15 @@ def apply_legal_portal_styling():
         left: 50% !important;
         transform: translateX(-50%) !important;
         width: 60% !important;
-        height: 2px !important;
+        height: 3px !important;
         background: linear-gradient(90deg, 
             transparent 0%, 
-            #3B82F6 30%, 
+            #1E40AF 30%, 
             #8B5CF6 50%, 
             #F472B6 70%, 
             transparent 100%) !important;
-        border-radius: 1px !important;
-        opacity: 0.6 !important;
+        border-radius: 2px !important;
+        opacity: 0.8 !important;
     }
     
     .stMarkdown h1::after, .main h1::after {
@@ -82,61 +82,62 @@ def apply_legal_portal_styling():
         left: 50% !important;
         transform: translateX(-50%) !important;
         width: 40% !important;
-        height: 2px !important;
+        height: 3px !important;
         background: linear-gradient(90deg, 
             transparent 0%, 
-            #60A5FA 25%, 
-            #A78BFA 50%, 
+            #3B82F6 25%, 
+            #A855F7 50%, 
             #F472B6 75%, 
             transparent 100%) !important;
-        border-radius: 1px !important;
-        opacity: 0.4 !important;
+        border-radius: 2px !important;
+        opacity: 0.6 !important;
     }
     
     /* Improved Section Headings */
     .main h2, .main h3 {
-        color: #E2E8F0 !important;
+        color: #0F172A !important;
         font-weight: 700 !important;
         font-size: 1.5rem !important;
-        border-left: 4px solid #8B5CF6 !important;
+        border-left: 4px solid #3B82F6 !important;
         padding-left: 1rem !important;
         margin: 2rem 0 1rem 0 !important;
-        text-shadow: 1px 2px 4px rgba(0,0,0,0.3) !important;
-        background: rgba(139, 92, 246, 0.1) !important;
+        text-shadow: none !important;
+        background: linear-gradient(145deg, rgba(59, 130, 246, 0.08), rgba(59, 130, 246, 0.05)) !important;
         padding: 0.75rem 1rem !important;
         border-radius: 0 8px 8px 0 !important;
     }
     
     /* Enhanced Text Visibility */
     .main p, .main li, .main div {
-        color: #F1F5F9 !important;
+        color: #1E293B !important;
         line-height: 1.7 !important;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.5) !important;
-        font-weight: 400 !important;
+        text-shadow: none !important;
+        font-weight: 500 !important;
+        font-size: 1rem !important;
     }
     
     /* Stronger text for important content */
     .main strong, .main b {
-        color: #FFFFFF !important;
+        color: #0F172A !important;
         font-weight: 700 !important;
-        text-shadow: 1px 1px 3px rgba(0,0,0,0.6) !important;
+        text-shadow: none !important;
     }
     
     .feature-list {
-        background: linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06)) !important;
+        background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(248,250,252,0.9)) !important;
         padding: 2rem !important;
         border-radius: 16px !important;
-        border: 2px solid rgba(255,255,255,0.15) !important;
+        border: 2px solid rgba(59, 130, 246, 0.2) !important;
         margin: 2rem 0 !important;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.3) !important;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.08) !important;
         backdrop-filter: blur(8px) !important;
     }
     
     .feature-list strong {
-        color: #3B82F6 !important;
+        color: #1E40AF !important;
         font-size: 1.1rem !important;
         font-weight: 700 !important;
-        text-shadow: 1px 1px 3px rgba(0,0,0,0.7) !important;
+        text-shadow: none !important;
     }
     
     .feature-list ul {
@@ -145,21 +146,22 @@ def apply_legal_portal_styling():
     }
     
     .feature-list li {
-        color: #F1F5F9 !important;
+        color: #334155 !important;
         margin: 0.75rem 0 !important;
         line-height: 1.7 !important;
         font-size: 1rem !important;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.5) !important;
+        text-shadow: none !important;
+        font-weight: 500 !important;
     }
     
     .feature-list li strong {
-        color: #60A5FA !important;
-        font-weight: 600 !important;
+        color: #3B82F6 !important;
+        font-weight: 700 !important;
     }
     
     /* Enhanced Buttons */
     .stButton > button {
-        background: linear-gradient(135deg, #8B5CF6 0%, #F472B6 100%) !important;
+        background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 50%, #F472B6 100%) !important;
         color: white !important;
         font-weight: 700 !important;
         font-size: 1.1rem !important;
@@ -167,119 +169,152 @@ def apply_legal_portal_styling():
         border-radius: 12px !important;
         padding: 1rem 2rem !important;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4) !important;
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3) !important;
         letter-spacing: 0.025em !important;
         width: 100% !important;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.3) !important;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.2) !important;
     }
     
     .stButton > button:hover {
-        background: linear-gradient(135deg, #7C3AED 0%, #EC4899 100%) !important;
+        background: linear-gradient(135deg, #1E40AF 0%, #7C3AED 50%, #EC4899 100%) !important;
         transform: translateY(-3px) !important;
-        box-shadow: 0 12px 32px rgba(139, 92, 246, 0.5) !important;
+        box-shadow: 0 12px 32px rgba(59, 130, 246, 0.4) !important;
     }
     
     /* Improved Form Elements */
     .stTextArea > div > div > textarea {
-        background: rgba(255,255,255,0.1) !important;
-        color: #F8FAFC !important;
-        border: 2px solid rgba(255,255,255,0.2) !important;
+        background: rgba(255,255,255,0.9) !important;
+        color: #1E293B !important;
+        border: 2px solid rgba(59, 130, 246, 0.3) !important;
         border-radius: 8px !important;
         font-size: 1rem !important;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.3) !important;
+        text-shadow: none !important;
+        font-weight: 500 !important;
     }
     
     /* Enhanced Alert Boxes */
     .stSuccess, .stInfo, .stWarning, .stError {
         border-radius: 12px !important;
-        font-weight: 500 !important;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.3) !important;
+        font-weight: 600 !important;
+        text-shadow: none !important;
         backdrop-filter: blur(8px) !important;
     }
     
     .stSuccess {
-        background: rgba(34, 197, 94, 0.15) !important;
+        background: rgba(34, 197, 94, 0.1) !important;
         border: 1px solid rgba(34, 197, 94, 0.3) !important;
-        color: #BBF7D0 !important;
+        color: #166534 !important;
     }
     
     .stInfo {
-        background: rgba(59, 130, 246, 0.15) !important;
+        background: rgba(59, 130, 246, 0.1) !important;
         border: 1px solid rgba(59, 130, 246, 0.3) !important;
-        color: #DBEAFE !important;
+        color: #1E40AF !important;
     }
     
     .stWarning {
-        background: rgba(245, 158, 11, 0.15) !important;
+        background: rgba(245, 158, 11, 0.1) !important;
         border: 1px solid rgba(245, 158, 11, 0.3) !important;
-        color: #FEF3C7 !important;
+        color: #92400E !important;
     }
     
     .stError {
-        background: rgba(239, 68, 68, 0.15) !important;
+        background: rgba(239, 68, 68, 0.1) !important;
         border: 1px solid rgba(239, 68, 68, 0.3) !important;
-        color: #FECACA !important;
+        color: #DC2626 !important;
     }
     
     /* Enhanced Summary Containers */
     .summary-container {
-        background: linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06)) !important;
+        background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(248,250,252,0.9)) !important;
         padding: 2rem !important;
         border-radius: 16px !important;
-        border: 2px solid rgba(59, 130, 246, 0.3) !important;
+        border: 2px solid rgba(59, 130, 246, 0.2) !important;
         margin: 1.5rem 0 !important;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.3) !important;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.08) !important;
         backdrop-filter: blur(8px) !important;
     }
     
     .summary-container strong {
-        color: #3B82F6 !important;
+        color: #1E40AF !important;
         font-size: 1.2rem !important;
         font-weight: 700 !important;
     }
     
+    .summary-container p, .summary-container div {
+        color: #334155 !important;
+        font-weight: 500 !important;
+    }
+    
     /* Enhanced Audio Section */
     .audio-section {
-        background: linear-gradient(145deg, rgba(139, 92, 246, 0.15), rgba(139, 92, 246, 0.08)) !important;
+        background: linear-gradient(145deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05)) !important;
         padding: 2rem !important;
         border-radius: 16px !important;
-        border: 2px solid rgba(139, 92, 246, 0.3) !important;
+        border: 2px solid rgba(139, 92, 246, 0.2) !important;
         margin: 2rem 0 !important;
-        box-shadow: 0 8px 32px rgba(139, 92, 246, 0.2) !important;
+        box-shadow: 0 8px 32px rgba(139, 92, 246, 0.15) !important;
         backdrop-filter: blur(8px) !important;
     }
     
     .audio-section h3 {
-        color: #C4B5FD !important;
+        color: #6B21A8 !important;
         font-weight: 700 !important;
         margin-bottom: 1rem !important;
     }
     
+    .audio-section p {
+        color: #475569 !important;
+        font-weight: 600 !important;
+    }
+    
     /* File uploader styling */
     .stFileUploader > div > button {
-        background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05)) !important;
-        border: 2px dashed rgba(255,255,255,0.3) !important;
+        background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(248,250,252,0.8)) !important;
+        border: 2px dashed rgba(59, 130, 246, 0.4) !important;
         border-radius: 12px !important;
-        color: #F1F5F9 !important;
-        font-weight: 500 !important;
+        color: #1E293B !important;
+        font-weight: 600 !important;
         padding: 2rem !important;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.3) !important;
+        text-shadow: none !important;
     }
     
     /* Sidebar improvements */
     .css-1d391kg {
-        background: linear-gradient(180deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95)) !important;
+        background: linear-gradient(180deg, rgba(248, 250, 252, 0.98), rgba(226, 232, 240, 0.95)) !important;
         backdrop-filter: blur(12px) !important;
     }
     
     .css-1d391kg .markdown-text-container {
-        color: #F1F5F9 !important;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.3) !important;
+        color: #1E293B !important;
+        text-shadow: none !important;
+        font-weight: 500 !important;
+    }
+    
+    .css-1d391kg h2 {
+        color: #0F172A !important;
+        font-weight: 700 !important;
+    }
+    
+    .css-1d391kg h3 {
+        color: #1E40AF !important;
+        font-weight: 600 !important;
+    }
+    
+    .css-1d391kg strong {
+        color: #0F172A !important;
+        font-weight: 700 !important;
     }
     
     /* Improved spinner */
     .stSpinner {
         color: #3B82F6 !important;
+    }
+    
+    /* Enhanced caption styling */
+    .stCaption {
+        color: #64748B !important;
+        font-weight: 500 !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -512,42 +547,155 @@ def run():
         # Display extracted text
         if extracted_text and len(extracted_text.strip()) > 0:
             word_count = len(extracted_text.split())
-            st.info(f"📊 Successfully extracted **{word_count}** words from your document")
+            char_count = len(extracted_text)
+            estimated_read_time = max(1, word_count // 200)  # Average reading speed
+            
+            st.success("🎉 Text extraction completed successfully!")
+            
+            # Interactive statistics
+            st.markdown("### 📊 Document Statistics")
+            create_interactive_stats(word_count, char_count, estimated_read_time)
+            
+            # Show a preview of extracted text with fade-in effect
+            with st.expander("👀 Preview Extracted Text", expanded=False):
+                preview_text = extracted_text[:500] + "..." if len(extracted_text) > 500 else extracted_text
+                st.markdown(f"""
+                <div style="
+                    background: rgba(248, 250, 252, 0.8);
+                    padding: 1.5rem;
+                    border-radius: 12px;
+                    border-left: 4px solid #3B82F6;
+                    animation: fadeIn 0.8s ease-in;
+                    font-family: 'Courier New', monospace;
+                    color: #334155;
+                    line-height: 1.6;
+                ">
+                {preview_text}
+                </div>
+                
+                <style>
+                @keyframes fadeIn {{
+                    from {{ opacity: 0; transform: translateY(20px); }}
+                    to {{ opacity: 1; transform: translateY(0); }}
+                }}
+                </style>
+                """, unsafe_allow_html=True)
 
-            # Summarization section
+            # Enhanced summarization button with progress tracking
             if st.button("🚀 Generate Summary & Audio", type="primary"):
-                with st.spinner("⚡ Creating intelligent summary..."):
-                    summary = summarize_text(extracted_text)
-                    simplified_summary = simplify_legal_text(summary)
-                    
-                    st.subheader("📝 Document Analysis Results")
-                    st.success("🎉 Summary generated successfully!")
-                    
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        st.markdown('<div class="summary-container">', unsafe_allow_html=True)
-                        st.markdown("**📄 Professional Summary:**")
-                        st.write(summary)
-                        st.markdown('</div>', unsafe_allow_html=True)
-                    
-                    with col2:
-                        st.markdown('<div class="summary-container">', unsafe_allow_html=True)
-                        st.markdown("**💡 Plain Language Version:**")
-                        st.write(simplified_summary)
-                        st.markdown('</div>', unsafe_allow_html=True)
-                    
-                    play_audio_summary(simplified_summary)
+                progress_container = st.container()
+                
+                with progress_container:
+                    # Step 1: Text Processing
+                    create_progress_indicator(1, 4)
+                    with st.spinner("🔍 Analyzing document structure..."):
+                        st.sleep(0.5)  # Brief pause for visual effect
+                
+                with progress_container:
+                    # Step 2: Summarization
+                    create_progress_indicator(2, 4)
+                    with st.spinner("🧠 Creating intelligent summary..."):
+                        summary = summarize_text(extracted_text)
+                        st.sleep(0.3)
+                
+                with progress_container:
+                    # Step 3: Simplification
+                    create_progress_indicator(3, 4)
+                    with st.spinner("💡 Translating to plain language..."):
+                        simplified_summary = simplify_legal_text(summary)
+                        st.sleep(0.3)
+                
+                with progress_container:
+                    # Step 4: Audio Generation
+                    create_progress_indicator(4, 4)
+                    with st.spinner("🎧 Generating audio summary..."):
+                        st.sleep(0.5)
+                
+                # Clear progress and show results
+                progress_container.empty()
+                
+                st.markdown("---")
+                st.subheader("📝 Document Analysis Results")
+                
+                # Success message with confetti effect
+                st.balloons()  # Streamlit's built-in celebration animation
+                st.success("🎉 Summary generated successfully!")
+                
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.markdown('<div class="summary-container">', unsafe_allow_html=True)
+                    st.markdown("**📄 Professional Summary:**")
+                    st.write(summary)
+                    st.markdown('</div>', unsafe_allow_html=True)
+                
+                with col2:
+                    st.markdown('<div class="summary-container">', unsafe_allow_html=True)
+                    st.markdown("**💡 Plain Language Version:**")
+                    st.write(simplified_summary)
+                    st.markdown('</div>', unsafe_allow_html=True)
+                
+                play_audio_summary(simplified_summary)
+                
+                # Additional interactive features
+                st.markdown("---")
+                st.markdown("### 🛠️ Additional Tools")
+                
+                tool_col1, tool_col2, tool_col3 = st.columns(3)
+                
+                with tool_col1:
+                    if st.button("📋 Copy Summary", key="copy_summary"):
+                        st.info("📋 Summary copied to clipboard!")
+                        st.code(summary, language=None)
+                
+                with tool_col2:
+                    if st.button("📊 Word Cloud", key="word_cloud"):
+                        st.info("🔮 Word cloud feature coming soon!")
+                
+                with tool_col3:
+                    if st.button("📈 Complexity Score", key="complexity"):
+                        # Simple complexity calculation
+                        avg_word_length = sum(len(word) for word in summary.split()) / len(summary.split())
+                        complexity_score = min(100, int(avg_word_length * 10))
+                        st.metric("Complexity Score", f"{complexity_score}%", 
+                                delta="Lower is better" if complexity_score > 70 else "Good readability")
                     
         else:
             st.warning("⚠️ No readable text could be extracted from your document.")
-            st.markdown("""
-            **💡 Tips to improve text extraction:**
-            - Ensure the image is clear and well-lit
-            - Use high-resolution scans (300 DPI or higher)
-            - Make sure text is horizontal and not skewed
-            - Try uploading a PDF version if available
-            - Check that the document contains actual text (not just images)
-            """)
+            
+            # Enhanced tips section with interactive cards
+            st.markdown("### 💡 Tips to improve text extraction:")
+            
+            tips = [
+                ("🌟 Image Quality", "Ensure the image is clear and well-lit"),
+                ("🎯 Resolution", "Use high-resolution scans (300 DPI or higher)"),
+                ("📐 Orientation", "Make sure text is horizontal and not skewed"),
+                ("📄 Format", "Try uploading a PDF version if available"),
+                ("✨ Content", "Check that the document contains actual text")
+            ]
+            
+            for i, (title, description) in enumerate(tips):
+                st.markdown(f"""
+                <div style="
+                    background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(248,250,252,0.8));
+                    padding: 1rem 1.5rem;
+                    margin: 0.5rem 0;
+                    border-radius: 8px;
+                    border-left: 4px solid #3B82F6;
+                    transition: all 0.3s ease;
+                    animation: slideIn {0.2 * (i + 1)}s ease-out;
+                " onmouseover="this.style.transform='translateX(10px)'; this.style.backgroundColor='rgba(59, 130, 246, 0.05)'"
+                   onmouseout="this.style.transform='translateX(0)'; this.style.backgroundColor='rgba(248,250,252,0.8)'">
+                    <strong style="color: #1E40AF;">{title}:</strong> 
+                    <span style="color: #475569;">{description}</span>
+                </div>
+                
+                <style>
+                @keyframes slideIn {{
+                    from {{ opacity: 0; transform: translateX(-20px); }}
+                    to {{ opacity: 1; transform: translateX(0); }}
+                }}
+                </style>
+                """, unsafe_allow_html=True)
 
     # Enhanced sidebar instructions
     with st.sidebar:
