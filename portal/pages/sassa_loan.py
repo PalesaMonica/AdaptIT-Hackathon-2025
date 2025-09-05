@@ -674,7 +674,7 @@ def run():
     # Header
     st.markdown("""
     <div class=" sassa-header">
-        <h1> ⚖️ SASSA Loans Analysis Tool</h1>
+        <h1>  SASSA Loans Analysis Tool</h1>
         
     """, unsafe_allow_html=True)
     

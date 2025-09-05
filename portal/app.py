@@ -9,6 +9,7 @@ def apply_beautiful_styling():
     st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap');
+    @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
     
     /* Beautiful lighter background */
     .stApp {
@@ -321,6 +322,24 @@ def apply_beautiful_styling():
         text-decoration: underline !important;
     }
     
+    /* Footer styling - Added to match the design */
+    .footer-section {
+        text-align: center !important;
+        padding: 3rem !important;
+        color: #475569 !important;
+        border-top: 2px solid rgba(59, 130, 246, 0.25) !important;
+        margin-top: 4rem !important;
+        background: rgba(255, 255, 255, 0.6) !important;
+        border-radius: 20px 20px 0 0 !important;
+        backdrop-filter: blur(10px) !important;
+    }
+    
+    .footer-section p {
+        color: #475569 !important;
+        margin: 0.75rem 0 !important;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+    }
+    
     /* Mobile responsive */
     @media (max-width: 768px) {
         .main .block-container {
@@ -347,6 +366,11 @@ def apply_beautiful_styling():
         .feature-badge {
             font-size: 0.8rem;
             padding: 0.4rem 0.8rem;
+        }
+        
+        .footer-section {
+            padding: 2rem 1rem !important;
+            margin-top: 2rem !important;
         }
     }
     
@@ -426,13 +450,9 @@ elif selected_page.title == "💰 SASSA Loan Assistant":
 
 # Enhanced Transparent Footer
 st.markdown("""
----
-<div style="text-align: center; padding: 3rem 0; margin-top: 2rem;">
-    <h3 style="color: #1E293B; margin-bottom: 1rem; text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8), 0 1px 2px rgba(0, 0, 0, 0.1);">🇿🇦 Proudly Serving South African Communities</h3>
-    <p style="font-size: 1rem; margin-bottom: 0.5rem; color: #334155; font-weight: 500; text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7);">Professional Legal Services • Educational Resources • Community Support</p>
-    <p style="font-size: 0.9rem; color: #475569; text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6);">This platform provides educational information and should not replace professional legal advice</p>
-    <div style="margin-top: 1rem; font-size: 0.8rem; color: #64748B; text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);">
-        Made with ❤️ for South Africa • Secure • Confidential • Professional
+    <div class="footer-section">
+        <p><i class="fas fa-balance-scale"></i> Legal Literacy Portal</p>
+        <p>Empowering South Africans through legal knowledge</p>
+        <p>© 2025 Legal Literacy Portal. All rights reserved.</p>
     </div>
-</div>
 """, unsafe_allow_html=True)

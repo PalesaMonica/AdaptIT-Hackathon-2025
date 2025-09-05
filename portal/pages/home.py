@@ -6,6 +6,7 @@ def apply_legal_home_styling():
     st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+    @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
     
     /* Main app background - Background image with lighter overlay */
     .stApp {
@@ -33,8 +34,6 @@ def apply_legal_home_styling():
         text-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
     }
     
-
-    
     /* Service cards - Brighter background */
     .service-card {
         background: linear-gradient(145deg, rgba(255,255,255,0.20), rgba(255,255,255,0.15)) !important;
@@ -45,6 +44,10 @@ def apply_legal_home_styling():
         transition: all 0.4s ease !important;
         box-shadow: 0 10px 30px rgba(0,0,0,0.12) !important;
         backdrop-filter: blur(6px) !important;
+        height: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
     }
     
     .service-card:hover {
@@ -55,10 +58,12 @@ def apply_legal_home_styling():
     }
     
     .card-icon {
-        font-size: 3rem !important;
+        font-size: 2.5rem !important;
         text-align: center !important;
         margin-bottom: 1.5rem !important;
         display: block !important;
+        color: #60A5FA !important;
+        font-weight: 600 !important;
     }
     
     .card-title {
@@ -76,6 +81,7 @@ def apply_legal_home_styling():
         margin-bottom: 2rem !important;
         line-height: 1.7 !important;
         font-size: 1rem !important;
+        flex-grow: 1 !important;
     }
     
     /* Buttons */
@@ -172,23 +178,22 @@ def apply_legal_home_styling():
         }
     }
     
-    /* Emergency section - Blue color scheme to match overall design */
+    /* Emergency section - Simplified */
     .emergency-section {
-        background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(37, 99, 235, 0.20)) !important;
+        background: rgba(59, 130, 246, 0.15) !important;
         padding: 2rem !important;
-        border-radius: 16px !important;
+        border-radius: 12px !important;
         margin: 3rem 0 !important;
-        border: 2px solid rgba(59, 130, 246, 0.5) !important;
+        border: 1px solid rgba(59, 130, 246, 0.3) !important;
         text-align: center !important;
-        backdrop-filter: blur(8px) !important;
+        backdrop-filter: blur(10px) !important;
     }
     
     .emergency-title {
         color: #93C5FD !important;
-        font-size: 1.8rem !important;
-        font-weight: 800 !important;
+        font-size: 1.5rem !important;
+        font-weight: 600 !important;
         margin-bottom: 1.5rem !important;
-        text-shadow: 0 2px 10px rgba(147, 197, 253, 0.3) !important;
     }
     
     .emergency-content p {
@@ -296,11 +301,11 @@ def run():
     apply_legal_home_styling()
 
     # Welcome audio section
-    st.info("🔊 Enable audio for guided navigation and accessibility features")
+    st.info("Audio guidance available for enhanced accessibility")
     
     col_audio1, col_audio2, col_audio3 = st.columns([1,2,1])
     with col_audio2:
-        if st.button("🎵 Play Welcome Message", key="welcome_audio"):
+        if st.button("Play Welcome Message", key="welcome_audio"):
             play_audio("Welcome to the Legal Literacy Portal! This platform helps South Africans understand legal documents, detect fraud, create wills, and connect with trusted lawyers.", auto_play=True)
 
     # Statistics
@@ -328,20 +333,20 @@ def run():
     """, unsafe_allow_html=True)
 
     # Services Section
-    st.markdown('<h2 class="section-title">🛡️ Legal Protection Services</h2>', unsafe_allow_html=True)
+    st.markdown('<h2 class="section-title">Legal Protection Services</h2>', unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns(3)
     
     with col1:
         st.markdown("""
         <div class="service-card">
-            <div class="card-icon">📄</div>
+            <div class="card-icon"><i class="fas fa-file-contract"></i></div>
             <div class="card-title">Document Summarizer</div>
             <div class="card-description">Transform complex legal documents into clear, understandable summaries in plain English with key highlights.</div>
         </div>
         """, unsafe_allow_html=True)
         
-        if st.button("📖 Summarize Document", key="summarize"):
+        if st.button("Summarize Document", key="summarize"):
             st.session_state['page'] = 'SummarizeDocs'
             play_audio("Opening document summarizer")
             st.rerun()
@@ -349,13 +354,13 @@ def run():
     with col2:
         st.markdown("""
         <div class="service-card">
-            <div class="card-icon">🛡️</div>
+            <div class="card-icon"><i class="fas fa-shield-alt"></i></div>
             <div class="card-title">Fraud Detection</div>
             <div class="card-description">AI-powered analysis to identify suspicious clauses, predatory terms, and potential scams in legal documents.</div>
         </div>
         """, unsafe_allow_html=True)
         
-        if st.button("🔍 Check for Fraud", key="fraud"):
+        if st.button("Check for Fraud", key="fraud"):
             st.session_state['page'] = 'FraudCheck'
             play_audio("Starting fraud detection")
             st.rerun()
@@ -363,32 +368,32 @@ def run():
     with col3:
         st.markdown("""
         <div class="service-card">
-            <div class="card-icon">📜</div>
+            <div class="card-icon"><i class="fas fa-scroll"></i></div>
             <div class="card-title">Will Generator</div>
             <div class="card-description">Create a legally compliant will draft based on South African law, ready for professional review.</div>
         </div>
         """, unsafe_allow_html=True)
         
-        if st.button("📝 Create Will", key="will"):
+        if st.button("Create Will", key="will"):
             st.session_state['page'] = 'WillGen'
             play_audio("Opening will generator")
             st.rerun()
 
     # Secondary Services
-    st.markdown('<h2 class="section-title">🤝 Professional Support</h2>', unsafe_allow_html=True)
+    st.markdown('<h2 class="section-title">Professional Support</h2>', unsafe_allow_html=True)
     
     col4, col5 = st.columns(2)
     
     with col4:
         st.markdown("""
         <div class="service-card">
-            <div class="card-icon">🏡</div>
+            <div class="card-icon"><i class="fas fa-gavel"></i></div>
             <div class="card-title">Property & Legal Assistance</div>
             <div class="card-description">Connect with verified lawyers and get guidance for safe property transactions, avoiding common pitfalls.</div>
         </div>
         """, unsafe_allow_html=True)
         
-        if st.button("🤝 Get Professional Help", key="lawyer"):
+        if st.button("Get Professional Help", key="lawyer"):
             st.session_state['page'] = 'LawyerAssist'
             play_audio("Connecting with legal professionals")
             st.rerun()
@@ -396,40 +401,40 @@ def run():
     with col5:
         st.markdown("""
         <div class="service-card">
-            <div class="card-icon">📚</div>
+            <div class="card-icon"><i class="fas fa-balance-scale"></i></div>
             <div class="card-title">Know Your Rights</div>
             <div class="card-description">Interactive legal education covering housing rights, contract law, consumer protection, and essential knowledge.</div>
         </div>
         """, unsafe_allow_html=True)
         
-        if st.button("🎓 Learn Your Rights", key="rights"):
+        if st.button("Learn Your Rights", key="rights"):
             st.session_state['page'] = 'RightsEdu'
             play_audio("Opening rights education")
             st.rerun()
 
-    # Emergency Section - Updated with blue color scheme
+    # Emergency Section
     st.markdown("""
     <div class="emergency-section">
-        <h3 class="emergency-title">🚨 Need Immediate Legal Help?</h3>
+        <h3 class="emergency-title"><i class="fas fa-exclamation-circle"></i> Need Immediate Legal Help?</h3>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
             <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px;">
                 <div class="emergency-content">
-                    <p><strong>Legal Aid SA Helpline</strong></p>
-                    <p class="emergency-phone">📞 0800 110 110</p>
+                    <p><strong><i class="fas fa-phone-alt"></i> Legal Aid SA Helpline</strong></p>
+                    <p class="emergency-phone">0800 110 110</p>
                     <p>(Toll-Free)</p>
                 </div>
             </div>
             <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px;">
                 <div class="emergency-content">
-                    <p><strong>WhatsApp Support</strong></p>
-                    <p class="emergency-phone">📱 079 835 7179</p>
+                    <p><strong><i class="fab fa-whatsapp"></i> WhatsApp Support</strong></p>
+                    <p class="emergency-phone">079 835 7179</p>
                     <p>Available 24/7</p>
                 </div>
             </div>
             <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px;">
                 <div class="emergency-content">
-                    <p><strong>Operating Hours</strong></p>
-                    <p class="emergency-hours">🕐 Mon - Fri</p>
+                    <p><strong><i class="far fa-clock"></i> Operating Hours</strong></p>
+                    <p class="emergency-hours">Mon - Fri</p>
                     <p>08:00 - 16:00</p>
                 </div>
             </div>
@@ -439,3 +444,7 @@ def run():
         </p>
     </div>
     """, unsafe_allow_html=True)
+
+    
+if __name__ == "__main__":
+    run()
